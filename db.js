@@ -1,4 +1,6 @@
 // for reference : https://www.w3schools.com/nodejs/nodejs_mysql_create_table.asp 
+// https://github.com/mysqljs/mysql
+// https://www.geeksforgeeks.org/how-to-create-table-in-sqlite3-database-using-node-js/?ref=gcse_outind (BEST ONE)
 
 const mysql = require('mysql2/promise');
 
@@ -17,7 +19,7 @@ const dbConfig = {
         // BUISNESS TABLE
         await connection.execute(`
             CREATE TABLE IF NOT EXISTS BUSINESS_TABLE (
-                Business_ID INT AUTO_INCREMENT PRIMARY KEY,
+               Business_ID INT AUTO_INCREMENT PRIMARY KEY,
                Business_Name VARCHAR(255)
             )
         `);
@@ -50,6 +52,47 @@ const dbConfig = {
                 FOREIGN KEY (User_ID) REFERENCES USER_TABLE(User_ID),
                 FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID),
                 PRIMARY KEY (User_ID, Job_ID)
+            )
+        `);
+
+        // JOB HISTORY  TABLE
+        await connection.execute(`
+        CREATE TABLE IF NOT EXISTS JOB_HISTORY (
+            History_ID INT AUTO_INCREMENT PRIMARY KEY,
+            User_ID INT,
+            Job_ID INT,
+            Completion_Date DATETIME,
+            Remarks VARCHAR(255),
+            FOREIGN KEY (User_ID) REFERENCES USER_TABLE(User_ID),
+            FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID)
+            )
+        `);
+
+        // CHAT TABLE
+        await connection.execute(`
+            CREATE TABLE IF NOT EXISTS CHAT_MESSAGES (
+                Message_ID INT AUTO_INCREMENT PRIMARY KEY,
+                User_ID INT,
+                Job_ID INT,
+                Message_Content TEXT NOT NULL,
+                Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                Is_Read BOOLEAN DEFAULT FALSE,
+                FOREIGN KEY (User_ID) REFERENCES USER_TABLE(User_ID),
+                FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID)
+            )
+        `);
+
+        // NOTIFCATION TABLE
+        await connection.execute(`
+            CREATE TABLE IF NOT EXISTS NOTIFICATIONS (
+                Notification_ID INT AUTO_INCREMENT PRIMARY KEY,
+                User_ID INT,
+                Job_ID INT,
+                Notification_Content TEXT NOT NULL,
+                Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                Is_Read BOOLEAN DEFAULT FALSE,
+                FOREIGN KEY (User_ID) REFERENCES USER_TABLE(User_ID),
+                FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID)
             )
         `);
 
