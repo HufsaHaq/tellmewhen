@@ -1,4 +1,7 @@
-import sqlite3 from 'sqlite3';
+import sqlite3 from "sqlite3";
+
+
+//https://www.sqlitetutorial.net/sqlite-nodejs/update/ GREAT ONE FOR TEMPLATE
 
 // Open database connection
 const db = new sqlite3.Database('tellmewhen.db', (err) => {
@@ -9,21 +12,31 @@ const db = new sqlite3.Database('tellmewhen.db', (err) => {
     }
 });
 
-// run a single query
-const runQuery = (sql, params = []) => {
+// Execute helper for running SQL queries
+export const execute = async (db, sql, params = []) => {
     return new Promise((resolve, reject) => {
-        db.run(sql, params, function (err) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve({ id: this.lastID, changes: this.changes });
-            }
-        });
+        if (params && params.length > 0) {
+            db.run(sql, params, function (err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve({ id: this.lastID, changes: this.changes });
+                }
+            });
+        } else {
+            db.exec(sql, (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        }
     });
 };
 
-// fetch all rows (show all)
-const fetchAll = (sql, params = []) => {
+// Fetch helper to retrieve all rows
+export const fetchAll = (db, sql, params = []) => {
     return new Promise((resolve, reject) => {
         db.all(sql, params, (err, rows) => {
             if (err) {
@@ -35,8 +48,8 @@ const fetchAll = (sql, params = []) => {
     });
 };
 
-// get a single row
-const fetchOne = (sql, params = []) => {
+// Fetch helper to retrieve a single row
+export const fetchOne = (db, sql, params = []) => {
     return new Promise((resolve, reject) => {
         db.get(sql, params, (err, row) => {
             if (err) {
@@ -48,79 +61,101 @@ const fetchOne = (sql, params = []) => {
     });
 };
 
-// isert record
-const insertRecord = async (table, data) => {
+// Insert helper
+export const insertRecord = async (db, table, data) => {
     const keys = Object.keys(data);
     const values = Object.values(data);
+
     const placeholders = keys.map(() => '?').join(', ');
-    const sql = `INSERT INTO ${table} (${keys.join(', ')}) VALUES (${placeholders})`;
-    return runQuery(sql, values);
-};
 
-// Update a record
-const updateRecord = async (table, data, whereClause, whereParams) => {
-    const updates = Object.keys(data).map((key) => `${key} = ?`).join(', ');
-    const values = [...Object.values(data), ...whereParams];
-    const sql = `UPDATE ${table} SET ${updates} WHERE ${whereClause}`;
-    return runQuery(sql, values);
-};
-
-// Delete a record
-const deleteRecord = async (table, whereClause, whereParams) => {
-    const sql = `DELETE FROM ${table} WHERE ${whereClause}`;
-    return runQuery(sql, whereParams);
-};
-
-// Utility: Check if a table exists
-const checkTableExists = async (tableName) => {
     const sql = `
-        SELECT name FROM sqlite_master 
-        WHERE type='table' AND name=?
+        INSERT INTO ${table} (${keys.join(', ')})
+        VALUES (${placeholders});
     `;
-    const result = await fetchOne(sql, [tableName]);
-    return !!result;
+
+    return execute(db, sql, values);
 };
 
-// close connections
-const closeDatabase = () => {
-    db.close((err) => {
+// Update helper
+export const updateRecord = async (db, table, data, idColumn) => {
+    const keys = Object.keys(data);
+    const values = Object.values(data);
+
+    const updates = keys.map(key => `${key} = ?`).join(', ');
+
+    const sql = `
+        UPDATE ${table}
+        SET ${updates}
+        WHERE ${idColumn} = ?;
+    `;
+
+    // Append the ID column value to the end of the parameters
+    const params = [...values, data[idColumn]];
+
+    return execute(db, sql, params);
+};
+
+// Main function
+const main = async () => {
+    const db = new sqlite3.Database("tellmewhen.db", (err) => {
         if (err) {
-            console.error('Error closing database:', err.message);
+            console.error("Error connecting to database:", err.message);
         } else {
-            console.log('Database connection closed.');
+            console.log("Connected to SQLite database.");
         }
     });
-};
-//#------------------------------Functions end----------------------------------#
-(async () => {
+
     try {
-        const tableExists = await checkTableExists('USER_TABLE');
-        console.log('USER_TABLE exists:', tableExists);
+        // Create table if it doesn't exist
+        const createTableSQL = `
+            CREATE TABLE IF NOT EXISTS USER_TABLE (
+                User_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                Username TEXT NOT NULL,
+                Hashed_Password TEXT NOT NULL,
+                Business_ID INTEGER
+            );
+        `;
+        await execute(db, createTableSQL);
 
-        // Insert a new record
-        const newUser = { Username: 'JohnDoe', Hashed_Password: 'password123', Business_ID: null };
-        const insertResult = await insertRecord('USER_TABLE', newUser);
-        console.log('Inserted record ID:', insertResult.id);
+        // Insert a new user
+        const newUser = {
+            Username: "JohnDoe",
+            Hashed_Password: "securepassword",
+            Business_ID: 1,
+        };
 
-        // Update the record
-        const updateResult = await updateRecord(
-            'USER_TABLE',
-            { Hashed_Password: 'newpassword123' },
-            'User_ID = ?',
-            [insertResult.id]
-        );
-        console.log('Number of rows updated:', updateResult.changes);
+        // Fetch the user to check if they exist
+        const existingUser = await fetchOne(db, `SELECT * FROM USER_TABLE WHERE Username = ?`, [newUser.Username]);
 
-        // Fetch all users
-        const users = await fetchAll('SELECT * FROM USER_TABLE');
-        console.log('All users:', users);
+        if (existingUser) {
+            console.log("User exists. Updating the record...");
+            const updatedUser = {
+                ...newUser,
+                User_ID: existingUser.User_ID, // Include the ID for the update
+            };
+            await updateRecord(db, "USER_TABLE", updatedUser, "User_ID");
+            console.log("User updated successfully.");
+        } else {
+            console.log("User does not exist. Inserting a new record...");
+            await insertRecord(db, "USER_TABLE", newUser);
+            console.log("New user inserted successfully.");
+        }
 
-        // Delete the user
-        const deleteResult = await deleteRecord('USER_TABLE', 'User_ID = ?', [insertResult.id]);
-        console.log('Number of rows deleted:', deleteResult.changes);
-    } catch (error) {
-        console.error('Database error:', error.message);
+        // Fetch all users to verify
+        const fetchUsersSQL = `SELECT * FROM USER_TABLE`;
+        const users = await fetchAll(db, fetchUsersSQL);
+        console.log("All users:", users);
+    } catch (err) {
+        console.error("Database error:", err.message);
     } finally {
-        closeDatabase();
+        db.close((err) => {
+            if (err) {
+                console.error("Error closing database:", err.message);
+            } else {
+                console.log("Database connection closed.");
+            }
+        });
     }
-})();
+};
+
+main();
