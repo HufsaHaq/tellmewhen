@@ -24,22 +24,24 @@ This then should host the webpage on your localhost, usually at "localhost:3000"
 
 ## Project Structure
 ### Pages/Routes
-The different webpages can be found in the "src" folder, where each webpage is contained in a corresponding folder under the same name, and the content in a "page.js" file.<br><br>
+The different webpages can be found in the "src" folder, where each webpage is contained in a corresponding folder under the same name, and the content in a "page.jsx" file.<br><br>
 To demonstrate this, to create an "about" page, the structure of the project would look like
 
 ```tree
 src
+├─ app
+│  ├─ globals.css
+│  ├─ page.jsx
+│  ├─ layout.js
 ├─ about
-│  ├─ page.js
-├─ page.js
-├─ layout.js
+│  ├─ page.jsx
 components
 
 ```
 
-The "page.js" file contains the content of the page, where the content of the "about" page is contained at
+The "page.jsx" file contains the content of the page, where the content of the "about" page is contained at
 ```location
-src/about/page.js
+src/about/page.jsx
 ```
 This will generate a webpage at the following location
 
@@ -49,9 +51,9 @@ localhost:3000/about
 
 **Note: The content for the main home page (landing page) is contained at**
 ```location
-src/page.js
+src/app/page.jsx
 ```
-
+This also contains the global css file for the webpages, which also contains the setup files for TailwindCSS so be careful modifying this file
 ### UI Components
 These are located in the "components" folder, and contain their own .jsx file for each component.
 
