@@ -1,8 +1,11 @@
+import Header from "../components/Header"
+import "../app/globals.css"
+
 function Page()
 {
     return(
         <>
-            <h1 className="text-[50px]">Landing Page</h1>
+            <Header/>
         </>
     );
 }

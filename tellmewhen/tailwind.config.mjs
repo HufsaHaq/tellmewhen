@@ -1,6 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
+    "./src/**/*.{jsx,js,tsx,mdx}",
+    "./components/*.{jsx,js,tsx,mdx}",
+    "./components/**/*.{jsx,js,tsx,mdx}",
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -10,6 +13,9 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+      },
+      fontFamily: {
+        "bebas-neue": ["Bebas Neue", "sans-serif"],
       },
     },
   },
