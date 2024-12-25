@@ -20,7 +20,11 @@ After this, you can then run the following command in the terminal to start host
 ```command
 npm run dev
 ```
-This then should host the webpage on your localhost, usually at "localhost:3000", although this will be clearly stated in the terminal which port it is being hosted on.
+This then should host the webpage on your localhost, usually at "localhost:3000", although this will be clearly stated in the terminal which port it is being hosted on.<br>
+If you get an error saying the command "next" isn't recognised, or something similar, then run the following:
+```command
+npm install next
+```
 
 ## Project Structure
 ### Pages/Routes
