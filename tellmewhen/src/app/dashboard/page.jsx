@@ -22,6 +22,7 @@ function Page()
         "tertiary": "#e9e9e9", //used when highlighting a secondary colour item (switcher)
         "tertiary-text-colour": "rgba(11,13,14,1)",
     };
+    // Needed as Tailwind isn't dynamic, and so cant concatenate the above colours in className prop
     let coloursTailwind = {
         "primary": `bg-[rgba(11,107,203,1)]`,
         "primary-text-colour": `text-[rgba(255,255,255,1)]`,
@@ -41,29 +42,45 @@ function Page()
     //Stores the currently displayed data
     const [DisplayedTableData, SetDisplayedTableData] = useState([[]]);
 
+    // Stores the necessary table headers and their widths given by percentage of the table
     const CurrentTableHeaders = ["Job ID", "User ID", "Description", "Due"];
     const CurrentTableWidths = ["w-[10%]", "w-[10%]", "w-[70%]", "w-[10%]"];
     const HistoryTableHeaders = ["Job ID", "User ID", "Description",];
     const HistoryTableWidths = ["w-[10%]", "w-[10%]", "w-[80%]"];
+
     //Used to determine which is the currently selected data (Current=0 or History=1)
     const [CurrentIndex, SetIndex] = useState(0);
+
+    // Stores the number of rows per page
     const [RowsCount, SetRowsCount] = useState(null);
+
+    //Stores the current page number
     const [PageNumber, SetPageNumber] = useState(1);
+
+    //Stores the end page number
     const [MaxPageNumber, SetMaxPageNumber] = useState(0);
+
+    // Stores a reference to the action for when the dropdown for the rows changes
     const RowsAction = React.useRef(null);
+
+    //Changes the title of the web page (gives an error, but works regardless)
     document.title = "Dashboard | Tell Me When";
 
     useEffect(() => {
         let startIndex = (PageNumber - 1) * (RowsCount == null ? 0 : RowsCount);
         let endIndex = PageNumber * (RowsCount == null ? 0 : RowsCount);
         SetDisplayedTableData([[]]);
+        // Set initially incase the data is null
+        SetMaxPageNumber(1);
         let tempArray = [[]]
         switch(CurrentIndex){
             case 0:
                 // On the "Current" Page
-                if(CurrentTableData == null) {SetMaxPageNumber(1); return;}
+                if(CurrentTableData == null) {return;}
+
                 if(RowsCount == null)
                 {
+                    //When there isn't a limit on the number of rows
                     SetDisplayedTableData(CurrentTableData);
                     return;
                 }
@@ -75,9 +92,10 @@ function Page()
                 SetDisplayedTableData(tempArray);
             case 1:
                 // On the "History" Page
-                if(HistoryTableData == null) {SetMaxPageNumber(1); return;}
+                if(HistoryTableData == null) { return;}
                 if(RowsCount == null)
                 {
+                    // When there isn't a limit on the number of rows
                     SetDisplayedTableData(HistoryTableData);
                     return;
                 }
@@ -182,6 +200,7 @@ function Page()
                     </TabList>
                 </Tabs>
                 <span className="mr-[10px] inline flex my-auto">
+                    { /* Dropdown for the number of rows per page */}
                     <Select className="outline outline-[1px] mr-[15px] my-auto"
                             action={RowsAction}
                             value={RowsCount}
@@ -196,7 +215,6 @@ function Page()
                                 <IconButton onMouseDown={(event) => {event.stopPropagation();}}
                                             onClick={() => {
                                                 SetRowsCount(null);
-                                                
                                                 RowsAction.current?.focusVisible();
                                             }}>
                                     <CloseRounded/>
@@ -225,7 +243,8 @@ function Page()
                         {/* Ternary operator for an if statement to determine which table headers are to be displayed */}
                         {CurrentIndex == 0 ? CurrentTableHeaders.map((item, index) => {
                                 return <th key={index} className={`px-[10px] ${index!=0?`border-l-[2px] border-[rgba(0,0,0,0.2)]`:{}} ${CurrentTableWidths[index]}`}>{item}</th>
-                            }) : HistoryTableHeaders.map((item, index) => {
+                            })
+                            : HistoryTableHeaders.map((item, index) => {
                                     return <th key={index} className={`px-[10px] ${index!=0?`border-l-[2px] border-[rgba(0,0,0,0.2)]`:{}} ${HistoryTableWidths[index]}`}>{item}</th>
                             })
                         }
@@ -237,9 +256,12 @@ function Page()
                     DisplayedTableData.map((item1, index1) => {
                         //Iterates through each item in the data and adds it to the table
                         return(<tr key={index1}
-                                   className={index1%2==1?coloursTailwind["rows-colour1"] : coloursTailwind["rows-colour2"]}>
+                                   className={index1 % 2 == 1 ? coloursTailwind["rows-colour1"] 
+                                   : coloursTailwind["rows-colour2"]}>
                             {item1.map((item2, index2) => {
-                                return<td className={`${index2!=0?`border-l-[2px]`:{}} px-[10px] py-[5px] border-[rgba(0,0,0,0.2)]`} key={index2}>{item2}</td>;
+                                return<td className={`${index2 != 0 ? `border-l-[2px]` //Adds vertical dividers to the table
+                                                                    : {}
+                                } px-[10px] py-[5px] border-[rgba(0,0,0,0.2)]`} key={index2}>{item2}</td>;
                             })}
                             </tr>);
                         })}

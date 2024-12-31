@@ -9,12 +9,11 @@ export default function Pagination({className,
                                     PageNumber = 1,
                                     border=false,
                                     MaxPageNumber = null,
-                                    SetPageNumber = ()=>{
+                                    SetPageNumber = () => {
                                         throw new Error("Page number function is not assigned. Assign a function to the \"SetPageNumber\" property in the Pagination component.");
                                     }
                                 })
 {
-    console.log("Max Page", MaxPageNumber)
     return(
         <div className = {className}>
             <ButtonGroup className={!border?"":"border-[1px] border-[#C0C0C0]"}>
