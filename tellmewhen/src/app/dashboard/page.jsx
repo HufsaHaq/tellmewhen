@@ -7,10 +7,10 @@
 */
 "use client"; //Makes the page client-side rendered rather than server-side rendered
 import { useState, useEffect } from "react";
-import {Button, Tab, Tabs, TabList, tabClasses} from "@mui/joy"
-import {Add} from "@mui/icons-material"
+import {Button, Tab, Tabs, TabList, tabClasses, Select, Option, IconButton, } from "@mui/joy"
+import {Add, CloseRounded} from "@mui/icons-material"
 import Pagination from "@/components/Pagination";
-
+import React from "react"
 function Page()
 {
     let colours = {
@@ -47,74 +47,101 @@ function Page()
     const HistoryTableWidths = ["w-[10%]", "w-[10%]", "w-[80%]"];
     //Used to determine which is the currently selected data (Current=0 or History=1)
     const [CurrentIndex, SetIndex] = useState(0);
-
+    const [RowsCount, SetRowsCount] = useState(null);
     const [PageNumber, SetPageNumber] = useState(1);
-
+    const [MaxPageNumber, SetMaxPageNumber] = useState(0);
+    const RowsAction = React.useRef(null);
     document.title = "Dashboard | Tell Me When";
-    useEffect(() => {
-        //This code will run when the value of "CurrentIndex" changes
 
-        
-        //    TO-DO: SWAP BETWEEN THE CURRENT DATA WHEN THE INDEX CHANES
-        
-        if(CurrentIndex == 0)
-        {
-            //DUMMY DATA
-            SetDisplayedTableData([["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-                ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-                ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ])
+    useEffect(() => {
+        let startIndex = (PageNumber - 1) * (RowsCount == null ? 0 : RowsCount);
+        let endIndex = PageNumber * (RowsCount == null ? 0 : RowsCount);
+        SetDisplayedTableData([[]]);
+        let tempArray = [[]]
+        switch(CurrentIndex){
+            case 0:
+                // On the "Current" Page
+                if(CurrentTableData == null) {SetMaxPageNumber(1); return;}
+                if(RowsCount == null)
+                {
+                    SetDisplayedTableData(CurrentTableData);
+                    return;
+                }
+                SetMaxPageNumber(Math.ceil(CurrentTableData.length / RowsCount));
+                for(let i = startIndex; i < (endIndex > CurrentTableData.length ? CurrentTableData.length : endIndex); i++)
+                {
+                    tempArray.push(CurrentTableData[i]);
+                }
+                SetDisplayedTableData(tempArray);
+            case 1:
+                // On the "History" Page
+                if(HistoryTableData == null) {SetMaxPageNumber(1); return;}
+                if(RowsCount == null)
+                {
+                    SetDisplayedTableData(HistoryTableData);
+                    return;
+                }
+                SetMaxPageNumber(Math.ceil(HistoryTableData.length / RowsCount));
+                for(let i = startIndex; i < (endIndex > HistoryTableData.length ? HistoryTableData.length : endIndex); i++)
+                {
+                    tempArray.push(HistoryTableData[i]);
+                }
+                SetDisplayedTableData(tempArray);
+            default:
+                throw new Error("Error parsing table data");
         }
-        else
-        {
-            SetDisplayedTableData([[]])
-        }
-    }, [CurrentIndex]);
+        
+    }, [RowsCount, PageNumber, CurrentIndex, CurrentTableData, HistoryTableData]);
 
     useEffect(() => {
         //Code below will run when the page is initially loaded
 
         //  TO-DO: ADD API CALLS
+        SetCurrentTableData([
+            ["1", "1", "CURRENT JOB DATA", "10 hours"],
+            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["3", "1", "CURRENT JOB DATA", "10 hours"],
+            ["4", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["5", "1", "CURRENT JOB DATA", "10 hours"],
+            ["6", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["7", "1", "CURRENT JOB DATA", "10 hours"],
+            ["8", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["1", "1", "CURRENT JOB DATA", "10 hours"],
+            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["1", "1", "CURRENT JOB DATA", "10 hours"],
+            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["1", "1", "CURRENT JOB DATA", "10 hours"],
+            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["1", "1", "CURRENT JOB DATA", "10 hours"],
+            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["1", "1", "CURRENT JOB DATA", "10 hours"],
+            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["1", "1", "CURRENT JOB DATA", "10 hours"],
+            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["1", "1", "CURRENT JOB DATA", "10 hours"],
+            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["1", "1", "CURRENT JOB DATA", "10 hours"],
+            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["1", "1", "CURRENT JOB DATA", "10 hours"],
+            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["1", "1", "CURRENT JOB DATA", "10 hours"],
+            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["1", "1", "CURRENT JOB DATA", "10 hours"],
+            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["1", "1", "CURRENT JOB DATA", "10 hours"],
+            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["1", "1", "CURRENT JOB DATA", "10 hours"],
+            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["1", "1", "CURRENT JOB DATA", "10 hours"],
+            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["1", "1", "CURRENT JOB DATA", "10 hours"],
+            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["1", "1", "CURRENT JOB DATA", "10 hours"],
+            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["1", "1", "CURRENT JOB DATA", "10 hours"],
+            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
+            ["1", "1", "FINAL JOB DATA", "10 hours"],
+        ])
     }, []);
 
     return(
@@ -154,7 +181,32 @@ function Page()
                             <Tab disableIndicator>History</Tab>
                     </TabList>
                 </Tabs>
-                <span className="mr-[10px]">
+                <span className="mr-[10px] inline flex my-auto">
+                    <Select className="outline outline-[1px] mr-[15px] my-auto"
+                            action={RowsAction}
+                            value={RowsCount}
+                            placeholder="Rows"
+                            sx={{
+                                width: "90px",
+                                height: "10px",
+                                fontSize: "15px",
+                            }}
+                            onChange={(event, newValue) => {SetRowsCount(newValue); SetPageNumber(1);}}
+                            {...RowsCount!=null && {endDecorator: (
+                                <IconButton onMouseDown={(event) => {event.stopPropagation();}}
+                                            onClick={() => {
+                                                SetRowsCount(null);
+                                                
+                                                RowsAction.current?.focusVisible();
+                                            }}>
+                                    <CloseRounded/>
+                                </IconButton>
+                            ), indicator: null}}
+                            >
+                                <Option value={10}>10</Option>
+                                <Option value={20}>20</Option>
+                                <Option value={50}>50</Option>
+                    </Select>
                     <Button endDecorator={<Add/>}
                             sx={{
                                 fontWeight: "650",
@@ -180,7 +232,9 @@ function Page()
                     </tr>
                 </thead>
                 <tbody className="">
-                    {DisplayedTableData.map((item1, index1) => {
+                {
+
+                    DisplayedTableData.map((item1, index1) => {
                         //Iterates through each item in the data and adds it to the table
                         return(<tr key={index1}
                                    className={index1%2==1?coloursTailwind["rows-colour1"] : coloursTailwind["rows-colour2"]}>
@@ -192,15 +246,17 @@ function Page()
                 </tbody>
             </table>
             </div>
-            <Pagination className = "sticky w-[100%] mt-[20px] bottom-[15px] justify-self-center flex justify-center"
+            {RowsCount != null
+            && <Pagination className = "fixed w-[80%] mt-[20px] bottom-[15px] justify-self-center flex justify-center"
                         buttonColour={colours["primary"]}
                         fontColourButtons={colours["primary-text-colour"]}
                         SetPageNumber={SetPageNumber}
                         PageNumber={PageNumber}
                         bgColour={colours["tertiary"]}
-                        border="true"/>
+                        MaxPageNumber={MaxPageNumber}
+                        border="true"/>}
             
-            <div className="bottom-margin mb-[30px]" />
+            <div className="bottom-margin mb-[70px]" />
         </div>
     );
 }
