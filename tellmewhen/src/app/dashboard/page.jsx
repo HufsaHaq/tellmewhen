@@ -40,7 +40,7 @@ function Page()
     const [CurrentTableData, SetCurrentTableData] = useState(null);
     const [HistoryTableData, SetHistoryTableData] = useState(null);
     //Stores the currently displayed data
-    const [DisplayedTableData, SetDisplayedTableData] = useState([[]]);
+    const [DisplayedTableData, SetDisplayedTableData] = useState([]);
 
     // Stores the necessary table headers and their widths given by percentage of the table
     const CurrentTableHeaders = ["Job ID", "Description", "Due"];
@@ -70,11 +70,10 @@ function Page()
     useEffect(() => {
         let startIndex = (PageNumber - 1) * (RowsCount == null ? 0 : RowsCount);
         let endIndex = PageNumber * (RowsCount == null ? 0 : RowsCount);
-        SetDisplayedTableData([[]]);
+        SetDisplayedTableData([]);
         // Set initially incase the data is null
         SetMaxPageNumber(1);
-        let tempArray = [[]]
-        console.log(CurrentIndex);
+        let tempArray = []
         if(CurrentIndex == 0)
         {
             // On the "Current" Page
@@ -123,10 +122,10 @@ function Page()
         //  TO-DO: ADD API CALLS
 
         // TEMPORARY DATA BELOW FOR TESTING PURPOSES
-        SetHistoryTableData([[]])
-        SetCurrentTableData([[]])
-        let tempArr = [[]]
-        let tempArr2 = [[]];
+        SetHistoryTableData([])
+        SetCurrentTableData([])
+        let tempArr = []
+        let tempArr2 = [];
         for(let i = 0; i < 150; i++)
         {
             tempArr.push([
@@ -240,7 +239,6 @@ function Page()
                 </thead>
                 <tbody className="">
                 {
-
                     DisplayedTableData.map((item1, index1) => {
                         //Iterates through each item in the data and adds it to the table
                         return(<tr key={index1}
