@@ -43,10 +43,10 @@ function Page()
     const [DisplayedTableData, SetDisplayedTableData] = useState([[]]);
 
     // Stores the necessary table headers and their widths given by percentage of the table
-    const CurrentTableHeaders = ["Job ID", "User ID", "Description", "Due"];
-    const CurrentTableWidths = ["w-[10%]", "w-[10%]", "w-[70%]", "w-[10%]"];
-    const HistoryTableHeaders = ["Job ID", "User ID", "Description",];
-    const HistoryTableWidths = ["w-[10%]", "w-[10%]", "w-[80%]"];
+    const CurrentTableHeaders = ["Job ID", "Description", "Due"];
+    const CurrentTableWidths = ["w-[10%]", "w-[80%]", "w-[10%]"];
+    const HistoryTableHeaders = ["Job ID", "User ID", "Remarks", "Completion Date"];
+    const HistoryTableWidths = ["w-[10%]", "w-[10%]", "w-[67%]", "w-[13%]"];
 
     //Used to determine which is the currently selected data (Current=0 or History=1)
     const [CurrentIndex, SetIndex] = useState(0);
@@ -63,8 +63,9 @@ function Page()
     // Stores a reference to the action for when the dropdown for the rows changes
     const RowsAction = React.useRef(null);
 
-    //Changes the title of the web page (gives an error, but works regardless)
-    document.title = "Dashboard | Tell Me When";
+    //Changes the title of the web page
+    if(typeof window !== 'undefined') document.title = "Dashboard | Tell Me When";
+    
 
     useEffect(() => {
         let startIndex = (PageNumber - 1) * (RowsCount == null ? 0 : RowsCount);
@@ -73,93 +74,79 @@ function Page()
         // Set initially incase the data is null
         SetMaxPageNumber(1);
         let tempArray = [[]]
-        switch(CurrentIndex){
-            case 0:
-                // On the "Current" Page
-                if(CurrentTableData == null) {return;}
-
-                if(RowsCount == null)
-                {
-                    //When there isn't a limit on the number of rows
-                    SetDisplayedTableData(CurrentTableData);
-                    return;
-                }
-                SetMaxPageNumber(Math.ceil(CurrentTableData.length / RowsCount));
-                for(let i = startIndex; i < (endIndex > CurrentTableData.length ? CurrentTableData.length : endIndex); i++)
-                {
-                    tempArray.push(CurrentTableData[i]);
-                }
-                SetDisplayedTableData(tempArray);
-            case 1:
-                // On the "History" Page
-                if(HistoryTableData == null) { return;}
-                if(RowsCount == null)
-                {
-                    // When there isn't a limit on the number of rows
-                    SetDisplayedTableData(HistoryTableData);
-                    return;
-                }
-                SetMaxPageNumber(Math.ceil(HistoryTableData.length / RowsCount));
-                for(let i = startIndex; i < (endIndex > HistoryTableData.length ? HistoryTableData.length : endIndex); i++)
-                {
-                    tempArray.push(HistoryTableData[i]);
-                }
-                SetDisplayedTableData(tempArray);
-            default:
-                throw new Error("Error parsing table data");
+        console.log(CurrentIndex);
+        if(CurrentIndex == 0)
+        {
+            // On the "Current" Page
+            if(CurrentTableData == null) {return;}
+            if(RowsCount == null)
+            {
+                //When there isn't a limit on the number of rows
+                SetDisplayedTableData(CurrentTableData);
+                return;
+            }
+            SetMaxPageNumber(Math.ceil(CurrentTableData.length / RowsCount));
+            for(let i = startIndex; i < (endIndex > CurrentTableData.length ? CurrentTableData.length : endIndex); i++)
+            {
+                tempArray.push(CurrentTableData[i]);
+            }
+            SetDisplayedTableData(tempArray);
         }
+        else if(CurrentIndex == 1)
+        {
+            // On the "History" Page
+            if(HistoryTableData == null) { return;}
+            if(RowsCount == null)
+            {
+            // When there isn't a limit on the number of rows
+                SetDisplayedTableData(HistoryTableData);
+                return;
+            }
+            SetMaxPageNumber(Math.ceil(HistoryTableData.length / RowsCount));
+            for(let i = startIndex; i < (endIndex > HistoryTableData.length ? HistoryTableData.length : endIndex); i++)
+            {
+                tempArray.push(HistoryTableData[i]);
+            }
+            SetDisplayedTableData(tempArray);
+        }
+        else
+        {
+            throw new Error("Error parsing table data for table " + CurrentIndex);
+        }
+
         
-    }, [RowsCount, PageNumber, CurrentIndex, CurrentTableData, HistoryTableData]);
+    }, [RowsCount, PageNumber, CurrentIndex, HistoryTableData, CurrentTableData]);
 
     useEffect(() => {
         //Code below will run when the page is initially loaded
 
         //  TO-DO: ADD API CALLS
-        SetCurrentTableData([
-            ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["3", "1", "CURRENT JOB DATA", "10 hours"],
-            ["4", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["5", "1", "CURRENT JOB DATA", "10 hours"],
-            ["6", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["7", "1", "CURRENT JOB DATA", "10 hours"],
-            ["8", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["1", "1", "CURRENT JOB DATA", "10 hours"],
-            ["2", "1", "CURRENT JOB DATA 2", " 5 Hours"],
-            ["1", "1", "FINAL JOB DATA", "10 hours"],
-        ])
+
+        // TEMPORARY DATA BELOW FOR TESTING PURPOSES
+        SetHistoryTableData([[]])
+        SetCurrentTableData([[]])
+        let tempArr = [[]]
+        let tempArr2 = [[]];
+        for(let i = 0; i < 150; i++)
+        {
+            tempArr.push([
+                "ID"+(i+1),
+                "Job Description "+(i+1),
+                ""+(i+1)+" hours"
+            ])
+        }
+        SetCurrentTableData(tempArr);
+        for(let i = 0; i < 150; i++)
+        {
+            tempArr2.push([
+                "ID"+(i+151),
+                "User"+(i+1),
+                "Completed this job, This is the job " + (i+1),
+                (i+1) + " hours ago"
+            ])
+        }
+        
+        SetHistoryTableData(tempArr2);
     }, []);
 
     return(
@@ -168,7 +155,7 @@ function Page()
             { /* Span element is for the controls above the table (Switcher and Button) to keep them inline*/ }
             <span className = {`sticky top-[15px] ${coloursTailwind["tertiary"]} border-[1px] mb-[10px] border-[#A0A0A0] w-[98%] m-auto rounded-lg shadow-lg flex mt-[20px] justify-between items-center h-[60px]`}>
                 <Tabs className = "w-[200px] outline ml-[6px] outline-[1px] outline-[#B8B8B8] rounded-[10px]"
-                      onChange={(event, index) => {SetIndex(index);}}>
+                      onChange={(event, index) => {SetIndex(index); SetPageNumber(1);}}>
                     <TabList
                             disableUnderline
                             sx={{
@@ -194,6 +181,7 @@ function Page()
                                     opacity: 0.7,
                                     },
                               },
+                              
                         }}>
                             <Tab disableIndicator>Current</Tab>
                             <Tab disableIndicator>History</Tab>
@@ -269,7 +257,7 @@ function Page()
             </table>
             </div>
             {RowsCount != null
-            && <Pagination className = "fixed w-[80%] mt-[20px] bottom-[15px] justify-self-center flex justify-center"
+            && <Pagination className = "fixed w-[80%] bottom-[20px] justify-self-center flex justify-center"
                         buttonColour={colours["primary"]}
                         fontColourButtons={colours["primary-text-colour"]}
                         SetPageNumber={SetPageNumber}
