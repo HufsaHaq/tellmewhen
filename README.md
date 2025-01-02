@@ -6,7 +6,7 @@ Documentation and examples for NextJS can be found at the [NextJS website here.]
 We will also be making use of TailwindCSS which allows for inline CSS styling, where the documentation and examples can be found [on their website here](https://tailwindcss.com/docs/installation) (This has already been installed and configured)
 
 ## Prerequisites/Things to install
-To be able to work on this project, NodeJS will need to be installed.<br>
+To be able to work on this project, NodeJS (v20.12 LTS) will need to be installed.<br>
 This can be found at their website [here.](https://nodejs.org/en)
 
 ## How to Start
@@ -16,15 +16,16 @@ To do this, nagivate to "tellmewhen" folder in the frontend branch using the com
 ```command
 cd tellmewhen
 ```
+
+If you have just cloned the repository, then you will need to then run the command:
+```command
+npm install next
+```
 After this, you can then run the following command in the terminal to start hosting the webpage:
 ```command
 npm run dev
 ```
 This then should host the webpage on your localhost, usually at "localhost:3000", although this will be clearly stated in the terminal which port it is being hosted on.<br>
-If you get an error saying the command "next" isn't recognised, or something similar, then run the following:
-```command
-npm install next
-```
 
 ## Project Structure
 ### Pages/Routes
@@ -69,4 +70,3 @@ For example, to style a h1 element, you could use the following
 ```
 which would make a h1 tag with the font size of 100px. It should be noted that this isn't mandatory to use, but ideally should be as it could cause issues down the road with conflicting styles.<br><br>
 If the CSS isn't being properly applied, it could be an issue with the "tailwind.config.mjs" file where the directory of the file will need to be added for in the "contents=[...]" section, following the same structure as the rest. (** for folder, * for file, then followed by the allowed filetypes)
-## Points Allocation
