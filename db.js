@@ -75,6 +75,15 @@ const createTables = [
         FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID)
     )
     `,
+        `
+    CREATE TABLE IF NOT EXISTS SUBSCRIPTION_TABLE (
+        Subscription_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        Endpoint TEXT NOT NULL,
+        Auth_Key1 TEXT NOT NULL,
+        Auth_Key2 TEXT NOT NULL,
+        Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+    `,
 ];
 
 // execute create queries
