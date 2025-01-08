@@ -12,6 +12,7 @@ import {Add, CloseRounded} from "@mui/icons-material"
 import Pagination from "@/components/Pagination";
 import React from "react"
 import JobCreation from "@/components/JobCreation";
+import JobDetail from "@/components/JobDetail";
 
 function Page()
 {
@@ -39,10 +40,14 @@ function Page()
     }
     colours["primaryTailwind"] = "bg-["+colours["primary"]+"]"
     
-    //Modal State
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    //Job Creation Modal State
+    const [isCreationModalOpen, setIsCreationModalOpen] = useState(false);
     const [formData, setFormData] = useState({ description: "", deadline: "" });
     
+    //Job Detail Modal State
+    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+    const [selectedJob, setSelectedJob] = useState({ id: "", description: "", deadline: "" });
+
     const [CurrentTableData, SetCurrentTableData] = useState(null);
     const [HistoryTableData, SetHistoryTableData] = useState(null);
     //Stores the currently displayed data
@@ -156,11 +161,11 @@ function Page()
 
 
     //Function to open the modal
-    const handleOpenModal = () => setIsModalOpen(true);
+    const handleOpenCreationModal = () => setIsCreationModalOpen(true);
 
     //Function to close the modal
     const handleCloseModal = () => {
-    setIsModalOpen(false);
+    setIsCreationModalOpen(false);
     setFormData({ description: "", deadline: "" });
     };
 
@@ -172,13 +177,39 @@ function Page()
           formData.deadline,
         ];
         SetCurrentTableData([...CurrentTableData, newJob]);
-        setIsModalOpen(false);
+        setIsCreationModalOpen(false);
         setFormData({ description: "", deadline: "" });
       };
 
+    //Function to handle the input change in the modal
     const handleInputChange = (e) =>
         setFormData({ ...formData, [e.target.name]: e.target.value });
 
+    //Function to handle the row click in the table
+    const handleRowClick = (job) => {
+        setSelectedJob({
+          id: job[0],
+          description: job[1],
+          deadline: job[2],
+        });
+        setIsDetailModalOpen(true);
+      };
+    
+    //Function to handle the close button in the modal
+    const handleUpdateJob = () => {
+    const updatedJobs = CurrentTableData.map((job) =>
+        job[0] === selectedJob.id
+        ? [selectedJob.id, selectedJob.description, selectedJob.deadline]
+        : job
+    );
+    SetCurrentTableData(updatedJobs);
+    setIsDetailModalOpen(false);
+    };
+
+    //Function to handle the input change in the modal
+    const handleDetailInputChange = (field, value) => {
+    setSelectedJob((prev) => ({ ...prev, [field]: value }));
+    };
 
     return(
         
@@ -251,7 +282,7 @@ function Page()
                                 color: colours["primary-text-colour"]}
                             }
                             className="h-[40px] font-bold" 
-                            onClick={handleOpenModal}>
+                            onClick={handleOpenCreationModal}>
                                 New Job
                             </Button>
                 </span>
@@ -272,19 +303,30 @@ function Page()
                     </tr>
                 </thead>
                 <tbody className="">
-                {
-                    DisplayedTableData.map((item1, index1) => {
-                        //Iterates through each item in the data and adds it to the table
-                        return(<tr key={index1}
-                                   className={index1 % 2 == 1 ? coloursTailwind["rows-colour1"] 
-                                   : coloursTailwind["rows-colour2"]}>
-                            {item1.map((item2, index2) => {
-                                return<td className={`${index2 != 0 ? `border-l-[2px]` //Adds vertical dividers to the table
-                                                                    : {}
-                                } px-[10px] py-[5px] border-[rgba(0,0,0,0.2)]`} key={index2}>{item2}</td>;
-                            })}
-                            </tr>);
-                        })}
+                    {DisplayedTableData.map((item1, index1) => {
+                        return (
+                        <tr
+                            key={index1}
+                            className={`cursor-pointer ${
+                            index1 % 2 === 1
+                                ? coloursTailwind["rows-colour1"]
+                                : coloursTailwind["rows-colour2"]
+                            }`}
+                            onClick={() => handleRowClick(item1)} // Pass the job data to handleRowClick
+                        >
+                            {item1.map((item2, index2) => (
+                            <td
+                                className={`${
+                                index2 !== 0 ? "border-l-[2px]" : ""
+                                } px-[10px] py-[5px] border-[rgba(0,0,0,0.2)]`}
+                                key={index2}
+                            >
+                                {item2}
+                            </td>
+                            ))}
+                        </tr>
+                        );
+                    })}
                 </tbody>
             </table>
             </div>
@@ -302,11 +344,19 @@ function Page()
 
             {/* Modal */}
             <JobCreation
-                isOpen={isModalOpen}
+                isOpen={isCreationModalOpen}
                 onClose={handleCloseModal}
                 onConfirm={handleConfirmModal}
                 formData={formData}
                 onInputChange={handleInputChange}
+            />
+            {/* Job Detail Modal */}
+            <JobDetail
+                isOpen={isDetailModalOpen}
+                jobData={selectedJob}
+                onClose={() => setIsDetailModalOpen(false)}
+                onConfirm={handleUpdateJob}
+                onInputChange={handleDetailInputChange}
             />
         </div>
     );
