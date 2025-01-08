@@ -319,6 +319,9 @@ function Page()
                         value={formData.description}
                         onChange={handleInputChange}
                     />
+                    {!formData.description && (
+                    <p className="text-red-500 text-sm">Description is required.</p>
+                    )}
                     </div>
 
                     <div className="mb-6">
@@ -337,6 +340,9 @@ function Page()
                         value={formData.deadline}
                         onChange={handleInputChange}
                     />
+                    {!formData.deadline && (
+                        <p className="text-red-500 text-sm">Deadline is required.</p>
+                    )}
                     </div>
 
                     <div className="flex justify-end space-x-4">
@@ -353,6 +359,7 @@ function Page()
                         variant="solid"
                         color="primary"
                         className="px-4 py-2"
+                        disabled={!formData.description || !formData.deadline}
                     >
                         Generate QR Code
                     </Button>
