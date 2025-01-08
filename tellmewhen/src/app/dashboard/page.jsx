@@ -12,7 +12,8 @@ import {Add, CloseRounded} from "@mui/icons-material"
 import Pagination from "@/components/Pagination";
 import React from "react"
 import JobCreation from "@/components/JobCreation";
-import JobDetail from "@/components/JobDetail";
+import CurrentJobDetail from "@/components/CurrentJobDetail";
+import HistoryJobDetailModal from "@/components/HistoryJobDetail";
 
 function Page()
 {
@@ -45,7 +46,8 @@ function Page()
     const [formData, setFormData] = useState({ description: "", deadline: "" });
     
     //Job Detail Modal State
-    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); // For Current Jobs
+    const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false); // For History Jobs
     const [selectedJob, setSelectedJob] = useState({ id: "", description: "", deadline: "" });
 
     const [CurrentTableData, SetCurrentTableData] = useState(null);
@@ -187,12 +189,24 @@ function Page()
 
     //Function to handle the row click in the table
     const handleRowClick = (job) => {
-        setSelectedJob({
-          id: job[0],
-          description: job[1],
-          deadline: job[2],
-        });
-        setIsDetailModalOpen(true);
+        if (CurrentIndex === 0) {
+          // Current Jobs
+          setSelectedJob({
+            id: job[0],
+            description: job[1],
+            deadline: job[2],
+          });
+          setIsDetailModalOpen(true);
+        } else if (CurrentIndex === 1) {
+          // History Jobs
+          setSelectedJob({
+            id: job[0],
+            userId: job[1],
+            remarks: job[2],
+            completionDate: job[3],
+          });
+          setIsHistoryModalOpen(true);
+        }
       };
     
     //Function to handle the close button in the modal
@@ -351,12 +365,17 @@ function Page()
                 onInputChange={handleInputChange}
             />
             {/* Job Detail Modal */}
-            <JobDetail
+            <CurrentJobDetail
                 isOpen={isDetailModalOpen}
                 jobData={selectedJob}
                 onClose={() => setIsDetailModalOpen(false)}
                 onConfirm={handleUpdateJob}
                 onInputChange={handleDetailInputChange}
+            />
+            <HistoryJobDetailModal
+                isOpen={isHistoryModalOpen}
+                jobData={selectedJob}
+                onClose={() => setIsHistoryModalOpen(false)}
             />
         </div>
     );
