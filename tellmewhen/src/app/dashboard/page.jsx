@@ -36,7 +36,11 @@ function Page()
 
     }
     colours["primaryTailwind"] = "bg-["+colours["primary"]+"]"
-
+    
+    //Modal State
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({ description: "", deadline: "" });
+    
     const [CurrentTableData, SetCurrentTableData] = useState(null);
     const [HistoryTableData, SetHistoryTableData] = useState(null);
     //Stores the currently displayed data
@@ -148,6 +152,32 @@ function Page()
         SetHistoryTableData(tempArr2);
     }, []);
 
+
+    //Function to open the modal
+    const handleOpenModal = () => setIsModalOpen(true);
+
+    //Function to close the modal
+    const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setFormData({ description: "", deadline: "" });
+    };
+
+    //Function to handle the confirm button in the modal
+    const handleConfirmModal = () => {
+        const newJob = [
+          "ID" + (CurrentTableData.length + 1),
+          formData.description,
+          formData.deadline,
+        ];
+        SetCurrentTableData([...CurrentTableData, newJob]);
+        setIsModalOpen(false);
+        setFormData({ description: "", deadline: "" });
+      };
+
+    const handleInputChange = (e) =>
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+
+
     return(
         
         <div className = {"page-content w-[80%] m-auto"}>
@@ -219,7 +249,9 @@ function Page()
                                 color: colours["primary-text-colour"]}
                             }
                             className="h-[40px] font-bold" 
-                            onClick={()=>{console.log("REDIRECT TO OTHER PAGE")}}>New Job</Button>
+                            onClick={handleOpenModal}>
+                                New Job
+                            </Button>
                 </span>
             </span>
             <div className="w-full rounded-md overflow-hidden shadow-md border-[1px] border-[#AFAFAF]">
@@ -265,6 +297,70 @@ function Page()
                         border="true"/>}
             
             <div className="bottom-margin mb-[70px]" />
+
+            {/* Modal */}
+            {isModalOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white w-1/3 rounded-lg shadow-lg p-6">
+                <h2 className="text-center text-2xl font-semibold mb-6">Create a job</h2>
+                <form>
+                    <div className="mb-4">
+                    <label
+                        htmlFor="description"
+                        className="block text-gray-700 font-medium mb-2"
+                    >
+                        Description:
+                    </label>
+                    <textarea
+                        id="description"
+                        name="description"
+                        placeholder="Enter job description"
+                        className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value={formData.description}
+                        onChange={handleInputChange}
+                    />
+                    </div>
+
+                    <div className="mb-6">
+                    <label
+                        htmlFor="deadline"
+                        className="block text-gray-700 font-medium mb-2"
+                    >
+                        Deadline:
+                    </label>
+                    <input
+                        type="date"
+                        id="deadline"
+                        name="deadline"
+                        lang='en-GB'
+                        className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value={formData.deadline}
+                        onChange={handleInputChange}
+                    />
+                    </div>
+
+                    <div className="flex justify-end space-x-4">
+                    <Button
+                        onClick={handleCloseModal}
+                        variant="soft"
+                        color="neutral"
+                        className="px-4 py-2"
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={handleConfirmModal}
+                        variant="solid"
+                        color="primary"
+                        className="px-4 py-2"
+                    >
+                        Generate QR Code
+                    </Button>
+                    </div>
+                </form>
+                </div>
+            </div>
+            )}
         </div>
     );
 }
