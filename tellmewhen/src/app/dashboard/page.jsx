@@ -287,7 +287,7 @@ function Page() {
                     </Button>
                 </span>
             </span>
-            <div className="w-full overflow-visible rounded-md shadow-md border-[1px] border-[#AFAFAF]">
+            <div className="w-full overflow-hidden rounded-md shadow-md border-[1px] border-[#AFAFAF]">
                 <table key={CurrentIndex /* This is needed as the width of table doesn't update */} className="text-left w-[100%] h-[80%] overflow-visible rounded-md">
                     <thead className={``}>
                         <tr className={`${coloursTailwind["primary"]} ${coloursTailwind["primary-text-colour"]} h-[40px]`}>
@@ -314,7 +314,7 @@ function Page() {
                             return (
                                 <tr
                                     key={index1}
-                                    className={`cursor-pointer hover:rounded-md transition ease-in-out hover:z-[5] z-0 hover:outline hover:outline-[1.5px] hover:outline-[rgb(70, 70, 70)] ${index1 % 2 === 1 ? coloursTailwind["rows-colour1"] : coloursTailwind["rows-colour2"]}`}
+                                    className={`cursor-pointer hover:rounded hover:outline hover:outline-[2px] hover:outline-offset-[-1.5px] hover:outline-[rgba(70,70,70,0.6)] ${index1 % 2 === 1 ? coloursTailwind["rows-colour1"] : coloursTailwind["rows-colour2"]}`}
                                     onClick={() => handleRowClick(item1)} // Pass the job data to handleRowClick
                                 >
                                     {item1.map((item2, index2) => (
