@@ -132,12 +132,12 @@ function Page() {
         SetCurrentTableData([]);
         let tempArr = [];
         let tempArr2 = [];
-        for (let i = 0; i < 150; i++) {
+        for (let i = 0; i < 50; i++) {
             tempArr.push(["ID" + (i + 1), "Job Description " + (i + 1), "" + (i + 1) + " hours"]);
         }
         SetCurrentTableData(tempArr);
-        for (let i = 0; i < 150; i++) {
-            tempArr2.push(["ID" + (i + 151), "User" + (i + 1), "Completed this job, This is the job " + (i + 1), i + 1 + " hours ago"]);
+        for (let i = 0; i < 50; i++) {
+            tempArr2.push(["ID" + (i + 51), "User" + (i + 1), "Completed this job, This is the job " + (i + 1), i + 1 + " hours ago"]);
         }
 
         SetHistoryTableData(tempArr2);
