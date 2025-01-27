@@ -46,8 +46,8 @@ function Page() {
     //Job Detail Modal State
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); // For Current Jobs
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false); // For History Jobs
+    
     const [selectedJob, setSelectedJob] = useState({ id: "", description: "", deadline: "" });
-
     const [CurrentTableData, SetCurrentTableData] = useState(null);
     const [HistoryTableData, SetHistoryTableData] = useState(null);
     //Stores the currently displayed data
@@ -183,8 +183,12 @@ function Page() {
     };
 
     //Function to handle the close button in the modal
-    const handleUpdateJob = () => {
-        const updatedJobs = CurrentTableData.map((job) => (job[0] === selectedJob.id ? [selectedJob.id, selectedJob.description, selectedJob.deadline] : job));
+    const handleUpdateJob = (updatedData) => {
+        const updatedJobs = CurrentTableData.map((job) => (
+            job[0] === updatedData.id 
+                ? [updatedData.id, updatedData.description, updatedData.deadline] 
+                : job
+        ));
         SetCurrentTableData(updatedJobs);
         setIsDetailModalOpen(false);
     };
@@ -346,7 +350,7 @@ function Page() {
             {/* Modal */}
             <JobCreation isOpen={isCreationModalOpen} onClose={handleCloseModal} onConfirm={handleConfirmModal} formData={formData} onInputChange={handleInputChange} />
             {/* Job Detail Modal */}
-            <CurrentJobDetail isOpen={isDetailModalOpen} jobData={selectedJob} onClose={() => setIsDetailModalOpen(false)} onConfirm={handleUpdateJob} onInputChange={handleDetailInputChange} />
+            <CurrentJobDetail isOpen={isDetailModalOpen} jobData={selectedJob} onClose={() => setIsDetailModalOpen(false)} onConfirm={handleUpdateJob} />
             <HistoryJobDetailModal isOpen={isHistoryModalOpen} jobData={selectedJob} onClose={() => setIsHistoryModalOpen(false)} />
         </div>
     );
