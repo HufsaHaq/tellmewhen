@@ -53,11 +53,14 @@ function Page() {
     //Stores the currently displayed data
     const [DisplayedTableData, SetDisplayedTableData] = useState([]);
 
-    // Stores the necessary table headers and their widths given by percentage of the table
+    // Stores the necessary table headers and their widths given by percentage of the table    
     const CurrentTableHeaders = ["Job ID", "Description", "Due"];
     const CurrentTableWidths = ["w-[10%]", "w-[80%]", "w-[10%]"];
+    const CurrentTableMaxWidths = ["max-w-[10%]", "max-w-[80%]", "max-w-[10%]"];
     const HistoryTableHeaders = ["Job ID", "User ID", "Remarks", "Completion Date"];
     const HistoryTableWidths = ["w-[10%]", "w-[10%]", "w-[67%]", "w-[13%]"];
+    const HistoryTableMaxWidths = ["max-w-[10%]", "max-w-[10%]", "max-w-[67%]", "max-w-[13%]"];
+
 
     //Used to determine which is the currently selected data (Current=0 or History=1)
     const [CurrentIndex, SetIndex] = useState(0);
@@ -299,14 +302,14 @@ function Page() {
                             {CurrentIndex == 0
                                 ? CurrentTableHeaders.map((item, index) => {
                                       return (
-                                          <th key={index} className={`px-[10px] ${index != 0 ? `border-l-[2px] border-[rgba(0,0,0,0.2)]` : {}} ${CurrentTableWidths[index]}`}>
+                                          <th key={index} className={`px-[10px] ${index != 0 ? `border-l-[2px] border-[rgba(0,0,0,0.2)]` : {}} ${CurrentTableMaxWidths[index]} ${CurrentTableWidths[index]}`}>
                                               {item}
                                           </th>
                                       );
                                   })
                                 : HistoryTableHeaders.map((item, index) => {
                                       return (
-                                          <th key={index} className={`px-[10px] ${index != 0 ? `border-l-[2px] border-[rgba(0,0,0,0.2)]` : {}} ${HistoryTableWidths[index]}`}>
+                                          <th key={index} className={`px-[10px] ${index != 0 ? `border-l-[2px] border-[rgba(0,0,0,0.2)]` : {}} ${HistoryTableMaxWidths[index]} ${HistoryTableWidths[index]}`}>
                                               {item}
                                           </th>
                                       );
