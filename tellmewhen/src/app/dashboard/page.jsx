@@ -47,16 +47,16 @@ function Page() {
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); // For Current Jobs
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false); // For History Jobs
     
-    const [selectedJob, setSelectedJob] = useState({ id: "", description: "", deadline: "" });
+    const [selectedJob, setSelectedJob] = useState({ id: "", description: "", deadline: "", status: "" });
     const [CurrentTableData, SetCurrentTableData] = useState(null);
     const [HistoryTableData, SetHistoryTableData] = useState(null);
     //Stores the currently displayed data
     const [DisplayedTableData, SetDisplayedTableData] = useState([]);
 
     // Stores the necessary table headers and their widths given by percentage of the table    
-    const CurrentTableHeaders = ["Job ID", "Description", "Due"];
-    const CurrentTableWidths = ["w-[10%]", "w-[80%]", "w-[10%]"];
-    const CurrentTableMaxWidths = ["max-w-[10%]", "max-w-[80%]", "max-w-[10%]"];
+    const CurrentTableHeaders = ["Job ID", "Description", "Due", "Status"];
+    const CurrentTableWidths = ["w-[10%]", "w-[70%]", "w-[10%]", "w-[10%]"];
+    const CurrentTableMaxWidths = ["max-w-[10%]", "max-w-[70%]", "max-w-[10%]", "max-w-[10%]"];
     const HistoryTableHeaders = ["Job ID", "User ID", "Remarks", "Completion Date"];
     const HistoryTableWidths = ["w-[10%]", "w-[10%]", "w-[67%]", "w-[13%]"];
     const HistoryTableMaxWidths = ["max-w-[10%]", "max-w-[10%]", "max-w-[67%]", "max-w-[13%]"];
@@ -133,7 +133,7 @@ function Page() {
         let tempArr = [];
         let tempArr2 = [];
         for (let i = 0; i < 50; i++) {
-            tempArr.push(["ID" + (i + 1), "Job Description " + (i + 1), "" + (i + 1) + " hours"]);
+            tempArr.push(["ID" + (i + 1), "Job Description " + (i + 1), "" + (i + 1) + " hours", ""]);
         }
         SetCurrentTableData(tempArr);
         for (let i = 0; i < 50; i++) {
@@ -154,10 +154,10 @@ function Page() {
 
     //Function to handle the confirm button in the modal
     const handleConfirmModal = () => {
-        const newJob = ["ID" + (CurrentTableData.length + 1), formData.description, formData.deadline];
+        const newJob = ["ID" + (CurrentTableData.length + 1), formData.description, formData.deadline, formData.status];
         SetCurrentTableData([...CurrentTableData, newJob]);
         setIsCreationModalOpen(false);
-        setFormData({ description: "", deadline: "" });
+        setFormData({ description: "", deadline: "", status: "" });
     };
 
     //Function to handle the input change in the modal
@@ -171,6 +171,7 @@ function Page() {
                 id: job[0],
                 description: job[1],
                 deadline: job[2],
+                status: job[3],
             });
             setIsDetailModalOpen(true);
         } else if (CurrentIndex === 1) {
@@ -189,7 +190,7 @@ function Page() {
     const handleUpdateJob = (updatedData) => {
         const updatedJobs = CurrentTableData.map((job) => (
             job[0] === updatedData.id 
-                ? [updatedData.id, updatedData.description, updatedData.deadline] 
+                ? [updatedData.id, updatedData.description, updatedData.deadline, updatedData.status] 
                 : job
         ));
         SetCurrentTableData(updatedJobs);
