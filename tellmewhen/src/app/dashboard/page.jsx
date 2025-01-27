@@ -13,6 +13,7 @@ import Pagination from "@/components/Pagination";
 import React from "react";
 import JobCreation from "@/components/JobCreation";
 import CurrentJobDetail from "@/components/CurrentJobDetail";
+import FinishJobModal from "@/components/FinishJob";
 import HistoryJobDetailModal from "@/components/HistoryJobDetail";
 
 function Page() {
@@ -47,9 +48,15 @@ function Page() {
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); // For Current Jobs
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false); // For History Jobs
     
+    //Stores the data for the tables
+    const [CurrentTableData, SetCurrentTableData] = useState([]);
+    const [HistoryTableData, SetHistoryTableData] = useState([]);
     const [selectedJob, setSelectedJob] = useState({ id: "", description: "", deadline: "", status: "" });
-    const [CurrentTableData, SetCurrentTableData] = useState(null);
-    const [HistoryTableData, SetHistoryTableData] = useState(null);
+    
+    //Finish Job Modal State
+    const [isFinishModalOpen, setIsFinishModalOpen] = useState(false);
+    const [jobToFinish, setJobToFinish] = useState(null);
+
     //Stores the currently displayed data
     const [DisplayedTableData, SetDisplayedTableData] = useState([]);
 
@@ -197,9 +204,37 @@ function Page() {
         setIsDetailModalOpen(false);
     };
 
-    //Function to handle the input change in the modal
-    const handleDetailInputChange = (field, value) => {
-        setSelectedJob((prev) => ({ ...prev, [field]: value }));
+    //Function to handle the finish job button
+    const handleOpenFinish = () => {
+        // We'll finish whichever job is currently selected
+        setJobToFinish(selectedJob);
+        setIsFinishModalOpen(true);
+    };
+
+    //Function to handle the finish job button
+    const handleFinishJob = (remarks) => {
+        if (!jobToFinish) return;
+
+        // 1) Remove from Current
+        const newCurrent = CurrentTableData.filter(
+            (job) => job[0] !== jobToFinish.id
+        );
+
+        // 2) Add to History
+        // e.g. [id, userId, remarks, completionDate]
+        const newHistoryRow = [
+            jobToFinish.id,
+            "UserXYZ", // or some real user from your system
+            remarks,
+            new Date().toISOString().slice(0, 10), // e.g. "2025-01-27"
+        ];
+
+        SetCurrentTableData(newCurrent);
+        SetHistoryTableData((prev) => [...prev, newHistoryRow]);
+
+        // Close both modals
+        setIsFinishModalOpen(false);
+        setIsDetailModalOpen(false);
     };
 
     return (
@@ -351,11 +386,14 @@ function Page() {
 
             <div className="bottom-margin mb-[70px]" />
 
-            {/* Modal */}
+            {/* Job Creation Modal */}
             <JobCreation isOpen={isCreationModalOpen} onClose={handleCloseModal} onConfirm={handleConfirmModal} formData={formData} onInputChange={handleInputChange} />
             {/* Job Detail Modal */}
-            <CurrentJobDetail isOpen={isDetailModalOpen} jobData={selectedJob} onClose={() => setIsDetailModalOpen(false)} onConfirm={handleUpdateJob} />
+            <CurrentJobDetail isOpen={isDetailModalOpen} jobData={selectedJob} onClose={() => setIsDetailModalOpen(false)} onConfirm={handleUpdateJob} onOpenFinish={handleOpenFinish}/>
             <HistoryJobDetailModal isOpen={isHistoryModalOpen} jobData={selectedJob} onClose={() => setIsHistoryModalOpen(false)} />
+            {/* Finish Job Modal */}
+            <FinishJobModal isOpen={isFinishModalOpen} job={jobToFinish} onClose={() => setIsFinishModalOpen(false)} onFinish={handleFinishJob}
+            />
         </div>
     );
 }
