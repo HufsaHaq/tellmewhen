@@ -7,7 +7,7 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm }) {
   const [tempData, setTempData] = useState(jobData);
 
   useEffect(() => {
-    // Sync with any new jobData from the parent
+    // Sync if the parent jobData changes
     setTempData(jobData);
   }, [jobData]);
 
@@ -19,14 +19,12 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm }) {
   };
 
   const handleSave = () => {
-    // Return updated data to the parent
-    onConfirm(tempData);
+    onConfirm(tempData); // Pass updated data back to parent
     setIsEditing(false);
   };
 
   const handleCancel = () => {
-    // Discard local changes
-    setTempData(jobData);
+    setTempData(jobData); // Discard edits
     setIsEditing(false);
   };
 
@@ -42,7 +40,7 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm }) {
         </h2>
 
         <form>
-          {/* ID field (optional) */}
+          {/* ID field (always uneditable) */}
           <div className="mb-4">
             <label
               htmlFor="jobId"
@@ -53,10 +51,10 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm }) {
             <input
               type="text"
               id="jobId"
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+              readOnly
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500
+                         disabled:bg-gray-100 cursor-not-allowed"
               value={tempData.id || ""}
-              disabled={!isEditing}
-              onChange={(e) => handleInputChange("id", e.target.value)}
             />
           </div>
 
@@ -75,9 +73,7 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm }) {
               rows={5}
               value={tempData.description || ""}
               disabled={!isEditing}
-              onChange={(e) =>
-                handleInputChange("description", e.target.value)
-              }
+              onChange={(e) => handleInputChange("description", e.target.value)}
             />
           </div>
 
@@ -95,9 +91,7 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm }) {
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
               value={tempData.deadline || ""}
               disabled={!isEditing}
-              onChange={(e) =>
-                handleInputChange("deadline", e.target.value)
-              }
+              onChange={(e) => handleInputChange("deadline", e.target.value)}
             />
           </div>
 
