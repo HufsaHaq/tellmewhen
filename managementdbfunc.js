@@ -54,3 +54,15 @@ export const deleteUser = async (workerId) => {
     `;
     return executeQuery(sql, [workerId]);
   };
+
+// Delete business account and all associated accounts
+export const deleteBusiness = async (businessId) => {
+    const sqlWorkers = `DELETE FROM WORKER_TABLE WHERE Business_ID = ?;`;
+    const sqlBusiness = `DELETE FROM BUSINESS_TABLE WHERE Business_ID = ?;`;
+  
+    // need to delete associated workers first then the business
+    await executeQuery(sqlWorkers, [businessId]);
+    return executeQuery(sqlBusiness, [businessId]);
+  };
+
+  
