@@ -37,3 +37,20 @@ const executeQuery = (sql, params = []) =>
       }
     });
   });
+
+// Add worker/manager/admin
+export const addUser = async (username, hashedPassword, businessId, privilegeLevel) => {
+    const sql = `
+      INSERT INTO WORKER_TABLE (Username, Hashed_Password, Business_ID, Privilege_level)
+      VALUES (?, ?, ?, ?);
+    `;
+    return executeQuery(sql, [username, hashedPassword, businessId, privilegeLevel]);
+  };
+  
+// Delete worker/manager/admin
+export const deleteUser = async (workerId) => {
+    const sql = `
+      DELETE FROM WORKER_TABLE WHERE Worker_ID = ?;
+    `;
+    return executeQuery(sql, [workerId]);
+  };
