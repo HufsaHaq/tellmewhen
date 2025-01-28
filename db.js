@@ -4,30 +4,42 @@
 
 import mysql from 'mysql';
 
-const db = sqlite3.Database('tellmewhen.db');
+const db = mysql.createConnection({
+    host: 'dbhost.cs.man.ac.uk', 
+    user: 'z26101hh', 
+    password: 'UTZxLV/au62nauNC7XxBhNsvh5Wm7CcShrtKz4bwj24',
+    database: 'tellmewhen' 
+});
 
-// create tables helper function
-const createTables = [
+// Connect to the database
+db.connect((err) => {
+  if (err) {
+    console.error('Error connecting to the database:', err.message);
+    return;
+  }
+  console.log('Connected to the MySQL database.');
+
+  // Create tables
+  const createTables = [
     `
     CREATE TABLE IF NOT EXISTS BUSINESS_TABLE (
-        Business_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-        Business_Name TEXT
+        Business_ID INT AUTO_INCREMENT PRIMARY KEY,
+        Business_Name VARCHAR(255)
     )
-    `, // workers belong to buisness will need to add buisness name to worker login to check they belong
-    //3 privilege levels: Admin (1) (can change passwords, delete accounts  - access to management page), Managers (2) (can assign jobs) and Workers (3) (can only see tasks assigned to them)
+    `,
     `
     CREATE TABLE IF NOT EXISTS WORKER_TABLE (
-        Worker_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-        Username TEXT NOT NULL,
-        Business_ID INTEGER,
-        Privledge_level INTEGER, 
-        Hashed_Password TEXT NOT NULL,
+        Worker_ID INT AUTO_INCREMENT PRIMARY KEY,
+        Username VARCHAR(255) NOT NULL,
+        Business_ID INT,
+        Privilege_level INT,
+        Hashed_Password VARCHAR(255) NOT NULL,
         FOREIGN KEY (Business_ID) REFERENCES BUSINESS_TABLE(Business_ID)
     )
     `,
     `
     CREATE TABLE IF NOT EXISTS JOB_TABLE (
-        Job_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        Job_ID INT AUTO_INCREMENT PRIMARY KEY,
         Description TEXT NOT NULL,
         URL TEXT NOT NULL,
         Due_Date DATETIME
@@ -35,78 +47,76 @@ const createTables = [
     `,
     `
     CREATE TABLE IF NOT EXISTS CURRENT_JOB (
-        User_ID INTEGER,
-        Job_ID INTEGER,
+        User_ID INT,
+        Job_ID INT,
         PRIMARY KEY (User_ID, Job_ID),
-        FOREIGN KEY (User_ID) REFERENCES USER_TABLE(User_ID),
+        FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(Worker_ID),
         FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID)
     )
     `,
     `
     CREATE TABLE IF NOT EXISTS JOB_HISTORY (
-        History_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-        User_ID INTEGER,
-        Job_ID INTEGER,
+        History_ID INT AUTO_INCREMENT PRIMARY KEY,
+        User_ID INT,
+        Job_ID INT,
         Completion_Date DATETIME,
         Remarks TEXT,
-        FOREIGN KEY (User_ID) REFERENCES USER_TABLE(User_ID),
+        FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(Worker_ID),
         FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID)
     )
     `,
     `
     CREATE TABLE IF NOT EXISTS CHAT_MESSAGES (
-        Message_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-        User_ID INTEGER,
-        Job_ID INTEGER,
+        Message_ID INT AUTO_INCREMENT PRIMARY KEY,
+        User_ID INT,
+        Job_ID INT,
         Message_Content TEXT NOT NULL,
         Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
         Is_Read BOOLEAN DEFAULT FALSE,
-        FOREIGN KEY (User_ID) REFERENCES USER_TABLE(User_ID),
+        FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(Worker_ID),
         FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID)
     )
     `,
     `
     CREATE TABLE IF NOT EXISTS NOTIFICATIONS (
-        Notification_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-        User_ID INTEGER,
-        Job_ID INTEGER,
+        Notification_ID INT AUTO_INCREMENT PRIMARY KEY,
+        User_ID INT,
+        Job_ID INT,
         Notification_Content TEXT NOT NULL,
         Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
         Is_Read BOOLEAN DEFAULT FALSE,
-        FOREIGN KEY (User_ID) REFERENCES USER_TABLE(User_ID),
+        FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(Worker_ID),
         FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID)
     )
     `,
-        `
+    `
     CREATE TABLE IF NOT EXISTS SUBSCRIPTION_TABLE (
-        Subscription_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        Subscription_ID INT AUTO_INCREMENT PRIMARY KEY,
         Endpoint TEXT NOT NULL,
         Auth_Key1 TEXT NOT NULL,
         Auth_Key2 TEXT NOT NULL,
         Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-        FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID)
     )
     `,
-];
+  ];
 
-// execute create queries
-createTables.forEach((query) => {
-    db.run(query, (err) => {
-        if (err) {
-            console.error('Error creating table:', err.message);
-        } else {
-            console.log('Table created or already exists.');
-        }
+  // Execute each table creation query
+  createTables.forEach((query) => {
+    db.query(query, (err) => {
+      if (err) {
+        console.error('Error creating table:', err.message);
+      } else {
+        console.log('Table created or already exists.');
+      }
     });
-});
+  });
 
-// close connections
-db.close((err) => {
+  // Close the database connection
+  db.end((err) => {
     if (err) {
-        console.error('Error closing database:', err.message);
+      console.error('Error closing the database:', err.message);
     } else {
-        console.log('Database connection closed.');
+      console.log('Database connection closed.');
     }
+  });
 });
-
-
