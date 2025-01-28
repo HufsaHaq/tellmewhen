@@ -330,22 +330,22 @@ function Page() {
                     </Button>
                 </span>
             </span>
-            <div className="w-full overflow-hidden rounded-md shadow-md border-[1px] border-[#AFAFAF]">
+            <div className="w-full overflow-hidden text-wrap rounded-md shadow-md border-[1px] border-[#AFAFAF]">
                 <table key={CurrentIndex /* This is needed as the width of table doesn't update */} className="text-left w-[100%] h-[80%] overflow-visible rounded-md">
                     <thead className={``}>
-                        <tr className={`${coloursTailwind["primary"]} ${coloursTailwind["primary-text-colour"]} h-[40px]`}>
+                        <tr className={`${coloursTailwind["primary"]} text-wrap ${coloursTailwind["primary-text-colour"]} h-[40px]`}>
                             {/* Ternary operator for an if statement to determine which table headers are to be displayed */}
                             {CurrentIndex == 0
                                 ? CurrentTableHeaders.map((item, index) => {
                                       return (
-                                          <th key={index} className={`px-[10px] ${index != 0 ? `border-l-[2px] border-[rgba(0,0,0,0.2)]` : {}} ${CurrentTableMaxWidths[index]} ${CurrentTableWidths[index]}`}>
+                                          <th key={index} className={`px-[10px] text-wrap ${CurrentTableMaxWidths[index]} ${index != 0 ? `border-l-[2px] border-[rgba(0,0,0,0.2)]` : {}} ${CurrentTableMaxWidths[index]} ${CurrentTableWidths[index]}`}>
                                               {item}
                                           </th>
                                       );
                                   })
                                 : HistoryTableHeaders.map((item, index) => {
                                       return (
-                                          <th key={index} className={`px-[10px] ${index != 0 ? `border-l-[2px] border-[rgba(0,0,0,0.2)]` : {}} ${HistoryTableMaxWidths[index]} ${HistoryTableWidths[index]}`}>
+                                          <th key={index} className={`px-[10px] text-wrap ${index != 0 ? `border-l-[2px] border-[rgba(0,0,0,0.2)]` : {}} ${HistoryTableMaxWidths[index]} ${HistoryTableWidths[index]}`}>
                                               {item}
                                           </th>
                                       );
@@ -357,11 +357,11 @@ function Page() {
                             return (
                                 <tr
                                     key={index1}
-                                    className={`cursor-pointer hover:rounded hover:outline hover:outline-[2px] hover:outline-offset-[-1.5px] hover:outline-[rgba(70,70,70,0.6)] ${index1 % 2 === 1 ? coloursTailwind["rows-colour1"] : coloursTailwind["rows-colour2"]}`}
+                                    className={`cursor-pointer hover:rounded text-wrap hover:outline hover:outline-[2px] hover:outline-offset-[-1.5px] hover:outline-[rgba(70,70,70,0.6)] ${index1 % 2 === 1 ? coloursTailwind["rows-colour1"] : coloursTailwind["rows-colour2"]}`}
                                     onClick={() => handleRowClick(item1)} // Pass the job data to handleRowClick
                                 >
                                     {item1.map((item2, index2) => (
-                                        <td className={`${index2 !== 0 ? "border-l-[2px]" : ""} px-[10px] py-[5px] border-[rgba(0,0,0,0.2)]`} key={index2}>
+                                        <td className={`${index2 !== 0 ? "border-l-[2px]" : ""} overflow-hidden max-w-[0px] text-pretty px-[10px] py-[5px] border-[rgba(0,0,0,0.2)]`} key={index2}>
                                             {item2}
                                         </td>
                                     ))}
