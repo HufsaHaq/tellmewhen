@@ -13,12 +13,14 @@ const createTables = [
         Business_ID INTEGER PRIMARY KEY AUTOINCREMENT,
         Business_Name TEXT
     )
-    `,
+    `, // workers belong to buisness will need to add buisness name to worker login to check they belong
+    //3 privilege levels: Admin (1) (can change passwords, delete accounts  - access to management page), Managers (2) (can assign jobs) and Workers (3) (can only see tasks assigned to them)
     `
-    CREATE TABLE IF NOT EXISTS USER_TABLE (
-        User_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    CREATE TABLE IF NOT EXISTS WORKER_TABLE (
+        Worker_ID INTEGER PRIMARY KEY AUTOINCREMENT,
         Username TEXT NOT NULL,
         Business_ID INTEGER,
+        Privledge_level INTEGER, 
         Hashed_Password TEXT NOT NULL,
         FOREIGN KEY (Business_ID) REFERENCES BUSINESS_TABLE(Business_ID)
     )
