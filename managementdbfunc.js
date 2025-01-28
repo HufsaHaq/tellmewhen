@@ -6,7 +6,7 @@
 //TOTAL JOBS CREATED DONE
 // search for employees based name/id  DONE
 // chnage privilege levels DONE
-// need to add func to return buisness name and pfp
+// need to add func to return buisness name and pfp DONE
 
 
 import mysql from 'mysql';
