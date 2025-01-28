@@ -2,9 +2,9 @@
 // https://github.com/mysqljs/mysql
 // https://www.geeksforgeeks.org/how-to-create-table-in-sqlite3-database-using-node-js/?ref=gcse_outind (BEST ONE)
 
-import sqlite3 from 'sqlite3';
+import mysql from 'mysql';
 
-const db = new sqlite3.Database('tellmewhen.db');
+const db = sqlite3.Database('tellmewhen.db');
 
 // create tables helper function
 const createTables = [
