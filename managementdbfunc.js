@@ -1,11 +1,12 @@
 //Add worker/manager/admin DONE
-//delete worker/manager/admin
-//edit worker/manager/admin login
-//delete buisness account - all associtated account with buisness id deleted
-//number of open jobs
-//TOTAL JOBS CREATED
-// search for employees based name/id 
-// chnage privilege levels
+//delete worker/manager/admin DONE
+//edit worker/manager/admin login DONE
+//delete buisness account - all associtated account with buisness id deleted DONE
+//number of open jobs DONE
+//TOTAL JOBS CREATED DONE
+// search for employees based name/id  DONE
+// chnage privilege levels DONE
+// need to add func to return buisness name and pfp
 
 
 import mysql from 'mysql';
@@ -125,5 +126,25 @@ export const changePrivilegeLevel = async (workerId, newPrivilegeLevel) => {
   return executeQuery(sql, [newPrivilegeLevel, workerId]);
 };
 
+// Get business name and photo
+export const getBusinessDetails = async (businessId) => {
+  const sql = `
+    SELECT Business_Name, Business_Photo 
+    FROM BUSINESS_TABLE 
+    WHERE Business_ID = ?;
+  `;
+  
+  const result = await executeQuery(sql, [businessId]);
+  
+  if (result[0]) {
+    const { Business_Name, Business_Photo } = result[0];
+    return {
+      name: Business_Name,
+      photo: Business_Photo, // Already stored as base64 encoded
+    };
+  } else {
+    return null;
+  }
+};
 
 

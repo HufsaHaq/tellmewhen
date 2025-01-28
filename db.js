@@ -25,6 +25,7 @@ db.connect((err) => {
     CREATE TABLE IF NOT EXISTS BUSINESS_TABLE (
         Business_ID INT AUTO_INCREMENT PRIMARY KEY,
         Business_Name VARCHAR(255)
+        Business_Photo TEXT
     )
     `,
     `
