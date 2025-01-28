@@ -1,4 +1,4 @@
-//Add worker/manager/admin
+//Add worker/manager/admin DONE
 //delete worker/manager/admin
 //edit worker/manager/admin login
 //delete buisness account - all associtated account with buisness id deleted
@@ -56,13 +56,13 @@ export const deleteUser = async (workerId) => {
 };
 
 // Edit worker/manager/admin login details
-export const editUserLogin = async (workerId, newUsername, newPassword) => {
+export const editUserLogin = async (workerId, Username, newPassword) => {
   const sql = `
     UPDATE WORKER_TABLE
     SET Hashed_Password = ?
     WHERE Worker_ID = ? AND Username = ?;
   `;
-  return executeQuery(sql, [newPassword, workerId, newUsername]);
+  return executeQuery(sql, [hash(newPassword), workerId, Username]);
 };
 
 // Delete business account and all associated accounts
