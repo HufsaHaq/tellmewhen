@@ -7,8 +7,6 @@
 // search for employees based name/id  DONE
 // chnage privilege levels DONE
 // need to add func to return buisness name and pfp DONE
-
-
 import mysql from 'mysql';
 
 const db = mysql.createConnection({
@@ -159,13 +157,11 @@ export const renameBusiness = async (businessId, newName) => {
 
 // Change business photo
 export const changeBusinessPhoto = async (businessId, newPhotoBase64) => {
-  // SQL query to update the business photo
   const sql = `
     UPDATE BUSINESS_TABLE 
     SET Business_Photo = ? 
     WHERE Business_ID = ?;
   `;
   
-  // Execute the query with the new photo and business ID as parameters
   return executeQuery(sql, [newPhotoBase64, businessId]);
 }
