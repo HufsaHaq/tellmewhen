@@ -165,3 +165,45 @@ export const changeBusinessPhoto = async (businessId, newPhotoBase64) => {
   
   return executeQuery(sql, [newPhotoBase64, businessId]);
 }
+//----------------------------------------------------------------
+const testFunctions = async () => {
+  try {
+    // Add a worker
+    await addUser('JohnDoe', 'hashedPassword123', 1, 2);
+    console.log('Worker added.');
+
+    // Delete a worker
+    await deleteUser(1);
+    console.log('Worker deleted.');
+
+    // Edit login details
+    await editUserLogin(2, 'JaneDoe', 'newHashedPassword');
+    console.log('Worker login updated.');
+
+    // Delete a business
+    await deleteBusiness(1);
+    console.log('Business deleted.');
+
+    // Count open jobs
+    const openJobs = await countOpenJobs();
+    console.log('Open jobs:', openJobs);
+
+    // Count total jobs created
+    const totalJobs = await countTotalJobs();
+    console.log('Total jobs created:', totalJobs);
+
+    // Search employees
+    const employees = await searchEmployees('Jane');
+    console.log('Employees found:', employees);
+
+    // Change privilege level
+    await changePrivilegeLevel(2, 1);
+    console.log('Privilege level updated.');
+  } catch (err) {
+    console.error('Error:', err.message);
+  } finally {
+    db.end();
+  }
+};
+
+testFunctions();
