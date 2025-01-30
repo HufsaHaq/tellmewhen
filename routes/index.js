@@ -37,15 +37,8 @@ indexRouter.get('/job_history/:bid', async (req,res)=>{
     const connection = await createConnection()
     const jobs = fetchAll(connection,sql,[businessId])
     res.json(jobs)
-  }catch(err){  
+  }catch(err){ 
     res.json({error:err})
   }
-})
-
-indexRouter.post('/send_nottification/:jid', async (req,res)=>{
-  // get the customer endpoints from the db and send a nottification through web-push
-  const jobId = req.params.jid
-
-  
 })
 export { indexRouter };
