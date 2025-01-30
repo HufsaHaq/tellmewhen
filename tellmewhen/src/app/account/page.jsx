@@ -34,7 +34,7 @@ function Account()
                 <div className="left-list overflow-visible w-[25%] outline outline-0 rounded-md px-[5px] pt-[2px]">
                     {MenuItems.map((item, index) => {
                         return (
-                            <span index={index} className={`${index} flex items-center h-[40px] my-[5px]`}>
+                            <span key={index} className={`${index} flex items-center h-[40px] my-[5px]`}>
                                 <div className={`w-[6px] h-[90%] rounded-md ${SelectedMenu == item && "bg-[#0A5397]"} transition ease-in-out mr-[5px]`}>‎</div>
                                 <button onClick={()=>{SetSelectedMenu(item)}}
                                         className={`${SelectedMenu == item && "bg-[#D6DBE3]"} hover:bg-[#D6DBE3] rounded-md transition ease-in-out w-[100%] h-full text-left pl-[10px]`}>{item}</button>
@@ -45,7 +45,8 @@ function Account()
                 <div className="menu-content transition ease-in-out w-[73%] h-[100px]">
                     <h1 className="text-[25px] font-semibold mt-auto text-black mb-[5px]">{SelectedMenu}</h1>
                     <div className="w-full h-[1px] mb-[20px] bg-[#949495]">‎</div>
-                    {SelectedMenu == MenuItems[0] &&
+
+                    {SelectedMenu == MenuItems[0] && //Account Management
                         <>
                             <h1 className="font-semibold mb-[15px] w-[100%] sticky text-[20px] mt-[20px]">Statistics</h1>
                             <span className="">
@@ -64,6 +65,13 @@ function Account()
                                 </span>
                                 <span className="flex w-full items-center justify-between px-[12px] py-[7px] rounded-md">
                                     <div>
+                                        <h1 className="font-semibold">Change Admin Password</h1>
+                                        <h1 className="">Changes the password for business</h1>
+                                    </div>
+                                    <Button variant="solid" color="primary" className="w-[75px]">Change</Button>
+                                </span>
+                                <span className="flex w-full items-center justify-between px-[12px] py-[7px] rounded-md">
+                                    <div>
                                         <h1 className="font-semibold text-[#C41C1C]">Delete Account</h1>
                                         <h1 className="">Warning! This action cannot be undone.</h1>
                                     </div>
@@ -72,79 +80,35 @@ function Account()
                             </div>
                         </>
                     }
-                    {SelectedMenu == MenuItems[1] && 
+                    {SelectedMenu == MenuItems[1] && //Employee Management
                         <div className="">
-                            <div className="">
-                                <h1 className="font-semibold mb-[15px] w-[100%] sticky text-[20px] mt-[20px]">Employee Management</h1>
-                                <div className="outline rounded-md outline-[1px] outline-[#505050]">
-                                    <span className="flex w-full items-center justify-between px-[12px] py-[7px] rounded-md">
-                                        <div>
-                                            <h1 className="font-semibold">Add Employee</h1>
-                                            <h1 className="text-[#121212]">Creates a new employee</h1>
-                                        </div>
-                                        <Button variant="solid" className="w-[75px]">Create</Button>
-                                    </span>
-                                    <span className="flex w-full items-center justify-between px-[12px] py-[7px] rounded-md">
-                                        <div>
-                                            <h1 className="font-semibold">Edit Employee Details</h1>
-                                            <h1 className="text-[#121212]">Modifies an existing employee</h1>
-                                        </div>
-                                        <Button variant="solid" className="w-[75px]">Edit</Button>
-                                    </span>
-                                    <span className="flex w-full items-center justify-between px-[12px] py-[7px] rounded-md">
-                                        <div>
-                                            <h1 className="font-semibold text-[#C41C1C]">Delete Employee</h1>
-                                            <h1 className="">Warning! This action cannot be undone</h1>
-                                        </div>
-                                        <Button variant="solid" className="w-[75px]" color="danger">Select</Button>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="w-full h-[1px] mt-[20px] bg-[#949495]">‎</div>
-
-                                <h1 className="font-semibold mb-[2px] w-[100%] sticky text-[20px] mt-[13px]">Privileges</h1>
-                                <span className="flex">
-                                    <h1 className="text-[15px] w-[100%] mb-[15px]">Set each employees privilege level. This determines what level of access each employee has access to.</h1>
+                                <h1 className="font-semibold mb-[2px] w-[100%] sticky text-[20px]">Employee Management</h1>
+                                <span className="flex items-center mb-[10px]">
+                                    <h1 className="text-[15px] w-[100%] mb-[15px]">Modify the details of each employee.</h1>
+                                    <Button className="mr-[50px] h-[10px]">Create</Button>
                                     <Input endDecorator={<Search></Search>}
-                                           className="mb-[10px] max-h-[50px] mx-[5px]"
+                                           className="max-h-[50px] mx-[5px]"
                                            placeholder="Search"></Input>
                                 </span>
-                                <div className="overscroll-none max-h-[350px] overflow-y-scroll rounded-md outline outline-[1px]">
+                                <div className="overscroll-none max-h-[450px] overflow-y-scroll rounded-md outline outline-[1px]">
                                     <table className="w-[100%] outline outline-[1px] ">
                                         <thead className="sticky bg-[rgb(210,214,218)] text-[#0E0E0E] text-left">
                                             <tr className="sticky px-[10px] py-[5px]">
                                                 <th className="sticky ml-[10px] px-[10px] py-[5px] w-[70%]">Name</th>
                                                 <th className="sticky ml-[10px] px-[10px] py-[5px] w-[15%]">Employee ID</th>
-
                                                 <th className="sticky ml-[10px] px-[10px] py-[5px] w-[15%]">Privilege</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {Employees.map((employee, index1) => {
                                                 return(
-                                                    <tr index={index1}>
+                                                    <tr key={index1} className="cursor-pointer" onClick={()=>{console.log("Clicked: ", index1)}}>
                                                         {employee.map((element, index2) => {
                                                             return(
-                                                                <td className={`${index1 % 2 == 1 ? "bg-[rgb(210,214,218)]" : "bg-[rgb(230,234,243)]"} overflow-hidden pl-[10px] ${index2 == 0 && "py-[10px]"} ${index2 != 0 && "border-l-[2px] border-[rgba(0,0,0,0.2)]"}`}>
+                                                                <td key={index2} className={`${index1 % 2 == 1 ? "bg-[rgb(210,214,218)]" : "bg-[rgb(230,234,243)]"} overflow-hidden pl-[10px] ${index2 == 0 && "py-[10px]"} ${index2 != 0 && "border-l-[2px] border-[rgba(0,0,0,0.2)]"}`}>
                                                                     <span className={`${index2 == 0 && "max-w-[85%]"} flex inline items-center`}>
                                                                         {index2!=2 && <h1>{element}</h1>}
-                                                                        {index2==2 &&
-                                                                            <Select
-                                                                                className="outline outline-[1px]"
-                                                                                placeholder={element}
-                                                                                sx={{
-                                                                                    width: "110px",
-                                                                                    height: "10px",
-                                                                                    fontSize: "13px",
-                                                                                    fontWeight: "bold",
-                                                                                    color: "black",
-                                                                                }}
-                                                                            >
-                                                                            <Option value={1}>Admin</Option>
-                                                                            <Option value={2}>Manager</Option>
-                                                                            <Option value={3}>Employee</Option>
-                                                                        </Select>}
+                                                                        {index2==2 && <h1>{element}</h1>}
                                                                     </span>
                                                                 </td>
                                                                 
