@@ -97,6 +97,7 @@ db.connect((err) => {
         Auth_Key1 TEXT NOT NULL,
         Auth_Key2 TEXT NOT NULL,
         Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID)
     )
     `,
   ];
