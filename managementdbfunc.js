@@ -47,11 +47,11 @@ export const addUser = async (username, hashedPassword, businessId, privilegeLev
 };
 
 // Delete worker/manager/admin
-export const deleteUser = async (workerId) => {
+export const deleteUser = async (workerId, currID) => {
   const sql = `
-    DELETE FROM WORKER_TABLE WHERE Worker_ID = ?;
+    DELETE FROM WORKER_TABLE WHERE Worker_ID = ? IF Worker_ID IS NOT ?;
   `;
-  return executeQuery(sql, [workerId]);
+  return executeQuery(sql, [workerId, currID]);
 };
 
 // Edit worker/manager/admin login details
