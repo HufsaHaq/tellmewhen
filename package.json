@@ -1,5 +1,17 @@
 {
   "dependencies": {
-    "qrcode": "^1.5.4"
-  }
+    "cookie-parser": "^1.4.7",
+    "express": "^4.21.2",
+    "http-errors": "^2.0.0",
+    "jase": "^1.2.0",
+    "logger": "^0.0.1",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.9",
+    "qrcode": "^1.5.4",
+    "web-push": "^3.6.7"
+  },
+  "scripts": {
+    "startDev": "nodemon app.js"
+  },
+  "type": "module"
 }

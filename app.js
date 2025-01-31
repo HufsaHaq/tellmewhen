@@ -1,11 +1,13 @@
 import createError from 'http-errors';
 import express from 'express';
-import path from'path';
+import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 
 import {indexRouter} from "./routes/index.js";
 import {qrRouter} from './routes/qr.js';
+
+const port = 4000; 
 
 var app = express();
 const __dirname = import.meta.dirname;
@@ -27,7 +29,6 @@ app.use('/qr', qrRouter);
 app.use(function(req, res, next) {
   next(createError(404));
 });
-
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
@@ -39,4 +40,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-export { app };
+app.listen(port, ()=>{
+  console.log(`Server listening on http://localhost:${port}`)
+})
+// export { app };
