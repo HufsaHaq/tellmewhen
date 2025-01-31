@@ -22,7 +22,8 @@ const execute = (sql, params = []) =>
         if (err) {
           reject(err);
         } else {
-          resolve(results);
+          resolve(JSON.stringify(results)); // might return a json object
+
         }
       });
     });
