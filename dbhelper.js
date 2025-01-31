@@ -27,7 +27,7 @@ const executeQuery = (sql, params = []) =>
       });
     });
 
-// Get all open jobs for a certain user (or all jobs if no user ID is provided)
+// jobs per user or all jobs if no user ID 
 const getOpenJobs = async (userId = null) => {
   let sql = `
     SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_TABLE.URL, JOB_TABLE.Due_Date
@@ -44,7 +44,7 @@ const getOpenJobs = async (userId = null) => {
   return executeQuery(sql, params);
 };
 
-// Get job history for a user
+// job history
 const getJobHistory = async (userId) => {
   const sql = `
     SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_HISTORY.Completion_Date, JOB_HISTORY.Remarks
@@ -55,7 +55,7 @@ const getJobHistory = async (userId) => {
   return executeQuery(sql, [userId]);
 };
 
-// Assign a job to a user
+// assign  job
 const assignJobToUser = async (userId, jobId) => {
   const sql = `
     INSERT INTO CURRENT_JOB (User_ID, Job_ID) VALUES (?, ?)
@@ -63,7 +63,7 @@ const assignJobToUser = async (userId, jobId) => {
   return executeQuery(sql, [userId, jobId]);
 };
 
-// Mark a job as completed (moves it to job history and removes from current jobs)
+// mark a job as completed (moves it to job history and removes from current jobs)
 const completeJob = async (userId, jobId, remarks = '') => {
   const sqlInsert = `
     INSERT INTO JOB_HISTORY (User_ID, Job_ID, Completion_Date, Remarks)
@@ -77,7 +77,7 @@ const completeJob = async (userId, jobId, remarks = '') => {
   return executeQuery(sqlDelete, [userId, jobId]);
 };
 
-// Get chat messages for a specific job
+// get chat messages for a specific job
 const getChatMessages = async (jobId) => {
   const sql = `
     SELECT User_ID, Message_Content, Timestamp, Is_Read
@@ -88,7 +88,7 @@ const getChatMessages = async (jobId) => {
   return executeQuery(sql, [jobId]);
 };
 
-// Get notifications for a user
+// get notifications for a user
 const getNotifications = async (userId) => {
   const sql = `
     SELECT Notification_Content, Timestamp, Is_Read
