@@ -100,6 +100,16 @@ const getNotifications = async (userId) => {
   return execute(sql, [userId]);
 };
 
+const getSubscription = async (jobId,businessId) => {
+  const sql = `
+    SELECT SUBSCRIPTION_TABLE.Subscription_ID, SUBSCRIPTION_TABLE.Endpoint, SUBSCRIPTION_TABLE.Auth_Key1,SUBSCRIPTION_TABLE.Auth_Key2
+    FROM SUBSCRIPTION_TABLE
+    JOIN CURRENT_JOB ON SUBSCRIPTION_TABLE.User_ID = CURRENT_JOB.User_ID
+    WHERE CURRENT_JOB.Job_ID = ? AND CURRENT_JOB.User_ID = ?
+  `;
+  return execute(sql, [jobId,businessId]);
+}
+
 const closeDB = () => {
   db.end((err) => {
     if (err) {
@@ -110,4 +120,4 @@ const closeDB = () => {
   });
 };
 
-
+export {getChatMessages, getNotifications, getOpenJobs, getJobHistory, assignJobToUser, completeJob};

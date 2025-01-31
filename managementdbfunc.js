@@ -165,6 +165,23 @@ export const changeBusinessPhoto = async (businessId, newPhotoBase64) => {
   
   return executeQuery(sql, [newPhotoBase64, businessId]);
 }
+
+export const getBusinessPhoto = async (businessId) => {
+  const sql = `
+    SELECT Business_Photo 
+    FROM BUSINESS_TABLE 
+    WHERE Business_ID = ?;
+  `;
+  
+  const result = await executeQuery(sql, [businessId]);
+  
+  if (result[0]) {
+    return result[0].Business_Photo;
+  } else {
+    return null;
+  }
+}
+
 //----------------------------------------------------------------
 const testFunctions = async () => {
   try {
