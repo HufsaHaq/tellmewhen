@@ -16,7 +16,7 @@ db.connect((err) => {
     }
   });
 
-const executeQuery = (sql, params = []) =>
+const execute = (sql, params = []) =>
     new Promise((resolve, reject) => {
       db.query(sql, params, (err, results) => {
         if (err) {
@@ -41,7 +41,7 @@ const getOpenJobs = async (userId = null) => {
     params.push(userId);
   }
 
-  return executeQuery(sql, params);
+  return execute(sql, params);
 };
 
 // job history
@@ -52,7 +52,7 @@ const getJobHistory = async (userId) => {
     JOIN JOB_TABLE ON JOB_HISTORY.Job_ID = JOB_TABLE.Job_ID
     WHERE JOB_HISTORY.User_ID = ?
   `;
-  return executeQuery(sql, [userId]);
+  return execute(sql, [userId]);
 };
 
 // assign  job
@@ -60,7 +60,7 @@ const assignJobToUser = async (userId, jobId) => {
   const sql = `
     INSERT INTO CURRENT_JOB (User_ID, Job_ID) VALUES (?, ?)
   `;
-  return executeQuery(sql, [userId, jobId]);
+  return execute(sql, [userId, jobId]);
 };
 
 // mark a job as completed (moves it to job history and removes from current jobs)
@@ -73,8 +73,8 @@ const completeJob = async (userId, jobId, remarks = '') => {
     DELETE FROM CURRENT_JOB WHERE User_ID = ? AND Job_ID = ?
   `;
   
-  await executeQuery(sqlInsert, [userId, jobId, remarks]);
-  return executeQuery(sqlDelete, [userId, jobId]);
+  await execute(sqlInsert, [userId, jobId, remarks]);
+  return execute(sqlDelete, [userId, jobId]);
 };
 
 // get chat messages for a specific job
@@ -85,7 +85,7 @@ const getChatMessages = async (jobId) => {
     WHERE Job_ID = ?
     ORDER BY Timestamp ASC
   `;
-  return executeQuery(sql, [jobId]);
+  return execute(sql, [jobId]);
 };
 
 // get notifications for a user
@@ -96,7 +96,7 @@ const getNotifications = async (userId) => {
     WHERE User_ID = ?
     ORDER BY Timestamp DESC
   `;
-  return executeQuery(sql, [userId]);
+  return execute(sql, [userId]);
 };
 
 const closeDB = () => {
