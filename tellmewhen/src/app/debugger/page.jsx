@@ -1,9 +1,14 @@
 "use client";
 import {Input, Button} from "@mui/joy";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 function Debugger()
 {
-    const [Endpoint, SetEndPoint] = useState(localStorage["endpoint"]);
+    const [Endpoint, SetEndPoint] = useState("");
+
+    useEffect(() => {
+        SetEndPoint(localStorage["endpoint"]);
+
+    }, []);
     return(
         <>
         <div className="ml-[20px] mt-[20px]">
@@ -20,6 +25,7 @@ function Debugger()
     );
     function SaveResultsToLocal()
     {
+        if (typeof window === "undefined") return;
         localStorage["endpoint"] = Endpoint;
     }
 
