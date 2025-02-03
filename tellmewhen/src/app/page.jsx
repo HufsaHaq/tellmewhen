@@ -5,7 +5,6 @@ import Header from "../components/Header";
 import "../app/globals.css";
 
 function Page() {
-  const [email, setEmail] = useState('');
 
   const features = [
     {
