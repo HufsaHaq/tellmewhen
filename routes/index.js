@@ -33,7 +33,7 @@ indexRouter.get('/job_history/:bid', async (req, res) => {
     .catch((err) => res.json({ error: err }));
 });
 
-indexRouter.get('/notify/:bid/:jid', async (req, res) => {
+indexRouter.post('/notify/:bid/:jid', async (req, res) => {
   // Notify the customer and update the notification table
   const businessId = req.params.bid;
   const jobId = req.params.jid;
@@ -65,5 +65,7 @@ indexRouter.get('/notify/:bid/:jid', async (req, res) => {
   catch((err) => res.json({ error: err }));
  
 });
+
+
 
 export { indexRouter }; 
