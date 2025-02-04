@@ -224,3 +224,5 @@ const testFunctions = async () => {
 };
 
 testFunctions();
+
+export{addUser, deleteUser, deleteBusiness,editUserLogin,countOpenJobs,countTotalJobs,searchEmployees,changePrivilegeLevel}

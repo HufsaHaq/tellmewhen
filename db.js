@@ -105,6 +105,15 @@ db.connect((err) => {
         FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID)
     )
     `,
+    `
+    CREATE TABLE IF NOT EXISTS ACCESS_TOKENS (
+    Token_ID INT AUTO_INCREMENT PRIMARY KEY,
+    User_ID INT NOT NULL,
+    Access_Token VARCHAR(255) NOT NULL,
+    Expiration_Time DATETIME NOT NULL,
+    FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(Worker_ID)
+    )
+    `,
   ];
 
   // Execute each table creation query

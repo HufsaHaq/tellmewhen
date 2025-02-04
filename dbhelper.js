@@ -28,6 +28,39 @@ const execute = (sql, params = []) =>
       });
     });
 
+//----------------------------------------------------------------------------------------------------
+export const storeAccessToken = async (userId, accessToken, expirationTime) => {
+      const sql = `
+        INSERT INTO ACCESS_TOKENS (User_ID, Access_Token, Expiration_Time)
+        VALUES (?, ?, ?);
+      `;
+      return execute(sql, [userId, accessToken, expirationTime]);
+    };
+
+export const validateAccessToken = async (accessToken) => {
+      const sql = `
+        SELECT User_ID, Expiration_Time 
+        FROM ACCESS_TOKENS 
+        WHERE Access_Token = ? AND Expiration_Time > NOW();
+      `;
+      const result = await executeQuery(sql, [accessToken]);
+    
+      if (result.length > 0) {
+        return result[0].User_ID; // Return the user ID if the token is valid
+      } else {
+        return null; // Token is invalid or expired
+      }
+    };
+
+export const deleteExpiredTokens = async () => {
+      const sql = `
+        DELETE FROM ACCESS_TOKENS 
+        WHERE Expiration_Time <= NOW();
+      `;
+      return executeQuery(sql);
+    };
+//-----------------------------------------------------------------------------------------------------
+
 // jobs per user or all jobs if no user ID 
 const getOpenJobs = async (userId = null) => {
   let sql = `
@@ -120,4 +153,4 @@ const closeDB = () => {
   });
 };
 
-export {getChatMessages, getNotifications, getOpenJobs, getJobHistory, assignJobToUser, completeJob};
+export {getChatMessages, getNotifications, getOpenJobs, getJobHistory, assignJobToUser, completeJob, getSubscription};
