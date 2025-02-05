@@ -3,6 +3,8 @@ This file outlines the handling of authentication for JWT tokens.
  */
 const jwt = require('jsonwebtoken');
 
+const publicKey = fs.readFileSync('public.pem','utf-8');
+
 const authMiddleWare = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   
@@ -14,7 +16,7 @@ const authMiddleWare = (req, res, next) => {
   const token = authHeader.split(' ')[1]; // extact the token from the header
 
   try{
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token,publicKey,{ algorithms: ['RS256'] });
     req.user = decoded;
     next();
   }catch(err){
@@ -22,4 +24,4 @@ const authMiddleWare = (req, res, next) => {
   }
 };
 
-export default authMiddleWare;
+export { authMiddleWare };
