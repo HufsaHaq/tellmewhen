@@ -27,4 +27,21 @@ const authMiddleWare = (req, res, next) => {
   }
 };
 
+const adminMiddleWare = (req, res, next)=>{
+  const privilege = req.body.privilege_level;
+  if(privilege === 1){
+    next();
+  }else{
+    res.status(401).json({ message: "Unauthorized: Invalid privilege level" });
+  }
+}
+
+const moderatorMiddleWare = (req, res, next)=>{
+  const privilege = req.body.privilege_level;
+  if(privilege === 2 || privilege === 1){
+    next();
+  }else{
+    res.status(401).json({ message: "Unauthorized: Invalid privilege level" });
+  }
+}
 export { authMiddleWare };
