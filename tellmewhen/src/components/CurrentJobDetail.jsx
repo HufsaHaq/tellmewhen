@@ -81,9 +81,28 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish })
             />
           </div>
 
-          <div className="flex justify-end space-x-4">
+          <div className="flex justify-between">
             {!isEditing && (
               <>
+              <span className="inline space-x-3">
+                <Button
+                  onClick={onOpenFinish}
+                  variant="solid"
+                  color="success"
+                  className="px-4 py-2"
+                >
+                  Finish
+                </Button>
+                <Button
+                  onClick={()=>{window.location.href = "/qr_code"}}
+                  variant="solid"
+                  color="primary"
+                  className="px-4 py-2 mx-[10px]"
+                >
+                  View QR Code
+                </Button>
+              </span>
+              <span className="space-x-3">
                 <Button
                   onClick={onClose}
                   variant="soft"
@@ -98,16 +117,9 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish })
                   color="primary"
                   className="px-4 py-2"
                 >
-                  Change
+                  Edit
                 </Button>
-                <Button
-                  onClick={onOpenFinish}
-                  variant="solid"
-                  color="success"
-                  className="px-4 py-2"
-                >
-                  Finish
-                </Button>
+              </span>
               </>
             )}
 
