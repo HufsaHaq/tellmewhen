@@ -9,7 +9,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import webPush from 'web-push';
 import { getJobHistory, getOpenJobs, getNotifications } from '../dbhelper.js';
-import { sendNotification } from 'web-push';
+// import { sendNotification } from 'web-push'; 
 import { countOpenJobs, getBusinessPhoto, addUser, getLoginCredentials} from '../managementdbfunc.js';
 import {authMiddleWare} from '../authMiddleWare.js';
 
@@ -93,7 +93,7 @@ indexRouter.post('/notify/:bid/:jid',authMiddleWare, async (req, res) => {
       privateKey: keys.privateKey
     }};
   //send notifcation using PUSH API
-  const notifcation = sendNotification(pushSubscription, payload).
+  const notifcation = webPush.sendNotification(pushSubscription, payload).
   then(() => {console.log("Notification Sent !")}).
   catch((err) => res.json({ error: err }));
  

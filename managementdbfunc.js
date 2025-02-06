@@ -233,4 +233,4 @@ const testFunctions = async () => {
 
 testFunctions();
 
-export{addUser, deleteUser, deleteBusiness,editUserLogin,countOpenJobs,countTotalJobs,searchEmployees,changePrivilegeLevel}
+// export{addUser, deleteUser, deleteBusiness,editUserLogin,countOpenJobs,countTotalJobs,searchEmployees}

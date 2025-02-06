@@ -3,9 +3,11 @@ import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
+import bodyParser from 'body-parser';
 
 import {indexRouter} from "./routes/index.js";
 import {qrRouter} from './routes/qr.js';
+import {deletionRouter} from './routes/delRoutes.js';
 
 const port = 4000; 
 
@@ -14,16 +16,18 @@ const __dirname = import.meta.dirname;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'jade'); // do we need a view engine
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/qr', qrRouter);
+app.use('/delete', deletionRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

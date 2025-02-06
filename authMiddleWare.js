@@ -1,7 +1,10 @@
 /*
 This file outlines the handling of authentication for JWT tokens.
+To-Do:
+
  */
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
+import fs from 'fs';
 
 const publicKey = fs.readFileSync('public.pem','utf-8');
 
