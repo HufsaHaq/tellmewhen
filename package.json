@@ -16,7 +16,7 @@
     "web-push": "^3.6.7"
   },
   "scripts": {
-    "startDev": "nodemon app.js"
+    "startDev": "nodemon db.js"
   },
   "type": "module"
 }

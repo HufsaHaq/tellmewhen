@@ -5,7 +5,7 @@ const db = mysql.createConnection({
   host: 'dbhost.cs.man.ac.uk',
   user: 'z26101hh',
   password: 'UTZxLV/au62nauNC7XxBhNsvh5Wm7CcShrtKz4bwj24',
-  database: 'tellmewhen',
+  database: 'z26101hh',
 });
 
 db.connect((err) => {
