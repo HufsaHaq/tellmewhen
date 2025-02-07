@@ -39,37 +39,25 @@ const executeQuery = (sql, params = []) =>
 
 // Add worker/manager/admin
 export const addUser = async (username, hashedPassword, businessId, privilegeLevel) => {
-  const sql = `
-    INSERT INTO WORKER_TABLE (Username, Hashed_Password, Business_ID, Privilege_level)
-    VALUES (?, ?, ?, ?);
-  `;
+  const sql = `INSERT INTO WORKER_TABLE (Username, Hashed_Password, Business_ID, Privilege_level) VALUES (?, ?, ?, ?);`;
   return executeQuery(sql, [username, hashedPassword, businessId, privilegeLevel]);
 };
 
 // Delete worker/manager/admin
 export const deleteUser = async (workerId, currID) => {
-  const sql = `
-    DELETE FROM WORKER_TABLE WHERE Worker_ID = ? IF Worker_ID IS NOT ?;
-  `;
+  const sql = `DELETE FROM WORKER_TABLE WHERE Worker_ID = ? IF Worker_ID IS NOT ?;`;
   return executeQuery(sql, [workerId, currID]);
 };
 
 export const getLoginCredentials = async (username, password) => {
-  const sql = `
-    SELECT Worker_ID, Business_ID, Privilege_level, Hashed_Password
-    FROM WORKER_TABLE
-    WHERE Username = ?;
-    `
+  const sql = `SELECT Worker_ID, Business_ID, Privilege_level, Hashed_Password FROM WORKER_TABLE WHERE Username = ?; `;
+  return executeQuery(sql, [username, password]);
 };
 
 // Edit worker/manager/admin login details
 export const editUserLogin = async (workerId, Username, newPassword) => {
-  const sql = `
-    UPDATE WORKER_TABLE
-    SET Hashed_Password = ?
-    WHERE Worker_ID = ? AND Username = ?;
-  `;
-  return executeQuery(sql, [hash(newPassword), workerId, Username]);
+  const sql = `UPDATE WORKER_TABLE SET Hashed_Password = ? WHERE Worker_ID = ? AND Username = ?;`;
+  return executeQuery(sql, [newPassword, workerId, Username]);
 };
 
 // Delete business account and all associated accounts
@@ -114,31 +102,20 @@ export const countOpenJobs = async () => {
 
 // Search for employees by name or ID
 export const searchEmployees = async (searchTerm) => {
-  const sql = `
-    SELECT * FROM WORKER_TABLE
-    WHERE Username LIKE ? OR Worker_ID = ?;
-  `;
+  const sql = `SELECT * FROM WORKER_TABLE WHERE Username LIKE ? OR Worker_ID = ?;`;
   const term = `%${searchTerm}%`;
   return executeQuery(sql, [term, searchTerm]);
 };
 
 // Change privilege levels
 export const changePrivilegeLevel = async (workerId, newPrivilegeLevel) => {
-  const sql = `
-    UPDATE WORKER_TABLE
-    SET Privilege_level = ?
-    WHERE Worker_ID = ?;
-  `;
+  const sql = `UPDATE WORKER_TABLE SET Privilege_level = ? WHERE Worker_ID = ?;`;
   return executeQuery(sql, [newPrivilegeLevel, workerId]);
 };
 
 // Get business name and photo
 export const getBusinessDetails = async (businessId) => {
-  const sql = `
-    SELECT Business_Name, Business_Photo 
-    FROM BUSINESS_TABLE 
-    WHERE Business_ID = ?;
-  `;
+  const sql = `SELECT Business_Name, Business_Photo FROM BUSINESS_TABLE WHERE Business_ID = ?;`;
   
   const result = await executeQuery(sql, [businessId]);
   
@@ -155,31 +132,18 @@ export const getBusinessDetails = async (businessId) => {
 
 // Rename a business
 export const renameBusiness = async (businessId, newName) => {
-  const sql = `
-    UPDATE BUSINESS_TABLE 
-    SET Business_Name = ? 
-    WHERE Business_ID = ?;
-  `;
+  const sql = `UPDATE BUSINESS_TABLE SET Business_Name = ? WHERE Business_ID = ?;`;
   return executeQuery(sql, [newName, businessId]);
 };
 
 // Change business photo
 export const changeBusinessPhoto = async (businessId, newPhotoBase64) => {
-  const sql = `
-    UPDATE BUSINESS_TABLE 
-    SET Business_Photo = ? 
-    WHERE Business_ID = ?;
-  `;
-  
+  const sql = `UPDATE BUSINESS_TABLE SET Business_Photo = ? WHERE Business_ID = ?;`;  
   return executeQuery(sql, [newPhotoBase64, businessId]);
 }
 
 export const getBusinessPhoto = async (businessId) => {
-  const sql = `
-    SELECT Business_Photo 
-    FROM BUSINESS_TABLE 
-    WHERE Business_ID = ?;
-  `;
+  const sql = `SELECT Business_Photo FROM BUSINESS_TABLE WHERE Business_ID = ?;`;
   
   const result = await executeQuery(sql, [businessId]);
   
@@ -232,5 +196,3 @@ const testFunctions = async () => {
 };
 
 testFunctions();
-
-// export{addUser, deleteUser, deleteBusiness,editUserLogin,countOpenJobs,countTotalJobs,searchEmployees}

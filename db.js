@@ -83,7 +83,74 @@ export const createaccesstoken = async () => {
   return executeQuery(sql);
 };
 
- 
+export const populateDatabase = async () => {
+  try {
+      // Insert into BUSINESS_TABLE
+      const businessResult = await executeQuery(
+          "INSERT INTO BUSINESS_TABLE (Business_Name, Business_Photo) VALUES (?, ?)",
+          ['TechCorp', 'techcorp.png']
+      );
+      const businessId = businessResult.insertId;
+
+      // Insert into WORKER_TABLE
+      const workerResult = await executeQuery(
+          "INSERT INTO WORKER_TABLE (Username, Business_ID, Privilege_level, Hashed_Password) VALUES (?, ?, ?, ?)",
+          ['johndoe', businessId, 1, 'hashed_password']
+      );
+      const workerId = workerResult.insertId;
+
+      // Insert into JOB_TABLE
+      const jobResult = await executeQuery(
+          "INSERT INTO JOB_TABLE (Description, URL, Due_Date) VALUES (?, ?, ?)",
+          ['Fix server issues', 'https://techcorp.com/job/1', '2025-03-01 12:00:00']
+      );
+      const jobId = jobResult.insertId;
+
+      // Insert into CURRENT_JOB
+      await executeQuery(
+          "INSERT INTO CURRENT_JOB (User_ID, Job_ID) VALUES (?, ?)",
+          [workerId, jobId]
+      );
+
+      // Insert into JOB_HISTORY
+      await executeQuery(
+          "INSERT INTO JOB_HISTORY (User_ID, Job_ID, Completion_Date, Remarks) VALUES (?, ?, ?, ?)",
+          [workerId, jobId, '2025-02-01 18:00:00', 'Job completed successfully']
+      );
+
+      // Insert into CHAT_MESSAGES
+      await executeQuery(
+          "INSERT INTO CHAT_MESSAGES (User_ID, Job_ID, Message_Content) VALUES (?, ?, ?)",
+          [workerId, jobId, 'Is this issue still happening?']
+      );
+
+      // Insert into SUBSCRIPTION_TABLE
+      await executeQuery(
+          "INSERT INTO SUBSCRIPTION_TABLE (Endpoint, Auth_Key1, Auth_Key2, Job_ID) VALUES (?, ?, ?, ?)",
+          ['https://pushservice.com', 'authkey1', 'authkey2', jobId]
+      );
+
+      // Insert into NOTIFICATIONS
+      await executeQuery(
+          "INSERT INTO NOTIFICATIONS (User_ID, Job_ID, Notification_Content) VALUES (?, ?, ?)",
+          [workerId, jobId, 'New job assigned to you']
+      );
+
+      // Insert into ACCESS_TOKENS
+      await executeQuery(
+          "INSERT INTO ACCESS_TOKENS (User_ID, Access_Token, Expiration_Time) VALUES (?, ?, ?)",
+          [workerId, 'randomaccesstoken', '2025-03-01 23:59:59']
+      );
+
+      console.log('Database populated successfully!');
+  } catch (error) {
+      console.error('Error populating database:', error.message);
+  } finally {
+      db.end();
+  }
+};
+
+
 //run create func
 
 (async () => {
@@ -96,4 +163,5 @@ export const createaccesstoken = async () => {
   await createsubscription_table();
   await createnotification();
   await createaccesstoken();
+  await populateDatabase(); 
 })();
