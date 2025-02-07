@@ -6,6 +6,7 @@
     "express": "^4.21.2",
     "fs": "^0.0.1-security",
     "http-errors": "^2.0.0",
+    "jade": "^1.11.0",
     "jase": "^1.2.0",
     "jsonwebtoken": "^9.0.2",
     "logger": "^0.0.1",
@@ -19,6 +20,7 @@
     "startDev": "nodemon app.js",
     "startDB": "nodemon db.js",
     "startHelper": "nodemon dbhelper.js",
-    "startManagement": "nodemon managementdbfunc.js"},
+    "startManagement": "nodemon managementdbfunc.js"
+  },
   "type": "module"
 }
