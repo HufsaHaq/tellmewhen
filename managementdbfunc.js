@@ -38,7 +38,10 @@ const executeQuery = (sql, params = []) =>
   });
 
 //Add new business
-export const addBusiness = async (businessName, businessPhoto) => {};
+export const addBusiness = async (businessName, businessPhoto) => {
+  const sql = `INSERT INTO BUSINESS_TABLE (Business_Name, Business_Photo) VALUES (?,?);`;
+  return executeQuery(sql, [businessName, businessPhoto]);
+};
 
 // Add worker/manager/admin
 export const addUser = async (username, hashedPassword, businessId, privilegeLevel) => {
