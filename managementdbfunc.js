@@ -163,6 +163,9 @@ export const getBusinessPhoto = async (businessId) => {
 //----------------------------------------------------------------
 const testFunctions = async () => {
   try {
+    // Add a business
+    await addBusiness('smallcorp', 'base64');
+    console.log('Business added.');
     // Add a worker
     await addUser('JohnDoe', 'hashedPassword123', 1, 2);
     console.log('Worker added.');
@@ -188,7 +191,7 @@ const testFunctions = async () => {
     console.log('Total jobs created:', totalJobs);
 
     // Search employees
-    const employees = await searchEmployees('Jane');
+    const employees = await searchEmployees('JohnDoe');
     console.log('Employees found:', employees);
 
     // Change privilege level

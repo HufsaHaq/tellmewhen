@@ -80,11 +80,7 @@ const getOpenJobs = async (userId = null) => {
 
 // job history
 const getJobHistory = async (userId = null) => {
-  const sql = `
-    SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_HISTORY.Completion_Date, JOB_HISTORY.Remarks
-    FROM JOB_HISTORY
-    JOIN JOB_TABLE ON JOB_HISTORY.Job_ID = JOB_TABLE.Job_ID
-  `;
+  let sql = `SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_HISTORY.Completion_Date, JOB_HISTORY.Remarks FROM JOB_HISTORY JOIN JOB_TABLE ON JOB_HISTORY.Job_ID = JOB_TABLE.Job_ID`;
 
   const params = [];
   if (userId) {
@@ -97,19 +93,17 @@ const getJobHistory = async (userId = null) => {
 
 // assign  job
 const assignJobToUser = async (userId, jobId) => {
-  const sql = `
-    INSERT INTO CURRENT_JOB (User_ID, Job_ID) VALUES (?, ?)
-  `;
+  let sql = `INSERT INTO CURRENT_JOB (User_ID, Job_ID) VALUES (?, ?)`;
   return execute(sql, [userId, jobId]);
 };
 
 // mark a job as completed (moves it to job history and removes from current jobs)
 const completeJob = async (userId, jobId, remarks = '') => {
-  const sqlInsert = `
+  let sqlInsert = `
     INSERT INTO JOB_HISTORY (User_ID, Job_ID, Completion_Date, Remarks)
     VALUES (?, ?, NOW(), ?)
   `;
-  const sqlDelete = `
+  let sqlDelete = `
     DELETE FROM CURRENT_JOB WHERE User_ID = ? AND Job_ID = ?
   `;
   
@@ -119,7 +113,7 @@ const completeJob = async (userId, jobId, remarks = '') => {
 
 // get chat messages for a specific job
 const getChatMessages = async (jobId) => {
-  const sql = `
+    let  sql = `
     SELECT User_ID, Message_Content, Timestamp, Is_Read
     FROM CHAT_MESSAGES
     WHERE Job_ID = ?
@@ -130,7 +124,7 @@ const getChatMessages = async (jobId) => {
 
 // get notifications for a user
 const getNotifications = async (userId) => {
-  const sql = `
+  let sql = `
     SELECT Notification_Content, Timestamp, Is_Read
     FROM NOTIFICATIONS
     WHERE User_ID = ?
@@ -140,7 +134,7 @@ const getNotifications = async (userId) => {
 };
 
 const getSubscription = async (jobId,businessId) => {
-  const sql = `
+  let sql = `
     SELECT SUBSCRIPTION_TABLE.Subscription_ID, SUBSCRIPTION_TABLE.Endpoint, SUBSCRIPTION_TABLE.Auth_Key1,SUBSCRIPTION_TABLE.Auth_Key2
     FROM SUBSCRIPTION_TABLE
     JOIN CURRENT_JOB ON SUBSCRIPTION_TABLE.User_ID = CURRENT_JOB.User_ID
@@ -161,16 +155,41 @@ const closeDB = () => {
 
 const testFunctions = async () => {
   try {
-    getOpenJobs();
-    console.log('Get open jobs with no user id');
+    const openall = await getOpenJobs();
+    console.log('Get open jobs with no user id :' + openall);
     
-    getOpenJobs(5);
-    console.log('Get open jobs with user id 5');
+    const open = await getOpenJobs(5);
+    console.log('Get open jobs with user id 5'+ open);
+
+    var history = await getJobHistory(5);
+    console.log('Get job history :'+ history);
+
+    var historyall = await getJobHistory();
+    console.log('Get job history :'+ historyall);
+    
+    var assign = await assignJobToUser(15, 1);
+    console.log('Assign job :'+ assign);
+    
+    var complete = await completeJob(5, 1, 'Completed');
+    console.log('Complete job :'+ complete);
+    
+    var messages = await getChatMessages(1);
+    console.log('Get chat messages :'+ messages);
+    
+    var notifications = await getNotifications(5);
+    console.log('Get notifications :'+ notifications);
+    
+    var subscription = await getSubscription(1, 1);
+    console.log('Get subscription :'+ subscription);
+    
+    closeDB();
 
   }
   catch (err) {
     console.error('Error:', err.message);
   }
 };
+
+testFunctions();
 
 export {getChatMessages, getNotifications, getOpenJobs, getJobHistory, assignJobToUser, completeJob, getSubscription, closeDB};
