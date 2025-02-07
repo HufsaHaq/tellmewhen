@@ -153,4 +153,4 @@ const closeDB = () => {
   });
 };
 
-export {getChatMessages, getNotifications, getOpenJobs, getJobHistory, assignJobToUser, completeJob, getSubscription};
+export {getChatMessages, getNotifications, getOpenJobs, getJobHistory, assignJobToUser, completeJob, getSubscription, closeDB};
