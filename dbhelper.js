@@ -79,14 +79,20 @@ const getOpenJobs = async (userId = null) => {
 };
 
 // job history
-const getJobHistory = async (userId) => {
+const getJobHistory = async (userId = null) => {
   const sql = `
     SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_HISTORY.Completion_Date, JOB_HISTORY.Remarks
     FROM JOB_HISTORY
     JOIN JOB_TABLE ON JOB_HISTORY.Job_ID = JOB_TABLE.Job_ID
-    WHERE JOB_HISTORY.User_ID = ?
   `;
-  return execute(sql, [userId]);
+
+  const params = [];
+  if (userId) {
+    sql += ' WHERE JOB_HISTORY.User_ID = ?';
+    params.push(userId);
+  }
+
+  return execute(sql, params);
 };
 
 // assign  job
@@ -151,6 +157,20 @@ const closeDB = () => {
       console.log('Database connection closed.');
     }
   });
+};
+
+const testFunctions = async () => {
+  try {
+    getOpenJobs();
+    console.log('Get open jobs with no user id');
+    
+    getOpenJobs(5);
+    console.log('Get open jobs with user id 5');
+
+  }
+  catch (err) {
+    console.error('Error:', err.message);
+  }
 };
 
 export {getChatMessages, getNotifications, getOpenJobs, getJobHistory, assignJobToUser, completeJob, getSubscription, closeDB};
