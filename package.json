@@ -17,6 +17,8 @@
   },
   "scripts": {
     "startDev": "nodemon app.js",
-    "startDB": "nodemon db.js"},
+    "startDB": "nodemon db.js",
+    "startHelper": "nodemon dbhelper.js",
+    "startManagement": "nodemon managementdbfunc.js"},
   "type": "module"
 }
