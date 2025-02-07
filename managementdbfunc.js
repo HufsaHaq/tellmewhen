@@ -37,6 +37,9 @@ const executeQuery = (sql, params = []) =>
     });
   });
 
+//Add new business
+export const addBusiness = async (businessName, businessPhoto) => {};
+
 // Add worker/manager/admin
 export const addUser = async (username, hashedPassword, businessId, privilegeLevel) => {
   const sql = `INSERT INTO WORKER_TABLE (Username, Hashed_Password, Business_ID, Privilege_level) VALUES (?, ?, ?, ?);`;

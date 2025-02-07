@@ -10,7 +10,7 @@ import jwt from 'jsonwebtoken';
 import webPush from 'web-push';
 import { getJobHistory, getOpenJobs, getNotifications } from '../dbhelper.js';
 // import { sendNotification } from 'web-push'; 
-import { countOpenJobs, getBusinessPhoto, addUser, getLoginCredentials} from '../managementdbfunc.js';
+import { countOpenJobs, getBusinessPhoto, addUser, getLoginCredentials,addBusiness} from '../managementdbfunc.js';
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
 
 
@@ -51,6 +51,17 @@ indexRouter.post('/login', async (req, res) => {
     res.json({error: "Invalid credentials"});
   }
 
+});
+
+indexRouter.post('/register', async (req, res) => {
+  // register a new business
+  const name = req.body.name;
+  const email = req.body.email;
+  const password = req.body.password;
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  addBusiness(name, email, hashedPassword);
 });
 
 indexRouter.get('/current_jobs/:bid',authMiddleWare, async (req, res) => {
