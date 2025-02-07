@@ -57,7 +57,7 @@ export const createcurrentjob = async () => {
 };
 
 export const createjobhistory = async () => {
-  const sql =     `CREATE TABLE IF NOT EXISTS JOB_HISTORY (History_ID INT AUTO_INCREMENT PRIMARY KEY,User_ID INT,Job_ID INT,Completion_Date DATETIME,Remarks VARCHAR,FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(Worker_ID),FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
+  const sql =     `CREATE TABLE IF NOT EXISTS JOB_HISTORY (History_ID INT AUTO_INCREMENT PRIMARY KEY,User_ID INT,Job_ID INT,Completion_Date DATETIME,Remarks VARCHAR(255),FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(Worker_ID),FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
 
   return executeQuery(sql);
 };
