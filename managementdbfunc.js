@@ -45,7 +45,7 @@ export const addUser = async (username, hashedPassword, businessId, privilegeLev
 
 // Delete worker/manager/admin
 export const deleteUser = async (workerId, currID) => {
-  const sql = `DELETE FROM WORKER_TABLE WHERE Worker_ID = ? IF Worker_ID IS NOT ?;`;
+  const sql = `DELETE FROM WORKER_TABLE WHERE Worker_ID = ? AND Worker_ID <> ?;`;
   return executeQuery(sql, [workerId, currID]);
 };
 
@@ -162,7 +162,7 @@ const testFunctions = async () => {
     console.log('Worker added.');
 
     // Delete a worker
-    await deleteUser(1);
+    await deleteUser(1,2);
     console.log('Worker deleted.');
 
     // Edit login details
@@ -170,8 +170,8 @@ const testFunctions = async () => {
     console.log('Worker login updated.');
 
     // Delete a business
-    await deleteBusiness(1);
-    console.log('Business deleted.');
+    //await deleteBusiness(1);
+    //console.log('Business deleted.');
 
     // Count open jobs
     const openJobs = await countOpenJobs();
