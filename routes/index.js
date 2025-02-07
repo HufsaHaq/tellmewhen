@@ -11,7 +11,7 @@ import webPush from 'web-push';
 import { getJobHistory, getOpenJobs, getNotifications } from '../dbhelper.js';
 // import { sendNotification } from 'web-push'; 
 import { countOpenJobs, getBusinessPhoto, addUser, getLoginCredentials} from '../managementdbfunc.js';
-import {authMiddleWare} from '../authMiddleWare.js';
+import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
 
 
 // set up the keys for authentication
@@ -32,6 +32,7 @@ indexRouter.post('/login', async (req, res) => {
   // authenticate the user through their credentials and generate a JWT token
   const username = req.body.username;
   const password = req.body.password; // this should be hashed
+  
 
   // check the database for the user
   const loginCredentials = await getLoginCredentials(username, password);
@@ -52,14 +53,14 @@ indexRouter.post('/login', async (req, res) => {
 
 });
 
-indexRouter.get('/current_jobs/:bid', async (req, res) => {
+indexRouter.get('/current_jobs/:bid',authMiddleWare, async (req, res) => {
   const businessId = req.params.bid;
   getOpenJobs(businessId)
     .then((jobs) => res.json(jobs))
     .catch((err) => res.json({ error: err }));
 });
 
-indexRouter.get('/job_history/:bid', async (req, res) => {
+indexRouter.get('/job_history/:bid',authMiddleWare, async (req, res) => {
   const businessId = req.params.bid;
   getJobHistory(businessId)
     .then((history) => res.json(history))
@@ -99,7 +100,7 @@ indexRouter.post('/notify/:bid/:jid',authMiddleWare, async (req, res) => {
  
 });
 
-indexRouter.post('/manage/:bid/addUser',authMiddleWare,(req,res) =>{
+indexRouter.post('/manage/:bid/addUser',authMiddleWare,adminMiddleWare,(req,res) =>{
   const access_token = req.access_token;
   const businessId = req.params.bid;
 
@@ -117,6 +118,6 @@ indexRouter.post('/manage/:bid/addUser',authMiddleWare,(req,res) =>{
   addUser(name, email, pwd, businessId, privLevel)
 })
 
-
+indexRouter.get('')
 
 export { indexRouter }; 

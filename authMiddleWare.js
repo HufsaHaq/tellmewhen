@@ -44,4 +44,4 @@ const moderatorMiddleWare = (req, res, next)=>{
     res.status(401).json({ message: "Unauthorized: Invalid privilege level" });
   }
 }
-export { authMiddleWare };
+export { authMiddleWare, moderatorMiddleWare, adminMiddleWare};
