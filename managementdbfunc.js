@@ -38,9 +38,15 @@ const executeQuery = (sql, params = []) =>
   });
 
 //Add new business
-export const addBusiness = async (businessName, businessPhoto) => {
-  const sql = `INSERT INTO BUSINESS_TABLE (Business_Name, Business_Photo) VALUES (?,?);`;
-  return executeQuery(sql, [businessName, businessPhoto]);
+// links to register page - this creates admin user - new users can be added through admin management page
+export const registerBusinessAndAdmin= async (businessName, username , password) => {
+  const defaultPhoto = 'base64photo_url';
+  const insertBusinessQuery = `INSERT INTO BUSINESS_TABLE (Business_Name, Business_Photo) VALUES (?, ?);`;
+  const businessResult = await executeQuery(insertBusinessQuery, [businessName, defaultPhoto]);
+
+  const businessId = businessResult.insertId;
+  const insertAdminQuery = `INSERT INTO WORKER_TABLE (Username, Hashed_Password, Business_ID, Privilege_level) VALUES (?, ?, ?, ?);`;
+  return await executeQuery(insertAdminQuery, [username, password, businessId, 1]); // Privilege level 1 = admin
 };
 
 // Add worker/manager/admin
@@ -164,7 +170,7 @@ export const getBusinessPhoto = async (businessId) => {
 const testFunctions = async () => {
   try {
     // Add a business
-    await addBusiness('smallcorp', 'base64');
+    await registerBusinessAndAdmin('tellmewhen', 'admin1', 'hashedandsaltedpassword')
     console.log('Business added.');
     // Add a worker
     await addUser('JohnDoe', 'hashedPassword123', 1, 2);
