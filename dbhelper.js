@@ -27,7 +27,12 @@ const execute = (sql, params = []) =>
         }
       });
     });
-
+    
+const addNotification = async (userId, jobId, notificationContent) => {
+    let sql = `INSERT INTO NOTIFICATIONS (User_ID, Job_ID, Notification_Content) VALUES (?, ?, ?);`;
+    return executeQuery(sql, [userId, jobId, notificationContent]);
+    };
+  
 // jobs per user or all jobs if no user ID 
 const getOpenJobs = async (userId = null) => {
   let sql = `
@@ -79,7 +84,7 @@ const completeJob = async (userId, jobId, remarks = '') => {
 };
 
 // get chat messages for a specific job
-const getChatMessages = async (jobId) => {
+/*const getChatMessages = async (jobId) => {
     let  sql = `
     SELECT User_ID, Message_Content, Timestamp, Is_Read
     FROM CHAT_MESSAGES
@@ -88,13 +93,13 @@ const getChatMessages = async (jobId) => {
   `;
   return execute(sql, [jobId]);
 };
-
-// get notifications for a user
-const getNotifications = async (userId) => {
+*/
+// get notifications for a job
+const getNotifications = async (jobId) => {
   let sql = `
     SELECT Notification_Content, Timestamp, Is_Read
     FROM NOTIFICATIONS
-    WHERE User_ID = ?
+    WHERE Job_ID = ?
     ORDER BY Timestamp DESC
   `;
   return execute(sql, [userId]);
@@ -140,8 +145,8 @@ const testFunctions = async () => {
     var complete = await completeJob(5, 1, 'Completed');
     console.log('Complete job :'+ complete);
     
-    var messages = await getChatMessages(1);
-    console.log('Get chat messages :'+ messages);
+    /*var messages = await getChatMessages(1);
+    console.log('Get chat messages :'+ messages);*/
     
     var notifications = await getNotifications(5);
     console.log('Get notifications :'+ notifications);
@@ -159,4 +164,4 @@ const testFunctions = async () => {
 
 testFunctions();
 
-export {getChatMessages, getNotifications, getOpenJobs, getJobHistory, assignJobToUser, completeJob, getSubscription, closeDB};
+export {addNotification, getChatMessages, getNotifications, getOpenJobs, getJobHistory, assignJobToUser, completeJob, getSubscription, closeDB};
