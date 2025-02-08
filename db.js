@@ -62,10 +62,10 @@ export const createjobhistory = async () => {
   return executeQuery(sql);
 };
 
-export const createchat_messages = async () => {
+/*export const createchat_messages = async () => {
   const sql =     `CREATE TABLE IF NOT EXISTS CHAT_MESSAGES (Message_ID INT AUTO_INCREMENT PRIMARY KEY,User_ID INT,Job_ID INT,Message_Content VARCHAR(255) NOT NULL,Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,Is_Read BOOLEAN DEFAULT FALSE,FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(Worker_ID),FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
   return executeQuery(sql);
-};
+};*/
 
 export const createsubscription_table = async () => {
   const sql =     `CREATE TABLE IF NOT EXISTS SUBSCRIPTION_TABLE (Subscription_ID INT AUTO_INCREMENT PRIMARY KEY,Endpoint VARCHAR(255) NOT NULL,Auth_Key1 VARCHAR(255) NOT NULL,Auth_Key2 VARCHAR(255) NOT NULL,Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,Job_ID INT,FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
@@ -119,10 +119,10 @@ export const populateDatabase = async () => {
       );
 
       // Insert into CHAT_MESSAGES
-      await executeQuery(
+      /*await executeQuery(
           "INSERT INTO CHAT_MESSAGES (User_ID, Job_ID, Message_Content) VALUES (?, ?, ?)",
           [workerId, jobId, 'Is this issue still happening?']
-      );
+      );*/
 
       // Insert into SUBSCRIPTION_TABLE
       await executeQuery(
@@ -159,7 +159,7 @@ export const populateDatabase = async () => {
   await createjob();
   await createcurrentjob();
   await createjobhistory();
-  await createchat_messages();
+  //await createchat_messages();
   await createsubscription_table();
   await createnotification();
   await createaccesstoken();
