@@ -37,6 +37,13 @@ const executeQuery = (sql, params = []) =>
     });
   });
 
+//login
+export const login = async (username, password) => {
+  const sql = 'SELECT * FROM WORKER_TABLE WHERE Username =? AND Hashed_Password =?;';
+  const result = await executeQuery(sql, [username, password]);
+  return result[0];
+};
+
 //Add new business
 // links to register page - this creates admin user - new users can be added through admin management page
 export const registerBusinessAndAdmin= async (businessName, username , password) => {
