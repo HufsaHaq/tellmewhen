@@ -1,4 +1,5 @@
 import axios from "axios";
+import { RefreshAccessToken } from "./session_management";
 
 function AddWorker(username, password, businessID, privilegeLevel, accessToken)
 {
@@ -28,7 +29,15 @@ async function DeleteBusiness(businessID, accessToken)
         }
     ).then(
             res => {
-                return res
+                if(res.statusCode === 401)
+                {
+                    console.log(res.message);
+                    RefreshAccessToken(accessToken);
+                    return null;
+                }
+                else{
+                    return res;
+                }
             });
 }
 
