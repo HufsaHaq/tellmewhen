@@ -5,8 +5,8 @@ import { motion, useScroll } from "framer-motion";
 function Header() {
     // used to determine when the elements transition to the mobile/desktop versions
     const WindowBoundaries = [1080, 500];
-    const [windowWidth, SetWindowWidth] = useState(window.innerWidth);
-    const [windowHeight, SetWindowHeight] = useState(window.innerHeight);
+    const [windowWidth, SetWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1920);
+    const [windowHeight, SetWindowHeight] = useState(typeof window !== "undefined" ? window.innerHeight : 1080);
     if (typeof window !== "undefined")
         window.addEventListener("resize", () => {
             SetWindowWidth(window.innerWidth);
