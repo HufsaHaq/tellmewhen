@@ -1,16 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Menu } from "@mui/icons-material";
-import { motion, useScroll } from "framer-motion";
+import { motion } from "framer-motion";
 function Header() {
     // used to determine when the elements transition to the mobile/desktop versions
-    const WindowBoundaries = [1080, 500];
-    const [windowWidth, SetWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1920);
-    const [windowHeight, SetWindowHeight] = useState(typeof window !== "undefined" ? window.innerHeight : 1080);
+    const [windowWidth, SetWindowWidth] = useState(0);
     if (typeof window !== "undefined")
         window.addEventListener("resize", () => {
             SetWindowWidth(window.innerWidth);
-            SetWindowHeight(window.innerHeight);
         });
     const [NavigationOpen, SetNavigationOpen] = useState(false);
     const [LoggedIn, SetLoggedIn] = useState(true);
@@ -18,26 +15,26 @@ function Header() {
     useEffect(() => {
         if (windowWidth > 1080 && NavigationOpen) SetNavigationOpen(false);
         SetWindowWidth(window.innerWidth);
-        SetWindowHeight(window.innerHeight);
+
     }, [windowWidth]);
 
     return (
         <>
             <div className="relative !z-[20] w-full top-[0px] h-[85px] bg-[#0A5397] shadow-lg">
                 {/* div used for centering text vertically and horizontally */}
-                <div className={`w-[100%] align-text-top h-full items-center flex flex-auto ${windowWidth > WindowBoundaries[1] && "justify-center"}`}>
+                <div className={`w-[100%] align-text-top h-full items-center flex flex-auto tablet500:justify-center`}>
                     <h1
                         onClick={() => {
                             window.location.href = "/";
                         }}
-                        className={`${windowWidth > WindowBoundaries[1] ? "text-[45px]" : "text-[35px] ml-[15%]"} text-white font-bebas-neue cursor-pointer`}
+                        className={`tablet500:text-[45px] max-tablet500:text-[35px] max-tablet500:ml-[15%] text-white font-bebas-neue cursor-pointer`}
                     >
                         Tell Me When
                     </h1>
-                    {windowWidth > WindowBoundaries[0] ?
+                    {
                         LoggedIn ? 
                             // DESKTOP SCALED NAVIGATION, WITHOUT MENU BUTTON
-                            <span className="space-x-[30px] font-semibold items-center text-white inline flex absolute text-[17px] right-[50px]">
+                            <span className="max-tablet1080:opacity-0 max-tablet1080:top-[-1000px] space-x-[30px] font-semibold items-center text-white inline flex absolute text-[17px] right-[50px]">
                                 <button
                                     onClick={() => {
                                         window.location.href = "/dashboard";
@@ -64,26 +61,24 @@ function Header() {
                          : 
                             // DESKTOP SCALED NAVIGATION FOR WHEN LOGGED OUT
                             <button
-                                className="bg-white px-[30px] text-[17px] py-[7px] text-[#0A5397] font-semibold rounded-md absolute right-[50px]"
+                                className="max-tablet1080:opacity-0 max-tablet1080:top-[-1000px] bg-white px-[30px] text-[17px] py-[7px] text-[#0A5397] font-semibold rounded-md absolute right-[50px]"
                                 onClick={() => {
                                     window.location.href = "/auth";
                                 }}
                             >
                                 Log In
                             </button>
-                        
-                    : 
-                        // MOBILE/TABLET SMALLER SCREEN SIZE
+                        }
+                        {/* MOBILE/TABLET SMALLER SCREEN SIZE*/}
                         <button
                             key={NavigationOpen}
-                            className="absolute items-center right-[50px] text-white scale-[1.75]"
+                            className="tablet1080:opacity-0 tablet1080:top-[-1000px] absolute items-center right-[50px] text-white scale-[1.75]"
                             onClick={() => {
                                 SetNavigationOpen(NavigationOpen ? false : true);
                             }}
                         >
                             <Menu className="" />
                         </button>
-                    }
                 </div>
             </div>
             {
@@ -103,7 +98,7 @@ function Header() {
                         {LoggedIn ?
                             // CONTROLS FOR WHEN LOGGED IN
                             <>
-                                <span className={`items-center w-full ${windowWidth > WindowBoundaries[1] && "flex justify-between inline"} bg-[rgba(0,0,0,0)]`}>
+                                <span className={`items-center w-full tablet500:flex tablet500:justify-between tablet500:inline bg-[rgba(0,0,0,0)]`}>
                                     <span className="flex justify-center inline space-x-[35px] text-[#F0F0F0] font-semibold ">
                                         <button
                                             className="text-[20px] justify-self-start"
@@ -123,7 +118,7 @@ function Header() {
                                         </button>
                                     </span>
                                     <button
-                                        className={`${windowWidth > WindowBoundaries[1] ? "right-[0px] absolute" : "w-[100%] mt-[15px] "} m-auto bg-white px-[30px] h-[40px] text-[17px] py-[7px] text-[#063660] font-semibold rounded-md mr-[50px]`}
+                                        className={`tablet500:right-[0px] tablet500:absolute max-tablet500:w-[100%] max-tablet500:mt-[15px] m-auto bg-white px-[30px] h-[40px] text-[17px] py-[7px] text-[#063660] font-semibold rounded-md mr-[50px]`}
                                         onClick={() => {
                                             SetLoggedIn(false);
                                         }}
@@ -136,7 +131,7 @@ function Header() {
                             // CONTROLS FOR WHEN LOGGED OUT
                             <div className="h-[30px] items-center flex">
                                 <button
-                                    className={`${windowWidth > WindowBoundaries[1] ? "right-[0px] absolute mr-[50px]" : "w-[100%]"} m-auto bg-white px-[30px] mt-[-5px] h-[40px] text-[17px] py-[7px] text-[#063660] font-semibold rounded-md`}
+                                    className={`tablet500:right-[0px] tablet500:absolute tablet500:mr-[50px] max-tablet500:w-[100%] m-auto bg-white px-[30px] mt-[-5px] h-[40px] text-[17px] py-[7px] text-[#063660] font-semibold rounded-md`}
                                     onClick={() => {
                                         window.location.href = "/auth";
                                     }}

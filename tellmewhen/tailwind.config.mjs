@@ -9,6 +9,11 @@ export default {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    screens: {
+      "tablet500": "500px",
+      "tablet1080": "1080px",
+      "tablet620": "620px"
+    },
     extend: {
       colors: {
         background: "var(--background)",

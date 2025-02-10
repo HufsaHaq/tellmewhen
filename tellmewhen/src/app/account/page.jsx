@@ -55,14 +55,15 @@ function Account()
     if (typeof window !== "undefined") document.title = "Account | Tell Me When";
 
     return(
-        <div className = {`page-content ${windowWidth < WindowBoundaries[1] ? "w-[90%]" :"w-[75%]"} m-auto mt-[25px]`}>
+        <div className = {`page-content max-tablet620:w-[90%] tablet620:w-[75%] m-auto mt-[25px]`}>
 
             {/* TITLEBAR */}
-            {windowWidth < WindowBoundaries[1] && 
-            <span onClick={()=>{SetSideMenuOpen(!SideMenuOpen)}} className="cursor-pointer w-[100%] inline flex justify-center space-x-[25px] outline outline-[1px] rounded-md items-center py-[15px] mb-[10px]">
+            
+            <span onClick={()=>{SetSideMenuOpen(!SideMenuOpen)}} className="tablet620:absolute tablet620:opacity-0 tablet620:top-[-1000px] cursor-pointer w-[100%] inline flex justify-center space-x-[25px] outline outline-[1px] rounded-md items-center py-[15px] mb-[10px]">
                 <Menu className="scale-[1.5]"/>
                 <h1 className="font-semibold">{SelectedMenu}</h1>
-            </span>}
+            </span>
+
             <span className="header-content flex mt-auto items-center ">
                 
                 <div className="w-[40px] bg-[#909090] min-w-[40px] h-[40px] mx-[10px] rounded-full animate-pulse"></div>
@@ -71,7 +72,7 @@ function Account()
 
             {/* PAGE MENU LIST ON THE LEFT */}
             <span className="content mt-[20px] flex justify-between">
-                <motion.div className={`${windowWidth < WindowBoundaries[1] ? "!absolute left-[0px] w-[100%] bg-[#E6EBF3] h-full overflow-y-hidden pr-[10px] z-[15]" : "w-[25%]"} left-list overflow-visible outline outline-0 rounded-md px-[5px] pt-[2px]`}
+                <motion.div className={`max-tablet620:!absolute max-tablet620:left-[0px] max-tablet620:w-[100%] max-tablet620:bg-[#E6EBF3] max-tablet620:h-full max-tablet620:overflow-y-hidden max-tablet620:pr-[10px] max-tablet620:z-[15] tablet620:w-[25%] left-list overflow-visible outline outline-0 rounded-md px-[5px] pt-[2px]`}
                     initial={{transform: SideMenuOpen ? "translateX(0px)" : "translateX(-700px)"}}
                     animate={{
                         transform: SideMenuOpen ? `translateX(0px)` : "translateX(-700px)",
@@ -98,7 +99,7 @@ function Account()
                     })}
                 </motion.div>
                 {/* MENU CONTENT SECTION */}
-                <div className={`menu-content transition ease-in-out ${windowWidth < WindowBoundaries[1] ? "w-[100%]" : "w-[73%]"} mb-[150px]`}>
+                <div className={`menu-content transition ease-in-out max-tablet620:w-[100%] tablet620:w-[73%] mb-[150px]`}>
 
                     {/* TITLEBAR FOR THE PAGE CONTENT*/}
                     <h1 className="text-[25px] font-semibold mt-auto text-black mb-[5px]">{SelectedMenu}</h1>
@@ -159,12 +160,12 @@ function Account()
                     {SelectedMenu == MenuItems[1] &&
                         <div className="">
                                 <h1 className="font-semibold mb-[2px] w-[100%] sticky text-[20px]">Employee Management</h1>
-                                <span className={`${windowWidth < WindowBoundaries[1] ? "block" : "flex"} items-center mb-[10px]`}>
+                                <span className={`max-tablet620:block tablet620:flex items-center mb-[10px]`}>
                                     <h1 className="text-[15px] w-[100%] mb-[15px]">Modify the details of each employee.</h1>
-                                    <span className={`${windowWidth < WindowBoundaries[1] && "justify-between space-x-[5px] "} flex inline`}>
+                                    <span className={`max-tablet620:justify-between max-tablet620:space-x-[5px] flex inline`}>
                                     <Button className="mr-[50px] h-[10px]">Create</Button>
                                     <Input endDecorator={<Search></Search>}
-                                           className={`max-h-[50px] ${windowWidth < WindowBoundaries[1] ? "w-full" : "mx-[5px]"}`}
+                                           className={`max-h-[50px] max-tablet620:w-full max-tablet620:mx-[5px]`}
                                            placeholder="Search"
                                            onChange={(event) => {
                                                 SetSearchParameter(event.target.value);
