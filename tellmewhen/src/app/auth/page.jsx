@@ -110,15 +110,16 @@ const AuthPage = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                     />
-
-                    <input
-                        type="text"
-                        placeholder="Enter your business ID"
-                        value={businessId}
-                        onChange={(e) => setBusinessId(e.target.value)}
-                        style={styles.input}
-                        required
-                    />
+                    {activeTab == 'register' && (
+                        <input
+                            type="text"
+                            placeholder="Enter your business ID"
+                            value={businessId}
+                            onChange={(e) => setBusinessId(e.target.value)}
+                            style={styles.input}
+                            required
+                        />
+                    )}
 
                     <input
                         type="password"
