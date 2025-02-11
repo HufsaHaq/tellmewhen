@@ -8,7 +8,7 @@ import fs from 'fs';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import webPush from 'web-push';
-import { getJobHistory, getOpenJobs, getNotifications } from '../dbhelper.js';
+import { getJobHistory, getOpenJobs, getNotifications, closeDB } from '../dbhelper.js';
 // import { sendNotification } from 'web-push'; 
 import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmin} from '../managementdbfunc.js';
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
@@ -36,27 +36,32 @@ indexRouter.post('/login', async (req, res) => {
   const username = req.body.username;
   const password = req.body.password; 
 
-  console.log(username)
-  console.log(password) 
+  console.log(`Username: ${username}`)
+  console.log(`Password: ${password}`) 
   
-  // const hashedPassword = bcrypt.hash(password,10)
   // check the database for the user
   const loginCredentials = await login(username, password)
-  const privilige =  1;
+
+  console.log(`DB password: ${loginCredentials}`)
+
   if (loginCredentials){
-    const isMatch = bcrypt.compare(password, bcrypt.hash(loginCredentials.Hashed_Password));
-    console.log(privateKey)
-    console.log(isMatch)
+    const privilige = loginCredentials.Privilege_level;
+
+    if(process.env.NODE_ENV === "development"){
+      const isMatch = loginCredentials.Hashed_Password === password;
+    }else{
+        const isMatch = bcrypt.compare(password, bcrypt.hash(loginCredentials.Hashed_Password)); uncomment in production
+    }
+    
     if (isMatch){
       const accessToken = jwt.sign({ username: username, role: privilige }, privateKey, { expiresIn: '1h', algorithm: 'RS256' })
       console.log(accessToken)
-      res.json({ accessToken: accessToken }).
-      catch((err) => res.json({error: err}))
+      res.json({ accessToken: accessToken })
     }else{
-      res.json({error: "Invalid credentials"});
+      res.json({error: "Passwords do not match"});
     }
   }else{
-    res.json({error: "Invalid credentials"});
+    res.json({error: "Unable to retrieve credentials from DB"});
   }
 
 });
@@ -64,12 +69,12 @@ indexRouter.post('/login', async (req, res) => {
 indexRouter.post('/register', async (req, res) => {
   // register a new business
   const name = req.body.name;
-  const email = req.body.email;
+  const username = req.body.username;
   const password = req.body.password;
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  addBusiness(name, email, hashedPassword);
+  registerBusinessAndAdmin(name, username, password)
 });
 
 indexRouter.get('/current_jobs/:bid',authMiddleWare, async (req, res) => {

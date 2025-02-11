@@ -4,12 +4,13 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import bodyParser from 'body-parser';
+import dotenv from 'dotenv';
 
 import {indexRouter} from "./routes/index.js";
 import {qrRouter} from './routes/qr.js';
 import {deletionRouter} from './routes/delRoutes.js';
 
-const port = 4000; 
+dotenv.config();
 
 var app = express();
 const __dirname = import.meta.dirname;
@@ -44,7 +45,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.listen(port, ()=>{
-  console.log(`Server listening on http://localhost:${port}`)
+app.listen(process.env.PORT, ()=>{
+  console.log(`Server listening on http://localhost:${process.env.PORT}`)
 })
 // export { app };

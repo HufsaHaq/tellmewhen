@@ -37,7 +37,7 @@ const executeQuery = (sql, params = []) =>
     });
   });
 
-const closeDB = () => {
+export const closeDB = () => {
   db.end((err) => {
     if (err) {
       console.error('Error closing the database:', err.message);
