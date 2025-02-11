@@ -2,15 +2,21 @@
 // https://github.com/mysqljs/mysql
 // https://www.geeksforgeeks.org/how-to-create-table-in-sqlite3-database-using-node-js/?ref=gcse_outind (BEST ONE)
 import mysql from 'mysql';
+const {
+  randomBytes,
+} = await import('node:crypto');
+
 
 const db = mysql.createConnection({
-    host: 'dbhost.cs.man.ac.uk', 
-    user: 'z26101hh', 
+    host: 'dbhost.cs.man.ac.uk',
+    user: 'z26101hh',
     password: 'UTZxLV/au62nauNC7XxBhNsvh5Wm7CcShrtKz4bwj24',
-    database: 'z26101hh' 
+    database: 'z26101hh'
 });
 
+
 // Connect to the database
+
 db.connect((err) => {
   if (err) {
     console.error('Error connecting to the database:', err.message);
@@ -18,8 +24,10 @@ db.connect((err) => {
     console.log('Connected to the MySQL database.');
   }
 });
+
+
 // excecute - split tables 
-const executeQuery = (sql, params = []) =>
+export const executeQuery = (sql, params = []) =>
   new Promise((resolve, reject) => {
     db.query(sql, params, (err, results) => {
       if (err) {
@@ -29,6 +37,20 @@ const executeQuery = (sql, params = []) =>
       }
     });
 });
+ /**
+       * Inserts a new job record into JOB_TABLE. Job_ID automatically incremented in DB.
+       * @param Description
+       * @param URL
+       * @param Due_Date
+       * @returns {Promise<unknown>}
+       */
+export async function insert_job(description, url, due_date) {
+      let random_job_id = randomBytes(10).toString('hex');
+      const insertQuery = `INSERT INTO JOB_TABLE (Random_Job_ID, Description, URL, Due_Date) VALUES (?, ?, ?, ?)`;
+      const result = await executeQuery(insertQuery, [random_job_id, description, url, due_date]);
+      const jobID = result.insertId;
+      return jobID;
+  }
 
 export const createbusiness = async () => {
   const sql = `CREATE TABLE IF NOT EXISTS BUSINESS_TABLE (Business_ID INT AUTO_INCREMENT PRIMARY KEY,Business_Name VARCHAR(255) ,Business_Photo VARCHAR(255));`;
@@ -45,11 +67,16 @@ export const createworker = async () => {
 };
 
 export const createjob = async () => {
-  const sql =     `CREATE TABLE IF NOT EXISTS JOB_TABLE (Job_ID INT AUTO_INCREMENT PRIMARY KEY,Description VARCHAR(255) NOT NULL,URL VARCHAR(255) NOT NULL,Due_Date DATETIME);`;
+  const sql =     `CREATE TABLE IF NOT EXISTS JOB_TABLE (Job_ID INT AUTO_INCREMENT PRIMARY KEY, Random_Job_ID VARCHAR(255), Description VARCHAR(255) NOT NULL,URL VARCHAR(255) NOT NULL,Due_Date DATETIME);`;
 
   return executeQuery(sql);
 };
-
+/*
+export const createjobindex = async () => {
+    const sql = `CREATE INDEX job_table_random_job_id on JOB_TABLE (Random_Job_ID)`
+    return executeQuery(sql);
+}
+*/
 export const createcurrentjob = async () => {
   const sql =     `CREATE TABLE IF NOT EXISTS CURRENT_JOB (User_ID INT,Job_ID INT,PRIMARY KEY (User_ID, Job_ID),FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(Worker_ID),FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
 
@@ -83,6 +110,8 @@ export const createaccesstoken = async () => {
   return executeQuery(sql);
 };
 
+
+
 export const populateDatabase = async () => {
   try {
       // Insert into BUSINESS_TABLE
@@ -105,6 +134,8 @@ export const populateDatabase = async () => {
           ['Fix server issues', 'https://techcorp.com/job/1', '2025-03-01 12:00:00']
       );
       const jobId = jobResult.insertId;
+
+
 
       // Insert into CURRENT_JOB
       await executeQuery(
@@ -165,3 +196,4 @@ export const populateDatabase = async () => {
   await createaccesstoken();
   await populateDatabase(); 
 })();
+

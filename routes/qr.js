@@ -1,11 +1,11 @@
-import get_qr_data_url from '../qr_generation.js';
+import {generate_qr} from '../qr_generation.js';
 import express from 'express';
 var qrRouter = express.Router();
 
-qrRouter.get('/url/:url', async function(req, res, next) {
-    let urls = req.params["url"];
-    const qr_url = await get_qr_data_url(`${urls}`);
-    res.render('qr', { data_url: `${qr_url}` }); // we need this encoded and sent to front end
+qrRouter.get('/jobs/:job_id', async function(req, res, next) {
+    const job_id = parseInt(req.params.job_id, 10);
+    const qr_url = await generate_qr(job_id);
+    res.send(qr_url); // we need this encoded and sent to front end
 });
 
 
