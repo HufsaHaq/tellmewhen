@@ -62,6 +62,12 @@ const getJobHistory = async (userId = null) => {
   return execute(sql, params);
 };
 
+// Function to create a new job
+ const createNewJob = async (description, url, dueDate) => {
+  const sql = `INSERT INTO JOB_TABLE (Description, URL, Due_Date) VALUES (?, ?, ?);`;
+  return executeQuery(sql, [description, url, dueDate]);
+};
+
 // assign  job
 const assignJobToUser = async (userId, jobId) => {
   let sql = `INSERT INTO CURRENT_JOB (User_ID, Job_ID) VALUES (?, ?)`;
@@ -163,4 +169,4 @@ const testFunctions = async () => {
 
 testFunctions();
 
-export {addNotification,  getNotifications, getOpenJobs, getJobHistory, assignJobToUser, completeJob, getSubscription, closeDB};
+export {addNotification,createNewJob,  getNotifications, getOpenJobs, getJobHistory, assignJobToUser, completeJob, getSubscription, closeDB};
