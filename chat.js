@@ -26,4 +26,4 @@ const createJobChannel = async (jobId, businessUserId) => {
   return channel;
 };
 
-module.exports = { generateBusinessToken, generateGuestToken, createJobChannel };
+export { generateBusinessToken, generateGuestToken, createJobChannel };

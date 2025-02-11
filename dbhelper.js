@@ -164,4 +164,4 @@ const testFunctions = async () => {
 
 testFunctions();
 
-export {addNotification, getChatMessages, getNotifications, getOpenJobs, getJobHistory, assignJobToUser, completeJob, getSubscription, closeDB};
+export {addNotification,  getNotifications, getOpenJobs, getJobHistory, assignJobToUser, completeJob, getSubscription, closeDB};
