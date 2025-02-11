@@ -6,7 +6,7 @@ Test authentication with JWT tokens
 import jwt from 'jsonwebtoken';
 import fs from 'fs';
 
-const publicKey = fs.readFileSync('public.pem','utf-8');
+const publicKey = fs.readFileSync('jwtRSA256-public.pem','utf-8');
 
 const authMiddleWare = (req, res, next) => {
   const authHeader = req.headers['authorization'];

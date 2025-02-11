@@ -10,18 +10,19 @@ import jwt from 'jsonwebtoken';
 import webPush from 'web-push';
 import { getJobHistory, getOpenJobs, getNotifications } from '../dbhelper.js';
 // import { sendNotification } from 'web-push'; 
-import { countOpenJobs, getBusinessPhoto, addUser, getLoginCredentials,registerBusinessAndAdmin} from '../managementdbfunc.js';
+import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmin} from '../managementdbfunc.js';
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
 
 
 // set up the keys for authentication
-const privateKey = fs.readFileSync('private.pem','utf-8');
-const publicKey = fs.readFileSync('public.pem','utf-8');
+const privateKey = fs.readFileSync('jwtRSA256-private.pem','utf-8');
+console.log(privateKey)
+const publicKey = fs.readFileSync('jwtRSA256-public.pem','utf-8');
 
 const keys = { publicKey: 'BBMhViKggz_SberAlf-lNtJ5fkVUyFqVj5X_brgnK3d01tYkjxCsbl23C374X62gPiyLSHIrFjDMBQVBoLTxqLE',
   privateKey: '1kNp0x3SkWbgAdG_Yj6B076Akm33S2YTIKLSE7fdfwE'}
 
-var indexRouter = express.Router();
+const indexRouter = express.Router();
 
 /* GET home page. */
 indexRouter.get('/', function(req, res) {
@@ -30,20 +31,27 @@ indexRouter.get('/', function(req, res) {
 
 indexRouter.post('/login', async (req, res) => {
   // authenticate the user through their credentials and generate a JWT token
+  const data = req.body
+  console.log(data)
   const username = req.body.username;
-  const password = req.body.password; // this should be hashed
+  const password = req.body.password; 
+
+  console.log(username)
+  console.log(password) 
   
-  const hashedPassword = await bcrypt.hash(password,10)
+  // const hashedPassword = bcrypt.hash(password,10)
   // check the database for the user
-  const loginCredentials = await getLoginCredentials(username, password);
-  const privilige = loginCredentials.Privilege_Level;
+  const loginCredentials = await login(username, password)
+  const privilige =  1;
   if (loginCredentials){
-
-    const isMatch = await bcrypt.compare(password, loginCredentials.password);
-
+    const isMatch = bcrypt.compare(password, bcrypt.hash(loginCredentials.Hashed_Password));
+    console.log(privateKey)
+    console.log(isMatch)
     if (isMatch){
-      const accessToken = jwt.sign({ username: username, role: privilige }, privateKey, { expiresIn: '1h', algorithm: 'RS256' });
-      res.json({ accessToken: accessToken })
+      const accessToken = jwt.sign({ username: username, role: privilige }, privateKey, { expiresIn: '1h', algorithm: 'RS256' })
+      console.log(accessToken)
+      res.json({ accessToken: accessToken }).
+      catch((err) => res.json({error: err}))
     }else{
       res.json({error: "Invalid credentials"});
     }
