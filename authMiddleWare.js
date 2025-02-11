@@ -1,7 +1,7 @@
 /*
 This file outlines the handling of authentication for JWT tokens.
 To-Do:
-
+Test authentication with JWT tokens
  */
 import jwt from 'jsonwebtoken';
 import fs from 'fs';

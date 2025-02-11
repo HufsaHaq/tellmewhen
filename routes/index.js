@@ -10,7 +10,7 @@ import jwt from 'jsonwebtoken';
 import webPush from 'web-push';
 import { getJobHistory, getOpenJobs, getNotifications } from '../dbhelper.js';
 // import { sendNotification } from 'web-push'; 
-import { countOpenJobs, getBusinessPhoto, addUser, getLoginCredentials,addBusiness} from '../managementdbfunc.js';
+import { countOpenJobs, getBusinessPhoto, addUser, getLoginCredentials,registerBusinessAndAdmin} from '../managementdbfunc.js';
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
 
 
