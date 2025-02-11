@@ -33,7 +33,7 @@ indexRouter.post('/login', async (req, res) => {
   const username = req.body.username;
   const password = req.body.password; // this should be hashed
   
-
+  const hashedPassword = await bcrypt.hash(password,10)
   // check the database for the user
   const loginCredentials = await getLoginCredentials(username, password);
   const privilige = loginCredentials.Privilege_Level;
