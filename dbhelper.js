@@ -23,7 +23,6 @@ const execute = (sql, params = []) =>
           reject(err);
         } else {
           resolve(JSON.stringify(results)); // might return a json object
-
         }
       });
     });

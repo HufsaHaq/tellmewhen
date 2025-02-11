@@ -37,6 +37,16 @@ const executeQuery = (sql, params = []) =>
     });
   });
 
+const closeDB = () => {
+  db.end((err) => {
+    if (err) {
+      console.error('Error closing the database:', err.message);
+    } else {
+      console.log('Database connection closed.');
+    }
+  });
+};
+
 //login
 export const login = async (username, password) => {
   const sql = 'SELECT * FROM WORKER_TABLE WHERE Username =? AND Hashed_Password =?;';
@@ -68,11 +78,11 @@ export const deleteUser = async (workerId, currID) => {
   return executeQuery(sql, [workerId, currID]);
 };
 
-export const getLoginCredentials = async (username, password) => {
+/*export const getLoginCredentials = async (username, password) => {
   const sql = `SELECT Worker_ID, Business_ID, Privilege_level, Hashed_Password FROM WORKER_TABLE WHERE Username = ?; `;
   return executeQuery(sql, [username, password]);
 };
-
+*/
 // Edit worker/manager/admin login details
 export const editUserLogin = async (workerId, Username, newPassword) => {
   const sql = `UPDATE WORKER_TABLE SET Hashed_Password = ? WHERE Worker_ID = ? AND Username = ?;`;
