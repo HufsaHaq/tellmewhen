@@ -1,6 +1,6 @@
 import QRCode from 'qrcode'
 import {createjob, executeQuery} from './db.js';
-import { insert_job } from './db.js'
+// import { insert_job } from './db.js'
 
 
 /**

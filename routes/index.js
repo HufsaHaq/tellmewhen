@@ -8,15 +8,16 @@ import fs from 'fs';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import webPush from 'web-push';
+import dotenv from 'dotenv';
 import { getJobHistory, getOpenJobs, getNotifications, closeDB } from '../dbhelper.js';
 // import { sendNotification } from 'web-push'; 
 import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmin} from '../managementdbfunc.js';
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
 
-
+dotenv.config('../')
+console.log(process.env.NODE_ENV)
 // set up the keys for authentication
 const privateKey = fs.readFileSync('jwtRSA256-private.pem','utf-8');
-console.log(privateKey)
 const publicKey = fs.readFileSync('jwtRSA256-public.pem','utf-8');
 
 const keys = { publicKey: 'BBMhViKggz_SberAlf-lNtJ5fkVUyFqVj5X_brgnK3d01tYkjxCsbl23C374X62gPiyLSHIrFjDMBQVBoLTxqLE',
@@ -35,22 +36,19 @@ indexRouter.post('/login', async (req, res) => {
   console.log(data)
   const username = req.body.username;
   const password = req.body.password; 
-
-  console.log(`Username: ${username}`)
-  console.log(`Password: ${password}`) 
   
   // check the database for the user
   const loginCredentials = await login(username, password)
 
-  console.log(`DB password: ${loginCredentials}`)
-
   if (loginCredentials){
     const privilige = loginCredentials.Privilege_level;
 
+    let isMatch;
+
     if(process.env.NODE_ENV === "development"){
-      const isMatch = loginCredentials.Hashed_Password === password;
+       isMatch = await loginCredentials.Hashed_Password === password;
     }else{
-        const isMatch = bcrypt.compare(password, bcrypt.hash(loginCredentials.Hashed_Password)); uncomment in production
+       isMatch = bcrypt.compare(password, loginCredentials.Hashed_Password)
     }
     
     if (isMatch){
@@ -72,9 +70,14 @@ indexRouter.post('/register', async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  if(name && username && password){
 
-  registerBusinessAndAdmin(name, username, password)
+    const hashedPassword = await bcrypt.hash(password, 10);
+    registerBusinessAndAdmin(name, username, hashedPassword)
+    res.status(200).json({message:"Business registered"})
+  }else{
+    res.status(400).json({message: "missing fields"})
+  }
 });
 
 indexRouter.get('/current_jobs/:bid',authMiddleWare, async (req, res) => {
