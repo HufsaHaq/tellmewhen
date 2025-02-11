@@ -1,24 +1,34 @@
 import axios from "axios";
+import {GetTokens, RefreshAccessToken} from "./session_management";
 
+//THIS ONE DONE, USE AS TEMPLATE!!!!!
 async function GetAllCurrentJobs(businessID, accessToken) {
     let base = localStorage["endpoint"];
     let attempt = await axios.get(
-            base + "/current_jobs/" + businessID, // REQUEST ENDPOINT
+            base + "/current_jobs/" + businessID,
             {
                 headers: {
-                    // REQUEST HEADERS
                     Authorization: "Bearer " + accessToken,
                 },
             },
         )
         .then((res) => {
+            // if the token is invalid or expired
             if (res.statusCode === 401) {
-                // if the token is invalid or expired
                 console.log(res.message);
-                RefreshAccessToken(accessToken);
-                return null;
+                // checks to see if the refresh access token was valid
+                if(RefreshAccessToken(accessToken) === true){
+                    // Recalls the function with the correct access token
+                    return GetAllCurrentJobs(businessID, localStorage["accessToken"]);
+                }
+                else{
+                    // If the access token passed is completely invalid, then we need to get a valid one
+                    GetTokens()
+                    return null;
+                }
             }
-            else {
+            // if the API call returned valid data
+            else if(res.statusCode === 200){
                 return res;
             }
         });
