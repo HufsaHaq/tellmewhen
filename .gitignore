@@ -1,4 +1,4 @@
-node_modules
+node_modules/
+.env
 jwtRSA256-private.pem
 jwtRSA256-public.pem
-.env
