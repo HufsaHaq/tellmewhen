@@ -1,7 +1,7 @@
 import axios from "axios";
 import {GetTokens, RefreshAccessToken} from "./session_management";
 
-//THIS ONE DONE, USE AS TEMPLATE!!!!!
+//THIS ONE DONE, USE AS TEMPLATE!!!!! :)
 async function GetAllCurrentJobs(businessID, accessToken) {
     let base = localStorage["endpoint"];
     let attempt = await axios.get(
