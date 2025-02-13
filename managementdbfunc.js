@@ -10,10 +10,10 @@
 import mysql from 'mysql';
 
 const db = mysql.createConnection({
-  host: 'dbhost.cs.man.ac.uk',
-  user: 'z26101hh',
-  password: 'UTZxLV/au62nauNC7XxBhNsvh5Wm7CcShrtKz4bwj24',
-  database: 'z26101hh',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
 });
 
 // Connect to the database
@@ -48,9 +48,11 @@ export const closeDB = () => {
 };
 
 //login
-export const login = async (username, password) => {
-  const sql = 'SELECT * FROM WORKER_TABLE WHERE Username =? AND Hashed_Password =?;';
-  const result = await executeQuery(sql, [username, password]);
+export const login = async (buisness, username, password) => {
+  const selectbusinessid = 'SELECT Business_ID FROM BUSINESS_TABLE WHERE Business_Name =?;';
+  const sql = 'SELECT * FROM WORKER_TABLE WHERE Username =? AND Hashed_Password =? AND Business_ID =? ;';
+  const businessIdResult = await executeQuery(selectbusinessid, [buisness]);
+  const result = await executeQuery(sql, [username, password, businessIdResult]);
   return result[0];
 };
 
