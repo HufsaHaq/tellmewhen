@@ -13,6 +13,7 @@ import { getJobHistory, getOpenJobs, getNotifications, closeDB } from '../dbhelp
 // import { sendNotification } from 'web-push'; 
 import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmin} from '../managementdbfunc.js';
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
+import { checkData } from '../datacheck.js';
 
 dotenv.config('../')
 console.log(process.env.NODE_ENV)
@@ -30,7 +31,8 @@ indexRouter.get('/', function(req, res) {
 
 indexRouter.post('/login', async (req, res) => {
   // authenticate the user through their credentials and generate a JWT token
-  const data = req.body
+
+  const name = req.body.name;
   const username = req.body.username;
   const password = req.body.password; 
   if(!(username||password)){
@@ -38,7 +40,9 @@ indexRouter.post('/login', async (req, res) => {
     return 0;
   }
   // check the database for the user
-  const loginCredentials = await login(username, password)
+  const loginCredentials = await login(name,username, password)
+
+  console.log(loginCredentials)
 
   if (loginCredentials){
     const privilige = loginCredentials.Privilege_level;
