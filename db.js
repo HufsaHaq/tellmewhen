@@ -4,10 +4,10 @@
 import mysql from 'mysql';
 
 const db = mysql.createConnection({
-    host: 'dbhost.cs.man.ac.uk',
-    user: 'z26101hh',
-    password: 'UTZxLV/au62nauNC7XxBhNsvh5Wm7CcShrtKz4bwj24',
-    database: 'z26101hh'
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
 });
 
 // Connect to the database

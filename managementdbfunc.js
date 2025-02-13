@@ -47,7 +47,7 @@ export const closeDB = () => {
   });
 };
 
-//login
+//login need to crosscheck with business tabvle to check if user belongs to business
 export const login = async (buisness, username, password) => {
   const selectbusinessid = 'SELECT Business_ID FROM BUSINESS_TABLE WHERE Business_Name =?;';
   const sql = 'SELECT * FROM WORKER_TABLE WHERE Username =? AND Hashed_Password =? AND Business_ID =? ;';
