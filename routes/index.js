@@ -20,8 +20,6 @@ console.log(process.env.NODE_ENV)
 const privateKey = fs.readFileSync('jwtRSA256-private.pem','utf-8');
 const publicKey = fs.readFileSync('jwtRSA256-public.pem','utf-8');
 
-const keys = { publicKey: 'BBMhViKggz_SberAlf-lNtJ5fkVUyFqVj5X_brgnK3d01tYkjxCsbl23C374X62gPiyLSHIrFjDMBQVBoLTxqLE',
-  privateKey: '1kNp0x3SkWbgAdG_Yj6B076Akm33S2YTIKLSE7fdfwE'}
 
 const indexRouter = express.Router();
 
@@ -33,10 +31,12 @@ indexRouter.get('/', function(req, res) {
 indexRouter.post('/login', async (req, res) => {
   // authenticate the user through their credentials and generate a JWT token
   const data = req.body
-  console.log(data)
   const username = req.body.username;
   const password = req.body.password; 
-  
+  if(!(username||password)){
+    res.status(400).json({message: "Missing fields from client"});
+    return 0;
+  }
   // check the database for the user
   const loginCredentials = await login(username, password)
 
@@ -117,8 +117,8 @@ indexRouter.post('/notify/:bid/:jid',authMiddleWare, async (req, res) => {
   const options = {
     vapidDetails: {
       subject: 'mailto:https://tellmewhen.co.uk',
-      publicKey: keys.publicKey,
-      privateKey: keys.privateKey
+      publicKey: process.env.VAPID_PUBLIC,
+      privateKey: process.env.VAPID_PRIVATE
     }};
   //send notifcation using PUSH API
   const notifcation = webPush.sendNotification(pushSubscription, payload).
@@ -133,16 +133,13 @@ indexRouter.post('/manage/:bid/addUser',authMiddleWare,adminMiddleWare,(req,res)
 
   const name = req.body.name;
   const email = req.body.email;
-  const pwd = req.body.Hpassword;
+  const pwd = req.body.Hashedpassword;
   const privLevel = req.body.privLevel;
 
-  if (privLevel < 0 || privLevel > 2){
-    res.json({error: "Invalid privLevel"});
-  }
-
-
-  
   addUser(name, email, pwd, businessId, privLevel)
+
+  res.status(200).json({message:`New user added: username:${name} privillige level:${privLevel}`})
+
 })
 
 indexRouter.get('')
