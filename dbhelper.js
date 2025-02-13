@@ -1,5 +1,7 @@
 // Get all open jobs for certain user id ( send empty paeameter for manager)
 import mysql from 'mysql';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,

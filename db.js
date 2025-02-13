@@ -2,6 +2,8 @@
 // https://github.com/mysqljs/mysql
 // https://www.geeksforgeeks.org/how-to-create-table-in-sqlite3-database-using-node-js/?ref=gcse_outind (BEST ONE)
 import mysql from 'mysql';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,

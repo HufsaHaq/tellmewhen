@@ -8,6 +8,8 @@
 // chnage privilege levels DONE
 // need to add func to return buisness name and pfp DONE
 import mysql from 'mysql';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
