@@ -1,6 +1,7 @@
 import axios from "axios";
 import { GetTokens, RefreshAccessToken } from "./session_management";
 
+//THIS ONE DONE, USE AS TEMPLATE!!!!! :)
 async function GetAllCurrentJobs(businessID, accessToken) {
     /*
     Gets all the current jobs for a business
