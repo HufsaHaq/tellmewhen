@@ -81,7 +81,7 @@ async function DeleteWorker(workeridTARGET, accessToken) {
                 }
                 else {
                     // If the access token passed is completely invalid, then we need to get a valid one
-                    GetTokens()
+                    window.location.href = "/auth";
                     return false;
                 }
             }
@@ -126,7 +126,7 @@ async function DeleteBusiness(businessID, accessToken) {
             }
             else {
                 // If the access token passed is completely invalid, then we need to get a valid one
-                GetTokens()
+                window.location.href = "/auth";
                 return null;
             }
         }
