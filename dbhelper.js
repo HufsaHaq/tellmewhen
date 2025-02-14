@@ -65,9 +65,36 @@ const getJobHistory = async (userId = null) => {
 };
 
 // Function to create a new job
- const createNewJob = async (description, url, dueDate) => {
+const createNewJob = async (description, url, dueDate) => {
   const sql = `INSERT INTO JOB_TABLE (Description, URL, Due_Date) VALUES (?, ?, ?);`;
-  return executeQuery(sql, [description, url, dueDate]);
+  const jobResult = await execute(sql, [description, url, dueDate]);
+  // Insert into MAPPING_TABLE
+  await insertMapping(jobId);
+
+};
+
+// insert a random job id into the mapping table
+const insertMapping = async (jobId) => {
+  let randomId;
+  let isUnique = false;
+
+  // unique random ID and insert the mapping
+  while (!isUnique) {
+    randomId = Math.floor(100000 + Math.random() * 900000); // 6-digit random number
+
+    // check unique
+    const checkSql = `SELECT COUNT(*) AS count FROM MAPPING_TABLE WHERE Random_ID = ?;`;
+    const result = await execute(checkSql, [randomId]);
+    if(result[0].count === 0){
+      isUnique = true;
+    };
+
+    if (isUnique) {
+      // Insert the mapping into the MAPPING_TABLE
+      const insertSql = `INSERT INTO MAPPING_TABLE (Random_ID, Job_ID) VALUES (?, ?);`;
+      await execute(insertSql, [randomId, jobId]);
+    }
+  }
 };
 
 // assign  job
