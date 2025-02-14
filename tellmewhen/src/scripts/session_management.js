@@ -1,9 +1,3 @@
-export async function GetTokens()
-{
-
-}
-
-
 export async function RefreshAccessToken(refreshToken){
     /*
     Parameters:
