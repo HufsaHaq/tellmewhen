@@ -48,6 +48,11 @@ export const createworker = async () => {
 
 };
 
+export const createmapping = async () => {
+  const sql =  `CREATE TABLE IF NOT EXISTS MAPPING_TABLE (Random_ID INT AUTO_INCREMENT PRIMARY KEY, Job_ID INT,FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
+  return executeQuery(sql);
+}
+
 export const createjob = async () => {
   const sql =     `CREATE TABLE IF NOT EXISTS JOB_TABLE (Job_ID INT AUTO_INCREMENT PRIMARY KEY, Description VARCHAR(255) NOT NULL,URL VARCHAR(255) NOT NULL,Due_Date DATETIME);`;
 
@@ -110,8 +115,6 @@ export const populateDatabase = async () => {
       );
       const jobId = jobResult.insertId;
 
-
-
       // Insert into CURRENT_JOB
       await executeQuery(
           "INSERT INTO CURRENT_JOB (User_ID, Job_ID) VALUES (?, ?)",
@@ -161,10 +164,11 @@ export const populateDatabase = async () => {
 
 (async () => {
   await createbusiness();
-  await createworker();
+  await createworker(); 
   await createjob();
   await createcurrentjob();
   await createjobhistory();
+  await createmapping(); 
   //await createchat_messages();
   await createsubscription_table();
   await createnotification();
