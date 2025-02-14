@@ -118,6 +118,21 @@ const getRandomIdFromJobId = async (jobId) => {
   }
 };
 
+const getJobDetails = async (jobId) => {
+  const sql = `
+    SELECT Job_ID, Description, URL, Due_Date
+    FROM JOB_TABLE
+    WHERE Job_ID = ?;
+  `;
+
+  const result = await execute(sql, [jobId]);
+
+  if (result && result[0]) {
+    return result[0]; 
+  } else {
+    return null; 
+  }
+};
 //----------------------------------------------------------------
 
 // assign  job
@@ -239,6 +254,7 @@ export {
   insertMapping,
   getJobIdFromRandomId,
   getRandomIdFromJobId,
+  getJobDetails,
   updateRandomIdForJob,
   deleteMappingForJob,
 };
