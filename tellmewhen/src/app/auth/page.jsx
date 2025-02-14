@@ -23,9 +23,11 @@ const AuthPage = () => {
                 const response = await fetch('/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
                     body: JSON.stringify({
-                        username: email,
-                        password: password
+                        businessName: businessName,
+                        username: username,
+                        password: password,
                     })
                 });
     
@@ -38,16 +40,18 @@ const AuthPage = () => {
                     setErrorMessage(data.error || 'Login failed');
                 }
             } else {
-                const response = await fetch(`/manage/${businessId}/addUser`, {
+ 
+                const response = await fetch(`/manage/${businessName}/addUser`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'application/json'
                     },
+                    credentials: 'include',
                     body: JSON.stringify({
-                        name: email,
-                        email: email,
-                        Hpassword: password
+                        businessName: businessName,
+                        username: username,
+                        password: password
                     })
                 });
     
