@@ -40,6 +40,7 @@ const getOpenJobs = async (userId = null) => {
     SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_TABLE.URL, JOB_TABLE.Due_Date
     FROM JOB_TABLE
     LEFT JOIN CURRENT_JOB ON JOB_TABLE.Job_ID = CURRENT_JOB.Job_ID
+    LEFT JOIN MAPPING_TABLE ON JOB_TABLE.Job_ID = MAPPING_TABLE.Job_ID
   `;
 
   const params = [];
@@ -53,7 +54,7 @@ const getOpenJobs = async (userId = null) => {
 
 // job history
 const getJobHistory = async (userId = null) => {
-  let sql = `SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_HISTORY.Completion_Date, JOB_HISTORY.Remarks FROM JOB_HISTORY JOIN JOB_TABLE ON JOB_HISTORY.Job_ID = JOB_TABLE.Job_ID`;
+  let sql = `SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_HISTORY.Completion_Date, JOB_HISTORY.Remarks FROM JOB_HISTORY JOIN JOB_TABLE ON JOB_HISTORY.Job_ID = JOB_TABLE.Job_ID LEFT JOIN MAPPING_TABLE ON JOB_TABLE.Job_ID = MAPPING_TABLE.Job_ID`;
 
   const params = [];
   if (userId) {
@@ -72,7 +73,7 @@ const createNewJob = async (description, url, dueDate) => {
   await insertMapping(jobId);
 
 };
-
+//----------------------------------------------------------------
 // insert a random job id into the mapping table
 const insertMapping = async (jobId) => {
   let randomId;
@@ -97,6 +98,28 @@ const insertMapping = async (jobId) => {
   }
 };
 
+const getJobIdFromRandomId = async (randomId) => {
+  const sql = `SELECT Job_ID FROM MAPPING_TABLE WHERE Random_ID = ?;`;
+  const result = await execute(sql, [randomId]);
+  if (result && result[0] && result[0].Job_ID) {
+    return result[0].Job_ID;
+  } else {
+    return null;
+  }
+};
+
+const getRandomIdFromJobId = async (jobId) => {
+  const sql = `SELECT Random_ID FROM MAPPING_TABLE WHERE Job_ID = ?;`;
+  const result = await execute(sql, [jobId]);
+  if (result && result[0] && result[0].Random_ID) {
+    return result[0].Random_ID; 
+  } else {
+    return null;
+  }
+};
+
+//----------------------------------------------------------------
+
 // assign  job
 const assignJobToUser = async (userId, jobId) => {
   let sql = `INSERT INTO CURRENT_JOB (User_ID, Job_ID) VALUES (?, ?)`;
@@ -115,6 +138,11 @@ const completeJob = async (userId, jobId, remarks = '') => {
   
   await execute(sqlInsert, [userId, jobId, remarks]);
   return execute(sqlDelete, [userId, jobId]);
+};
+
+const deleteMappingForJob = async (jobId) => {
+  const sql = `DELETE FROM MAPPING_TABLE WHERE Job_ID = ?;`;
+  await execute(sql, [jobId]);
 };
 
 // get chat messages for a specific job
@@ -198,4 +226,19 @@ const testFunctions = async () => {
 
 testFunctions();
 
-export {addNotification,createNewJob,  getNotifications, getOpenJobs, getJobHistory, assignJobToUser, completeJob, getSubscription, closeDB};
+export {
+  addNotification,
+  createNewJob,
+  getNotifications,
+  getOpenJobs,
+  getJobHistory,
+  assignJobToUser,
+  completeJob,
+  getSubscription,
+  closeDB,
+  insertMapping,
+  getJobIdFromRandomId,
+  getRandomIdFromJobId,
+  updateRandomIdForJob,
+  deleteMappingForJob,
+};
