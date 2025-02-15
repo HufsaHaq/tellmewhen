@@ -1,24 +1,20 @@
 # Tell Me When - Chat Branch
 ## Prerequisites (Backend)
-Navigate to the server folder and run:
+Navigate to the server folder and run the follwing:
 ```cmd
-npm install express
-npm install stream-chat
-npm install stream-chat-react
+npm install
 ```
 
 ## Prerequisites (Frontend)
 Navigate to the tellmewhen folder and run:
 ```cmd
 npm install next
-npm install motion
-npm install stream-chat
-npm install stream-chat-react
 ```
 
 ## Running the Server
 
-Firstly, set up the environment variables. These should be: 
+**.env needs to be inside of the "server" folder** <br/> <br/>
+Firstly, set up the environment variables. The variables should be:
 ```cmd
 PORT_CHAT = ...                     // Port the server will run on
 STREAM_API_KEY = ...                // Public API Key from the Stream Chat dashboard
