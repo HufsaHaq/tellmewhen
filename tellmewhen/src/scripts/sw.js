@@ -13,7 +13,8 @@ function urlB64ToUint8Array(base64String) {
     return outputArray;
 }
 async function saveSubscription(subscription) {
-    const response = await fetch('http://localhost:3000/save-new-subscription',{
+    let endpoint = localStorage["endpoint"];
+    const response = await fetch(endpoint + '/save-new-subscription',{
         method:"POST",
         headers:{ 'Content-type': 'application.json'},
         body: JSON.stringify(subscription)

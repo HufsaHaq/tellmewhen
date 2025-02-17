@@ -5,11 +5,32 @@ import {Button, Select, Input, Option} from "@mui/joy";
 import { Search } from "@mui/icons-material";
 import ChangeName from "@/components/ChangeName"
 import ChangeProfilePhoto from "@/components/ChangeProfilePhoto"
-
+import { Menu } from "@mui/icons-material";
 import { useState, useEffect } from "react";
+import { motion, useScroll } from "framer-motion";
 
 function Account()
 {
+    // Used for scaling the UI
+    const WindowBoundaries = [1080, 620];
+    const [windowWidth, SetWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1920);
+    const [windowHeight, SetWindowHeight] = useState(typeof window !== "undefined" ? window.innerHeight : 1080);
+    if (typeof window !== "undefined") window.addEventListener("resize", () => {
+            SetWindowWidth(window.innerWidth);
+            SetWindowHeight(window.innerHeight);
+        }
+    );
+    // UI Hooks
+    const [SideMenuOpen, SetSideMenuOpen] = useState(false);
+
+    useEffect(() => {
+        if(windowWidth > WindowBoundaries[1])
+        {
+            SetSideMenuOpen(true);
+        }
+    }, [windowWidth, windowHeight, SideMenuOpen])
+
+    
     // Holds the current menu
     const [SelectedMenu, SetSelectedMenu] = useState("Account");
 
@@ -53,20 +74,41 @@ function Account()
    
 
     return(
-        <div className = "page-content w-[75%] m-auto mt-[25px]">
+        <div className = {`page-content max-tablet620:w-[90%] tablet620:w-[75%] m-auto mt-[25px]`}>
 
             {/* TITLEBAR */}
+<<<<<<< HEAD
             <span className="header-content flex mt-auto items-center ">   
                 {profilePhoto ? (
                     <div className="my-4"><img src={URL.createObjectURL(profilePhoto)} alt="Profile" className="w-[150px] h-[150px] rounded-full object-cover"/>
                     </div>) : (<div className="my-4 w-[150px] h-[150px] bg-[#909090] rounded-full animate-pulse"></div>
                 )}
                 <h1 className="align-top inline-block text-[30px] ml-[20px] mb-[70px] font-semibold mt-auto text-black">{businessName}</h1>
+=======
+            
+            <span onClick={()=>{SetSideMenuOpen(!SideMenuOpen)}} className="tablet620:absolute tablet620:opacity-0 tablet620:top-[-1000px] cursor-pointer w-[100%] inline flex justify-center space-x-[25px] outline outline-[1px] rounded-md items-center py-[15px] mb-[10px]">
+                <Menu className="scale-[1.5]"/>
+                <h1 className="font-semibold">{SelectedMenu}</h1>
+            </span>
+
+            <span className="header-content flex mt-auto items-center ">
+                
+                <div className="w-[40px] bg-[#909090] min-w-[40px] h-[40px] mx-[10px] rounded-full animate-pulse"></div>
+                <h1 className="align-top inline-block text-[30px] font-semibold mt-auto text-black text-nowrap overflow-hidden">[Business Name Here]</h1>
+>>>>>>> 1e2f8877b7b78c4bc75e7b115b37d91c1fb5916f
             </span>
 
             {/* PAGE MENU LIST ON THE LEFT */}
             <span className="content mt-[20px] flex justify-between">
-                <div className="left-list overflow-visible w-[25%] outline outline-0 rounded-md px-[5px] pt-[2px]">
+                <motion.div className={`max-tablet620:!absolute max-tablet620:left-[0px] max-tablet620:w-[100%] max-tablet620:bg-[#E6EBF3] max-tablet620:h-full max-tablet620:overflow-y-hidden max-tablet620:pr-[10px] max-tablet620:z-[15] tablet620:w-[25%] left-list overflow-visible outline outline-0 rounded-md px-[5px] pt-[2px]`}
+                    initial={{transform: SideMenuOpen ? "translateX(0px)" : "translateX(-700px)"}}
+                    animate={{
+                        transform: SideMenuOpen ? `translateX(0px)` : "translateX(-700px)",
+                    }}
+                    transition={{
+                        duration: windowWidth < WindowBoundaries[1] ? 0.25 : 0,
+                        ease: [0.5, 0.71, 0.2, 1.01],
+                    }}>
                     {/* ITERATES THROUGH THE DIFFERENT MENU ITEMS IN THE "MenuItems" ARRAY */}
                     {MenuItems.map((item, index) => {
                         return (
@@ -75,15 +117,17 @@ function Account()
                                 <div className={`w-[6px] h-[90%] rounded-md ${SelectedMenu == item && "bg-[#0A5397]"} transition ease-in-out mr-[5px]`}>‎</div>
                                 
                                 {/* BUTTON CONTAINING THE MENU NAME */}
-                                <button onClick={()=>{SetSelectedMenu(item)}}
+                                <button onClick={()=>{
+                                    SetSelectedMenu(item);
+                                    windowWidth < WindowBoundaries[1] && SetSideMenuOpen(false)
+                                }}
                                         className={`${SelectedMenu == item && "bg-[#D6DBE3]"} hover:bg-[#D6DBE3] rounded-md transition ease-in-out w-[100%] h-full text-left pl-[10px]`}>{item}</button>
                             </span>
                         );
                     })}
-                </div>
-
+                </motion.div>
                 {/* MENU CONTENT SECTION */}
-                <div className="menu-content transition ease-in-out w-[73%] mb-[150px]">
+                <div className={`menu-content transition ease-in-out max-tablet620:w-[100%] tablet620:w-[73%] mb-[150px]`}>
 
                     {/* TITLEBAR FOR THE PAGE CONTENT*/}
                     <h1 className="text-[25px] font-semibold mt-auto text-black mb-[5px]">{SelectedMenu}</h1>
@@ -158,16 +202,18 @@ function Account()
                     {SelectedMenu == MenuItems[1] &&
                         <div className="">
                                 <h1 className="font-semibold mb-[2px] w-[100%] sticky text-[20px]">Employee Management</h1>
-                                <span className="flex items-center mb-[10px]">
+                                <span className={`max-tablet620:block tablet620:flex items-center mb-[10px]`}>
                                     <h1 className="text-[15px] w-[100%] mb-[15px]">Modify the details of each employee.</h1>
+                                    <span className={`max-tablet620:justify-between max-tablet620:space-x-[5px] flex inline`}>
                                     <Button className="mr-[50px] h-[10px]">Create</Button>
                                     <Input endDecorator={<Search></Search>}
-                                           className="max-h-[50px] mx-[5px]"
+                                           className={`max-h-[50px] max-tablet620:w-full max-tablet620:mx-[5px]`}
                                            placeholder="Search"
                                            onChange={(event) => {
                                                 SetSearchParameter(event.target.value);
                                                 console.log("SEARCH PARAM CHANGED");
                                             }}></Input>
+                                    </span>
                                 </span>
                                 {/* EMPLOYEE DATA TABLE */}
                                 <div className="overscroll-none max-h-[450px] overflow-y-scroll rounded-md outline outline-[1px]">
