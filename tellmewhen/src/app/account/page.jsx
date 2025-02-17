@@ -80,15 +80,10 @@ function Account()
                     </div>) : (<div className="my-4 w-[150px] h-[150px] bg-[#909090] rounded-full animate-pulse"></div>
                 )}
                 <h1 className="align-top inline-block text-[30px] ml-[20px] mb-[70px] font-semibold mt-auto text-black">{businessName}</h1>
+            </span>
             <span onClick={()=>{SetSideMenuOpen(!SideMenuOpen)}} className="tablet620:absolute tablet620:opacity-0 tablet620:top-[-1000px] cursor-pointer w-[100%] inline flex justify-center space-x-[25px] outline outline-[1px] rounded-md items-center py-[15px] mb-[10px]">
                 <Menu className="scale-[1.5]"/>
                 <h1 className="font-semibold">{SelectedMenu}</h1>
-            </span>
-
-            <span className="header-content flex mt-auto items-center ">
-                
-                <div className="w-[40px] bg-[#909090] min-w-[40px] h-[40px] mx-[10px] rounded-full animate-pulse"></div>
-                <h1 className="align-top inline-block text-[30px] font-semibold mt-auto text-black text-nowrap overflow-hidden">[Business Name Here]</h1>
             </span>
 
             {/* PAGE MENU LIST ON THE LEFT */}
@@ -198,14 +193,14 @@ function Account()
                                 <span className={`max-tablet620:block tablet620:flex items-center mb-[10px]`}>
                                     <h1 className="text-[15px] w-[100%] mb-[15px]">Modify the details of each employee.</h1>
                                     <span className={`max-tablet620:justify-between max-tablet620:space-x-[5px] flex inline`}>
-                                    <Button className="mr-[50px] h-[10px]">Create</Button>
-                                    <Input endDecorator={<Search></Search>}
-                                           className={`max-h-[50px] max-tablet620:w-full max-tablet620:mx-[5px]`}
-                                           placeholder="Search"
-                                           onChange={(event) => {
-                                                SetSearchParameter(event.target.value);
-                                                console.log("SEARCH PARAM CHANGED");
-                                            }}></Input>
+                                        <Button className="mr-[50px] h-[10px]">Create</Button>
+                                        <Input endDecorator={<Search></Search>}
+                                               className={`max-h-[50px] max-tablet620:w-full max-tablet620:mx-[5px]`}
+                                               placeholder="Search"
+                                               onChange={(event) => {
+                                                    SetSearchParameter(event.target.value);
+                                                    console.log("SEARCH PARAM CHANGED");
+                                                }}></Input>
                                     </span>
                                 </span>
                                 {/* EMPLOYEE DATA TABLE */}
@@ -239,6 +234,7 @@ function Account()
                                         </tbody>
                                     </table>
                                 </div>
+
                         </div>
                     }
                 </div>
