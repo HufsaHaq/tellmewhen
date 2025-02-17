@@ -71,21 +71,15 @@ function Account()
     setProfilePhoto(newImage);
     };
 
-   
-
     return(
         <div className = {`page-content max-tablet620:w-[90%] tablet620:w-[75%] m-auto mt-[25px]`}>
-
-            {/* TITLEBAR */}
-<<<<<<< HEAD
+        {/* TITLEBAR */}
             <span className="header-content flex mt-auto items-center ">   
                 {profilePhoto ? (
                     <div className="my-4"><img src={URL.createObjectURL(profilePhoto)} alt="Profile" className="w-[150px] h-[150px] rounded-full object-cover"/>
                     </div>) : (<div className="my-4 w-[150px] h-[150px] bg-[#909090] rounded-full animate-pulse"></div>
                 )}
                 <h1 className="align-top inline-block text-[30px] ml-[20px] mb-[70px] font-semibold mt-auto text-black">{businessName}</h1>
-=======
-            
             <span onClick={()=>{SetSideMenuOpen(!SideMenuOpen)}} className="tablet620:absolute tablet620:opacity-0 tablet620:top-[-1000px] cursor-pointer w-[100%] inline flex justify-center space-x-[25px] outline outline-[1px] rounded-md items-center py-[15px] mb-[10px]">
                 <Menu className="scale-[1.5]"/>
                 <h1 className="font-semibold">{SelectedMenu}</h1>
@@ -95,7 +89,6 @@ function Account()
                 
                 <div className="w-[40px] bg-[#909090] min-w-[40px] h-[40px] mx-[10px] rounded-full animate-pulse"></div>
                 <h1 className="align-top inline-block text-[30px] font-semibold mt-auto text-black text-nowrap overflow-hidden">[Business Name Here]</h1>
->>>>>>> 1e2f8877b7b78c4bc75e7b115b37d91c1fb5916f
             </span>
 
             {/* PAGE MENU LIST ON THE LEFT */}
@@ -250,7 +243,6 @@ function Account()
                     }
                 </div>
             </span>
-
         </div>
     )
 }
