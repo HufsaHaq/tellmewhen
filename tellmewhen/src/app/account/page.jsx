@@ -4,6 +4,7 @@
 import {Button, Select, Input, Option} from "@mui/joy";
 import { Search } from "@mui/icons-material";
 import ChangeName from "@/components/ChangeName"
+import ChangeProfilePhoto from "@/components/ChangeProfilePhoto"
 
 import { useState, useEffect } from "react";
 
@@ -35,21 +36,32 @@ function Account()
     if (typeof window !== "undefined") document.title = "Account | Tell Me When";
 
     const [isChangeNameOpen, setIsChangeNameOpen] = useState(false);
-    const [businessName, setBusinessName] = useState("[Enter Business Name");
+    const [businessName, setBusinessName] = useState("[Enter Business Name]");
+
+    const [isChangeProfilePhotoOpen, setIsChangeProfilePhotoOpen] = useState(false);
+    const [profilePhoto, setProfilePhoto] = useState(null);
 
     const handleSaveBusinessName = (newBusinessName) => {
     setBusinessName(newBusinessName);
     setIsChangeNameOpen(false);
     };
 
+    const handleSaveProfilePhoto = (newImage) => {
+    setProfilePhoto(newImage);
+    };
+
+   
 
     return(
         <div className = "page-content w-[75%] m-auto mt-[25px]">
 
             {/* TITLEBAR */}
-            <span className="header-content flex mt-auto items-center ">
-                <div className="w-[40px] bg-[#909090] h-[40px] mx-[10px] rounded-full animate-pulse"></div>
-                <h1 className="align-top inline-block text-[30px] font-semibold mt-auto text-black">{businessName}</h1>
+            <span className="header-content flex mt-auto items-center ">   
+                {profilePhoto ? (
+                    <div className="my-4"><img src={URL.createObjectURL(profilePhoto)} alt="Profile" className="w-[150px] h-[150px] rounded-full object-cover"/>
+                    </div>) : (<div className="my-4 w-[150px] h-[150px] bg-[#909090] rounded-full animate-pulse"></div>
+                )}
+                <h1 className="align-top inline-block text-[30px] ml-[20px] mb-[70px] font-semibold mt-auto text-black">{businessName}</h1>
             </span>
 
             {/* PAGE MENU LIST ON THE LEFT */}
@@ -106,7 +118,8 @@ function Account()
                                         <h1 className="font-semibold">Change Account Profile Photo</h1>
                                         <h1 className="">Changes the profile photo for business</h1>
                                     </div>
-                                    <Button variant="solid" color="primary" className="w-[75px]">Change</Button>
+                                    <Button variant="solid" color="primary" className="w-[75px]" onClick ={() => setIsChangeProfilePhotoOpen(true)}>Change</Button>
+                                    
                                 </span>
                                 {/* ADMIN PASSWORD */}
                                 <span className="flex w-full items-center justify-between px-[12px] py-[7px] rounded-md">
@@ -131,6 +144,12 @@ function Account()
                                 businessName={businessName}
                                 onClose={() => setIsChangeNameOpen(false)}
                                 onSave={handleSaveBusinessName}
+                              />
+
+                            <ChangeProfilePhoto 
+                                isOpen={isChangeProfilePhotoOpen}
+                                onClose={() => setIsChangeProfilePhotoOpen(false)}
+                                onSave={handleSaveProfilePhoto}
                               />
                         </>
                     }
