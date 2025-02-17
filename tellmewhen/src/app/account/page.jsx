@@ -3,6 +3,7 @@
 
 import {Button, Select, Input, Option} from "@mui/joy";
 import { Search } from "@mui/icons-material";
+import ChangeName from "@/components/ChangeName"
 
 import { useState, useEffect } from "react";
 
@@ -33,13 +34,22 @@ function Account()
 
     if (typeof window !== "undefined") document.title = "Account | Tell Me When";
 
+    const [isChangeNameOpen, setIsChangeNameOpen] = useState(false);
+    const [businessName, setBusinessName] = useState("[Enter Business Name");
+
+    const handleSaveBusinessName = (newBusinessName) => {
+    setBusinessName(newBusinessName);
+    setIsChangeNameOpen(false);
+    };
+
+
     return(
         <div className = "page-content w-[75%] m-auto mt-[25px]">
 
             {/* TITLEBAR */}
             <span className="header-content flex mt-auto items-center ">
                 <div className="w-[40px] bg-[#909090] h-[40px] mx-[10px] rounded-full animate-pulse"></div>
-                <h1 className="align-top inline-block text-[30px] font-semibold mt-auto text-black">[Business Name Here]</h1>
+                <h1 className="align-top inline-block text-[30px] font-semibold mt-auto text-black">{businessName}</h1>
             </span>
 
             {/* PAGE MENU LIST ON THE LEFT */}
@@ -87,7 +97,7 @@ function Account()
                                         <h1 className="font-semibold">Rename Account</h1>
                                         <h1 className="">Changes the name of the business</h1>
                                     </div>
-                                    <Button variant="solid" color="primary" className="w-[75px]">Change</Button>
+                                    <Button variant="solid" color="primary" className="w-[75px]" onClick={() => setIsChangeNameOpen(true)} >Change</Button>
                                 </span>
 
                                 {/* PROFILE PHOTO */}
@@ -115,6 +125,13 @@ function Account()
                                     <Button variant="solid" className="w-[75px]" color="danger">Delete</Button>
                                 </span>
                             </div>
+
+                            <ChangeName
+                                isOpen={isChangeNameOpen}
+                                businessName={businessName}
+                                onClose={() => setIsChangeNameOpen(false)}
+                                onSave={handleSaveBusinessName}
+                              />
                         </>
                     }
 
