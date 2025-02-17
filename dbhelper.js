@@ -35,17 +35,19 @@ const addNotification = async (userId, jobId, notificationContent) => {
     };
   
 // jobs per user or all jobs if no user ID 
-const getOpenJobs = async (userId = null) => {
+const getOpenJobs = async (businessId, userId = null) => {
   let sql = `
-    SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_TABLE.URL, JOB_TABLE.Due_Date
+    SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_TABLE.URL, JOB_TABLE.Due_Date, MAPPING_TABLE.Random_ID
     FROM JOB_TABLE
     LEFT JOIN CURRENT_JOB ON JOB_TABLE.Job_ID = CURRENT_JOB.Job_ID
     LEFT JOIN MAPPING_TABLE ON JOB_TABLE.Job_ID = MAPPING_TABLE.Job_ID
+    WHERE JOB_TABLE.Business_ID = ?
   `;
 
-  const params = [];
+  const params = [businessId];
+
   if (userId) {
-    sql += ' WHERE CURRENT_JOB.User_ID = ?';
+    sql += ' AND CURRENT_JOB.User_ID = ?';
     params.push(userId);
   }
 
@@ -53,12 +55,19 @@ const getOpenJobs = async (userId = null) => {
 };
 
 // job history
-const getJobHistory = async (userId = null) => {
-  let sql = `SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_HISTORY.Completion_Date, JOB_HISTORY.Remarks FROM JOB_HISTORY JOIN JOB_TABLE ON JOB_HISTORY.Job_ID = JOB_TABLE.Job_ID LEFT JOIN MAPPING_TABLE ON JOB_TABLE.Job_ID = MAPPING_TABLE.Job_ID`;
+const getJobHistory = async (businessId, userId = null) => {
+  let sql = `
+    SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_HISTORY.Completion_Date, JOB_HISTORY.Remarks, MAPPING_TABLE.Random_ID
+    FROM JOB_HISTORY
+    JOIN JOB_TABLE ON JOB_HISTORY.Job_ID = JOB_TABLE.Job_ID
+    LEFT JOIN MAPPING_TABLE ON JOB_TABLE.Job_ID = MAPPING_TABLE.Job_ID
+    WHERE JOB_TABLE.Business_ID = ?
+  `;
 
-  const params = [];
+  const params = [businessId];
+
   if (userId) {
-    sql += ' WHERE JOB_HISTORY.User_ID = ?';
+    sql += ' AND JOB_HISTORY.User_ID = ?';
     params.push(userId);
   }
 
