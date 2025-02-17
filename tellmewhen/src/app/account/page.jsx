@@ -8,6 +8,8 @@ import ChangeProfilePhoto from "@/components/ChangeProfilePhoto"
 import { Menu } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import { motion, useScroll } from "framer-motion";
+import EmployeeCreationModal from "@/components/EmployeeCreationModal";
+import EmployeeDetailsModal from "@/components/EmployeeDetailsModal";
 
 function Account()
 {
@@ -70,6 +72,41 @@ function Account()
     const handleSaveProfilePhoto = (newImage) => {
     setProfilePhoto(newImage);
     };
+
+    //Modals Part here
+    // =================== Creation Modal =================
+    const [isEmployeeCreationModalOpen, setIsEmployeeCreationModalOpen] = useState(false);
+
+    // When user confirms creation in the modal:
+    const handleEmployeeConfirm = (newEmployee) => {
+        SetEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
+        setIsEmployeeCreationModalOpen(false);
+    };
+
+    // ================= Employee details =================
+    const [isEmployeeDetailsModalOpen, setIsEmployeeDetailsModalOpen] = useState(false);
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
+
+    const handleEmployeeRowClick = (employee) => {
+        setSelectedEmployee({
+            name: employee[0],
+            id: employee[1],
+            role: employee[2],
+        });
+        setIsEmployeeDetailsModalOpen(true);
+    };
+
+    const handleUpdateEmployee = (updatedEmployee) => {
+        const newList = Employees.map((emp) => {
+            if (emp[1] === updatedEmployee.id) {
+                return [updatedEmployee.name, updatedEmployee.id, updatedEmployee.role];
+            }
+            return emp;
+        });
+        SetEmployees(newList);
+        setIsEmployeeDetailsModalOpen(false);
+    };
+
 
     return(
         <div className = {`page-content max-tablet620:w-[90%] tablet620:w-[75%] m-auto mt-[25px]`}>
@@ -193,7 +230,11 @@ function Account()
                                 <span className={`max-tablet620:block tablet620:flex items-center mb-[10px]`}>
                                     <h1 className="text-[15px] w-[100%] mb-[15px]">Modify the details of each employee.</h1>
                                     <span className={`max-tablet620:justify-between max-tablet620:space-x-[5px] flex inline`}>
-                                        <Button className="mr-[50px] h-[10px]">Create</Button>
+                                        <Button className="mr-[50px] h-[10px]"
+                                                onClick={() => setIsEmployeeCreationModalOpen(true)}
+                                        >
+                                            Create
+                                        </Button>
                                         <Input endDecorator={<Search></Search>}
                                                className={`max-h-[50px] max-tablet620:w-full max-tablet620:mx-[5px]`}
                                                placeholder="Search"
@@ -218,7 +259,7 @@ function Account()
                                             {/* ITERATES THROUGH EACH EMPLOYEE */}
                                             {Employees.map((employee, index1) => {
                                                 return(
-                                                    <tr key={index1} className="cursor-pointer" onClick={()=>{console.log("Clicked: ", index1)}}>
+                                                    <tr key={index1} className="cursor-pointer" onClick={()=> handleEmployeeRowClick(employee)}>
                                                         {employee.map((element, index2) => {
                                                             return(
                                                                 <td key={index2} className={`${index1 % 2 == 1 ? "bg-[rgb(210,214,218)]" : "bg-[rgb(230,234,243)]"} overflow-hidden pl-[10px] ${index2 == 0 && "py-[10px]"} ${index2 != 0 && "border-l-[2px] border-[rgba(0,0,0,0.2)]"}`}>
@@ -239,6 +280,28 @@ function Account()
                     }
                 </div>
             </span>
+
+
+            {/* ============= EMPLOYEE CREATION MODAL ============= */}
+            {isEmployeeCreationModalOpen && (
+                <EmployeeCreationModal
+                    isOpen={isEmployeeCreationModalOpen}
+                    onClose={() => setIsEmployeeCreationModalOpen(false)}
+                    onConfirm={handleEmployeeConfirm}
+                    existingEmployees={Employees}
+                />
+            )}
+
+            {/* ============= EMPLOYEE DETAILS MODAL ============= */}
+            {isEmployeeDetailsModalOpen && (
+                <EmployeeDetailsModal
+                    isOpen={isEmployeeDetailsModalOpen}
+                    employeeData={selectedEmployee}
+                    onClose={() => setIsEmployeeDetailsModalOpen(false)}
+                    onConfirm={handleUpdateEmployee}
+                />
+            )}
+
         </div>
     )
 }
