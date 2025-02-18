@@ -84,20 +84,6 @@ indexRouter.post('/register', async (req, res) => {
   }
 });
 
-indexRouter.get('/current_jobs/:bid',authMiddleWare, async (req, res) => {
-  const businessId = req.params.bid;
-  getOpenJobs(businessId)
-    .then((jobs) => res.json(jobs))
-    .catch((err) => res.json({ error: err }));
-});
-
-indexRouter.get('/job_history/:bid',authMiddleWare, async (req, res) => {
-  const businessId = req.params.bid;
-  getJobHistory(businessId)
-    .then((history) => res.json(history))
-    .catch((err) => res.json({ error: err }));
-});
-
 indexRouter.post('/notify/:bid/:jid',authMiddleWare, async (req, res) => {
   // Notify the customer and update the notification table
   const businessId = req.params.bid;
