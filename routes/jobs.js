@@ -3,11 +3,12 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import webPush from 'web-push'
 // db helper functions
-import { getJobHistory, getOpenJobs, createNewJob } from '../dbhelper.js';
-import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmin} from '../managementdbfunc.js';
+import { getJobHistory, getOpenJobs, createNewJob, assignJobToUser, completeJob } from '../dbhelper.js';
+import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmin, countTotalJobs} from '../managementdbfunc.js';
 //middleware functions for encyrption, authentication and data integrity
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
 import { checkData } from '../datacheck.js';
+import { JWTClaimValidationFailed } from 'jose/errors';
 
 //provide path to .env file
 dotenv.config('../')
@@ -19,23 +20,55 @@ jobRouter.get('/history/:bid',authMiddleWare, async (req, res) => {
     getJobHistory(businessId)
       .then((history) => res.json(history))
       .catch((err) => res.json({ error: err }));
-  });
+});
 
-jobRouter.get('/current/:bid/:jid',authMiddleWare, async (req, res) => {
+jobRouter.get('/open_jobs/:bid', authMiddleWare, async(req,res) => {
+    
     const businessId = req.params.bid;
-    getOpenJobs(businessId,)
+
+    try{
+        countOpenJobs() //follow up
+    } catch (err) {
+        res.json( { error:err })
+    }
+})
+// returns total number of jobs ever for a business
+jobRouter.get('/total_jobs/:bid', authMiddleWare, async(req,res) => {
+
+    //extract business id
+    const businessId = req.params.bid;
+
+    try{
+      countTotalJobs();
+    }catch {err} {
+      res.json( {error:err});
+    }
+})
+jobRouter.get('/current/:bid/:uid',authMiddleWare, async (req, res) => {
+    const businessId = req.params.bid;
+    const userId = req.params.uid;
+    getOpenJobs(businessId,userId)
       .then((jobs) => res.json(jobs))
       .catch((err) => res.json({ error: err }));
   });
 
-jobRouter.post('/complete/:jid',authMiddleWare, async (req,res) =>{
-    const jobId = req.params.jid
+// assign a job to a worker
+jobRouter.post('/assign_job',authMiddleWare, moderatorMiddleWare, async (req,res) => {
+    const data = req.body // get the request data
 
-    // Notify customer of complete job
-    // Update db to reflect changes
+    const jobId = data.jid;
+    const userId = data.uid;
+
+    try{
+        assignJobToUser(userId,jobId)
+    }catch (err) {
+        res.json({error: err})
+    }
+    res.sendStatus(200).json({message : `Job ${jobId} assigned to worker with id: ${userId}`})
+
 })
 
-jobRouter.post('new', authMiddleWare, async (req,res) => {
+jobRouter.post('/new', authMiddleWare, async (req,res) => {
     // create new job in the db
     const jobData = req.body;
 
@@ -52,6 +85,25 @@ jobRouter.post('new', authMiddleWare, async (req,res) => {
     res.sendStatus(200).json({message: "New job succesfully registered"})
     // Notify the user that the job has been registered
 })
+
+//needs updating to check right user has marked a job as complete
+jobRouter.post('/complete/:jid',authMiddleWare, async (req,res) =>{
+    const jobId = req.params.jid
+    //extract JSON data from request 
+    const data = req.params.body
+    const userId = data.uid
+    const remarks = data.remarks
+
+    try{
+        completeJob(userId,jobId,remarks)
+    }catch (err) {
+        res.json( { error : err } )
+    }
+
+    res.sendStatus(200).json( { message: 'Job marked as complete'})
+})
+
+//send customer a notification
 jobRouter.post('/notify/:bid/:jid',authMiddleWare, async (req, res) => {
     // Notify the customer and update the notification table
     const businessId = req.params.bid;
@@ -83,5 +135,5 @@ jobRouter.post('/notify/:bid/:jid',authMiddleWare, async (req, res) => {
     then(() => {console.log("Notification Sent !")}).
     catch((err) => res.json({ error: err }));
    
-  });
+})
 
