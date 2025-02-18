@@ -48,13 +48,8 @@ export const createworker = async () => {
 
 };
 
-export const createmapping = async () => {
-  const sql =  `CREATE TABLE IF NOT EXISTS MAPPING_TABLE (Random_ID INT AUTO_INCREMENT PRIMARY KEY, Job_ID INT,FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
-  return executeQuery(sql);
-}
-
 export const createjob = async () => {
-  const sql =     `CREATE TABLE IF NOT EXISTS JOB_TABLE (Job_ID INT AUTO_INCREMENT PRIMARY KEY, Description VARCHAR(255) NOT NULL,URL VARCHAR(255) NOT NULL,Due_Date DATETIME);`;
+  const sql =     `CREATE TABLE IF NOT EXISTS JOB_TABLE (Job_ID INT PRIMARY KEY, Description VARCHAR(255) NOT NULL,URL VARCHAR(255) NOT NULL,Due_Date DATETIME);`;
 
   return executeQuery(sql);
 };
@@ -74,7 +69,11 @@ export const createjobhistory = async () => {
 /*export const createchat_messages = async () => {
   const sql =     `CREATE TABLE IF NOT EXISTS CHAT_MESSAGES (Message_ID INT AUTO_INCREMENT PRIMARY KEY,User_ID INT,Job_ID INT,Message_Content VARCHAR(255) NOT NULL,Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,Is_Read BOOLEAN DEFAULT FALSE,FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(Worker_ID),FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
   return executeQuery(sql);
-};*/
+};
+export const createmapping = async () => {
+  const sql =  `CREATE TABLE IF NOT EXISTS MAPPING_TABLE (Random_ID INT AUTO_INCREMENT PRIMARY KEY, Job_ID INT,FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
+  return executeQuery(sql);
+}*/
 
 export const createsubscription_table = async () => {
   const sql =     `CREATE TABLE IF NOT EXISTS SUBSCRIPTION_TABLE (Subscription_ID INT AUTO_INCREMENT PRIMARY KEY,Endpoint VARCHAR(255) NOT NULL,Auth_Key1 VARCHAR(255) NOT NULL,Auth_Key2 VARCHAR(255) NOT NULL,Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,Job_ID INT,FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;

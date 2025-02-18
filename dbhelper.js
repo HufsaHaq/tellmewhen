@@ -3,6 +3,11 @@ import mysql from 'mysql';
 import dotenv from 'dotenv';
 dotenv.config();
 
+const {
+  randomBytes,
+} = await import('node:crypto');
+
+
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -40,7 +45,6 @@ const getOpenJobs = async (businessId, userId = null) => {
     SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_TABLE.URL, JOB_TABLE.Due_Date, MAPPING_TABLE.Random_ID
     FROM JOB_TABLE
     LEFT JOIN CURRENT_JOB ON JOB_TABLE.Job_ID = CURRENT_JOB.Job_ID
-    LEFT JOIN MAPPING_TABLE ON JOB_TABLE.Job_ID = MAPPING_TABLE.Job_ID
     WHERE JOB_TABLE.Business_ID = ?
   `;
 
@@ -60,7 +64,6 @@ const getJobHistory = async (businessId, userId = null) => {
     SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_HISTORY.Completion_Date, JOB_HISTORY.Remarks, MAPPING_TABLE.Random_ID
     FROM JOB_HISTORY
     JOIN JOB_TABLE ON JOB_HISTORY.Job_ID = JOB_TABLE.Job_ID
-    LEFT JOIN MAPPING_TABLE ON JOB_TABLE.Job_ID = MAPPING_TABLE.Job_ID
     WHERE JOB_TABLE.Business_ID = ?
   `;
 
@@ -76,57 +79,11 @@ const getJobHistory = async (businessId, userId = null) => {
 
 // Function to create a new job
 const createNewJob = async (description, url, dueDate) => {
-  const sql = `INSERT INTO JOB_TABLE (Description, URL, Due_Date) VALUES (?, ?, ?);`;
-  const jobResult = await execute(sql, [description, url, dueDate]);
-  // Insert into MAPPING_TABLE
-  await insertMapping(jobId);
-
+  const sql = `INSERT INTO JOB_TABLE (Job_ID, Description, URL, Due_Date) VALUES (?, ?, ?, ?);`;
+  let random_job_id = randomBytes(16).toString('hex');
+  return execute(sql, [random_job_id, description, url, dueDate]);
 };
 //----------------------------------------------------------------
-// insert a random job id into the mapping table
-const insertMapping = async (jobId) => {
-  let randomId;
-  let isUnique = false;
-
-  // unique random ID and insert the mapping
-  while (!isUnique) {
-    randomId = Math.floor(100000 + Math.random() * 900000); // 6-digit random number
-
-    // check unique
-    const checkSql = `SELECT COUNT(*) AS count FROM MAPPING_TABLE WHERE Random_ID = ?;`;
-    const result = await execute(checkSql, [randomId]);
-    if(result[0].count === 0){
-      isUnique = true;
-    };
-
-    if (isUnique) {
-      // Insert the mapping into the MAPPING_TABLE
-      const insertSql = `INSERT INTO MAPPING_TABLE (Random_ID, Job_ID) VALUES (?, ?);`;
-      await execute(insertSql, [randomId, jobId]);
-    }
-  }
-};
-
-const getJobIdFromRandomId = async (randomId) => {
-  const sql = `SELECT Job_ID FROM MAPPING_TABLE WHERE Random_ID = ?;`;
-  const result = await execute(sql, [randomId]);
-  if (result && result[0] && result[0].Job_ID) {
-    return result[0].Job_ID;
-  } else {
-    return null;
-  }
-};
-
-const getRandomIdFromJobId = async (jobId) => {
-  const sql = `SELECT Random_ID FROM MAPPING_TABLE WHERE Job_ID = ?;`;
-  const result = await execute(sql, [jobId]);
-  if (result && result[0] && result[0].Random_ID) {
-    return result[0].Random_ID; 
-  } else {
-    return null;
-  }
-};
-
 const getJobDetails = async (jobId) => {
   const sql = `
     SELECT Job_ID, Description, URL, Due_Date
@@ -162,11 +119,6 @@ const completeJob = async (userId, jobId, remarks = '') => {
   
   await execute(sqlInsert, [userId, jobId, remarks]);
   return execute(sqlDelete, [userId, jobId]);
-};
-
-const deleteMappingForJob = async (jobId) => {
-  const sql = `DELETE FROM MAPPING_TABLE WHERE Job_ID = ?;`;
-  await execute(sql, [jobId]);
 };
 
 // get chat messages for a specific job
@@ -260,10 +212,5 @@ export {
   completeJob,
   getSubscription,
   closeDB,
-  insertMapping,
-  getJobIdFromRandomId,
-  getRandomIdFromJobId,
   getJobDetails,
-  updateRandomIdForJob,
-  deleteMappingForJob,
 };
