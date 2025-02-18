@@ -42,8 +42,6 @@ indexRouter.post('/login', async (req, res) => {
   // check the database for the user
   const loginCredentials = await login(name,username, password)
 
-  console.log(loginCredentials)
-
   if (loginCredentials){
     const privilige = loginCredentials.Privilege_level;
 
@@ -56,8 +54,8 @@ indexRouter.post('/login', async (req, res) => {
     }
     
     if (isMatch){
+      // create new jwt
       const accessToken = jwt.sign({ username: username, role: privilige }, privateKey, { expiresIn: '1h', algorithm: 'RS256' })
-      console.log(accessToken)
       res.json({ accessToken: accessToken })
     }else{
       res.json({error: "Passwords do not match"});
@@ -68,8 +66,9 @@ indexRouter.post('/login', async (req, res) => {
 
 });
 
+// register a new business and admin
 indexRouter.post('/register', async (req, res) => {
-  // register a new business
+  
   const name = req.body.name;
   const username = req.body.username;
   const password = req.body.password;
@@ -83,55 +82,5 @@ indexRouter.post('/register', async (req, res) => {
     res.status(400).json({message: "missing fields"})
   }
 });
-
-indexRouter.post('/notify/:bid/:jid',authMiddleWare, async (req, res) => {
-  // Notify the customer and update the notification table
-  const businessId = req.params.bid;
-  const jobId = req.params.jid;
-  const messageBody = req.body.message || 'Your job is ready for pickup';
-  const messageTitle = req.body.title || 'There is an update to your job';
-  const photo = getBusinessPhoto(businessId);
-
-  try{
-    const pushSubscription = getNotifications(businessId, jobId);
-  } catch (err) {
-    res.json({ error: err });
-  }
-
-  const payload = JSON.stringify({
-    title: messageTitle,
-    body: messageBody,
-    icon: photo
-  })
-
-  const options = {
-    vapidDetails: {
-      subject: 'mailto:https://tellmewhen.co.uk',
-      publicKey: process.env.VAPID_PUBLIC,
-      privateKey: process.env.VAPID_PRIVATE
-    }};
-  //send notifcation using PUSH API
-  const notifcation = webPush.sendNotification(pushSubscription, payload).
-  then(() => {console.log("Notification Sent !")}).
-  catch((err) => res.json({ error: err }));
- 
-});
-
-indexRouter.post('/manage/:bid/addUser',authMiddleWare,adminMiddleWare,(req,res) =>{
-  const access_token = req.access_token;
-  const businessId = req.params.bid;
-
-  const name = req.body.name;
-  const email = req.body.email;
-  const pwd = req.body.Hashedpassword;
-  const privLevel = req.body.privLevel;
-
-  addUser(name, email, pwd, businessId, privLevel)
-
-  res.status(200).json({message:`New user added: username:${name} privillige level:${privLevel}`})
-
-})
-
-indexRouter.get('')
 
 export { indexRouter }; 

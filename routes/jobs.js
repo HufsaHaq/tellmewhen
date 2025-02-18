@@ -1,6 +1,7 @@
 import express from 'express';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import webPush from 'web-push'
 // db helper functions
 import { getJobHistory, getOpenJobs, createNewJob } from '../dbhelper.js';
 import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmin} from '../managementdbfunc.js';
@@ -51,5 +52,36 @@ jobRouter.post('new', authMiddleWare, async (req,res) => {
     res.sendStatus(200).json({message: "New job succesfully registered"})
     // Notify the user that the job has been registered
 })
-
+jobRouter.post('/notify/:bid/:jid',authMiddleWare, async (req, res) => {
+    // Notify the customer and update the notification table
+    const businessId = req.params.bid;
+    const jobId = req.params.jid;
+    const messageBody = req.body.message || 'Your job is ready for pickup';
+    const messageTitle = req.body.title || 'There is an update to your job';
+    const photo = getBusinessPhoto(businessId);
+  
+    try{
+      const pushSubscription = getNotifications(businessId, jobId);
+    } catch (err) {
+      res.json({ error: err });
+    }
+  
+    const payload = JSON.stringify({
+      title: messageTitle,
+      body: messageBody,
+      icon: photo
+    })
+  
+    const options = {
+      vapidDetails: {
+        subject: 'mailto:https://tellmewhen.co.uk',
+        publicKey: process.env.VAPID_PUBLIC,
+        privateKey: process.env.VAPID_PRIVATE
+      }};
+    //send notifcation using PUSH API
+    const notifcation = webPush.sendNotification(pushSubscription, payload).
+    then(() => {console.log("Notification Sent !")}).
+    catch((err) => res.json({ error: err }));
+   
+  });
 
