@@ -1,7 +1,7 @@
 /* This file handles the checking that the data displayed on the front-end is up to date and remedying any 
 out-of-date data */
 import { get } from "jase"
-import { getOpenJobs } from "./dbhelper"
+import { getOpenJobs } from "./dbhelper.js"
 
 export const checkData = async(res,req,next) =>{
     /*
