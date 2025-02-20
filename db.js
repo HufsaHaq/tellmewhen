@@ -55,8 +55,7 @@ export const createjob = async () => {
 };
 
 export const createjobhistory = async () => {
-  const sql =     `CREATE TABLE IF NOT EXISTS JOB_HISTORY (History_ID INT AUTO_INCREMENT PRIMARY KEY,User_ID INT,Job_ID INT,Completion_Date DATETIME,Remarks VARCHAR(255),FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(User_ID),FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
-
+  const sql =     `CREATE TABLE IF NOT EXISTS JOB_HISTORY (History_ID INT AUTO_INCREMENT PRIMARY KEY,User_ID INT,Job_ID INT, Business_ID INT, Completion_Date DATETIME,Description VARCHAR(255),Remarks VARCHAR(255),FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(User_ID), FOREIGN KEY (Business_ID) REFERENCES BUSINESS_TABLE(Business_ID),FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
   return executeQuery(sql);
 };
 
@@ -70,7 +69,6 @@ export const createnotification = async () => {
   const sql =     `CREATE TABLE IF NOT EXISTS NOTIFICATIONS (Notification_ID INT AUTO_INCREMENT PRIMARY KEY,User_ID INT,Job_ID INT,Notification_Content VARCHAR(255) NOT NULL,Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,Is_Read BOOLEAN DEFAULT FALSE,FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(User_ID),FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
   return executeQuery(sql);
 };
-
 
 export const deleteBusinesstable = async () => {
   const sql = 'DROP TABLE IF EXISTS BUSINESS_TABLE';

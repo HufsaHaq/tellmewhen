@@ -61,10 +61,13 @@ const getOpenJobs = async (businessId, userId = null) => {
 // job history
 const getJobHistory = async (businessId, userId = null) => {
   let sql = `
-    SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_HISTORY.Completion_Date, JOB_HISTORY.Remarks
+    SELECT 
+      JOB_HISTORY.Job_ID, 
+      JOB_HISTORY.Description, 
+      JOB_HISTORY.Completion_Date, 
+      JOB_HISTORY.Remarks
     FROM JOB_HISTORY
-    JOIN JOB_TABLE ON JOB_HISTORY.Job_ID = JOB_TABLE.Job_ID
-    WHERE JOB_TABLE.Business_ID = ?
+    WHERE JOB_HISTORY.Business_ID = ?
   `;
 
   const params = [businessId];
@@ -78,10 +81,13 @@ const getJobHistory = async (businessId, userId = null) => {
 };
 
 // Function to create a new job
-const createNewJob = async (description, url, dueDate) => {
-  const sql = `INSERT INTO JOB_TABLE (Job_ID, Description, URL, Due_Date) VALUES (?, ?, ?, ?);`;
-  let random_job_id = randomBytes(16).toString('hex');
-  return execute(sql, [random_job_id, description, url, dueDate]);
+const createNewJob = async (businessId, userId = null, description, url, dueDate) => {
+  const sql = `
+    INSERT INTO JOB_TABLE (Business_ID, User_ID, Description, URL, Due_Date)
+    VALUES (?, ?, ?, ?, ?);
+  `;
+
+  return execute(sql, [businessId, userId, description, url, dueDate]);
 };
 //----------------------------------------------------------------
 const getJobDetails = async (jobId) => {
@@ -103,35 +109,45 @@ const getJobDetails = async (jobId) => {
 
 // assign  job
 const assignJobToUser = async (userId, jobId) => {
-  let sql = `INSERT INTO CURRENT_JOB (User_ID, Job_ID) VALUES (?, ?)`;
+  const sql = `
+    UPDATE JOB_TABLE
+    SET User_ID = ?
+    WHERE Job_ID = ?;
+  `;
+
   return execute(sql, [userId, jobId]);
 };
 
 // mark a job as completed (moves it to job history and removes from current jobs)
 const completeJob = async (userId, jobId, remarks = '') => {
-  let sqlInsert = `
-    INSERT INTO JOB_HISTORY (User_ID, Job_ID, Completion_Date, Remarks)
-    VALUES (?, ?, NOW(), ?)
+  const selectSql = `
+    SELECT Business_ID, Description
+    FROM JOB_TABLE
+    WHERE Job_ID = ?;
   `;
-  let sqlDelete = `
-    DELETE FROM CURRENT_JOB WHERE User_ID = ? AND Job_ID = ?
+  const jobDetails = await execute(selectSql, [jobId]);
+
+  const insertSql = `
+    INSERT INTO JOB_HISTORY (User_ID, Job_ID, Business_ID, Completion_Date, Description, Remarks)
+    VALUES (?, ?, ?, NOW(), ?, ?);
   `;
-  
-  await execute(sqlInsert, [userId, jobId, remarks]);
-  return execute(sqlDelete, [userId, jobId]);
+  await execute(insertSql, [
+    userId,
+    jobId,
+    jobDetails[0].Business_ID,
+    jobDetails[0].Description,
+    remarks,
+  ]);
+
+  const deleteSql = `
+    DELETE FROM JOB_TABLE
+    WHERE Job_ID = ?;
+  `;
+  await execute(deleteSql, [jobId]);
+
+  console.log(`Job ${jobId} completed and moved to history.`);
 };
 
-// get chat messages for a specific job
-/*const getChatMessages = async (jobId) => {
-    let  sql = `
-    SELECT User_ID, Message_Content, Timestamp, Is_Read
-    FROM CHAT_MESSAGES
-    WHERE Job_ID = ?
-    ORDER BY Timestamp ASC
-  `;
-  return execute(sql, [jobId]);
-};
-*/
 // get notifications for a job
 const getNotifications = async (jobId) => {
   let sql = `
@@ -143,15 +159,20 @@ const getNotifications = async (jobId) => {
   return execute(sql, [userId]);
 };
 
-const getSubscription = async (jobId,businessId) => {
-  let sql = `
-    SELECT SUBSCRIPTION_TABLE.Subscription_ID, SUBSCRIPTION_TABLE.Endpoint, SUBSCRIPTION_TABLE.Auth_Key1,SUBSCRIPTION_TABLE.Auth_Key2
+const getSubscription = async (jobId, businessId) => {
+  const sql = `
+    SELECT 
+      SUBSCRIPTION_TABLE.Subscription_ID, 
+      SUBSCRIPTION_TABLE.Endpoint, 
+      SUBSCRIPTION_TABLE.Auth_Key1, 
+      SUBSCRIPTION_TABLE.Auth_Key2
     FROM SUBSCRIPTION_TABLE
-    JOIN CURRENT_JOB ON SUBSCRIPTION_TABLE.User_ID = CURRENT_JOB.User_ID
-    WHERE CURRENT_JOB.Job_ID = ? AND CURRENT_JOB.User_ID = ?
+    JOIN JOB_TABLE ON SUBSCRIPTION_TABLE.Job_ID = JOB_TABLE.Job_ID
+    WHERE JOB_TABLE.Job_ID = ? AND JOB_TABLE.Business_ID = ?;
   `;
-  return execute(sql, [jobId,businessId]);
-}
+
+  return execute(sql, [jobId, businessId]);
+};
 
 const closeDB = () => {
   db.end((err) => {
@@ -165,38 +186,41 @@ const closeDB = () => {
 
 const testFunctions = async () => {
   try {
-    const openall = await getOpenJobs();
-    console.log('Get open jobs with no user id :' + openall);
-    
-    const open = await getOpenJobs(5);
-    console.log('Get open jobs with user id 5'+ open);
+    const businessId = 1; 
+    const userId = 5; 
+    const jobId = 10; 
 
-    var history = await getJobHistory(5);
-    console.log('Get job history :'+ history);
 
-    var historyall = await getJobHistory();
-    console.log('Get job history :'+ historyall);
-    
-    var assign = await assignJobToUser(15, 1);
-    console.log('Assign job :'+ assign);
-    
-    var complete = await completeJob(5, 1, 'Completed');
-    console.log('Complete job :'+ complete);
-    
-    /*var messages = await getChatMessages(1);
-    console.log('Get chat messages :'+ messages);*/
-    
-    var notifications = await getNotifications(5);
-    console.log('Get notifications :'+ notifications);
-    
-    var subscription = await getSubscription(1, 1);
-    console.log('Get subscription :'+ subscription);
-    
+    const openAllJobs = await getOpenJobs(businessId);
+    console.log('All open jobs for business:', openAllJobs);
+
+    const openJobsForUser = await getOpenJobs(businessId, userId);
+    console.log('Open jobs for user:', openJobsForUser);
+
+    const jobHistoryForUser = await getJobHistory(businessId, userId);
+    console.log('Job history for user:', jobHistoryForUser);
+
+    const allJobHistory = await getJobHistory(businessId);
+    console.log('All job history for business:', allJobHistory);
+
+    const assignResult = await assignJobToUser(userId, jobId);
+    console.log('Job assigned to user:', assignResult);
+
+    const completeResult = await completeJob(userId, jobId, 'Completed successfully');
+    console.log('Job completed:', completeResult);
+
+    const notifications = await getNotifications(jobId);
+    console.log('Notifications for job:', notifications);
+
+    const subscription = await getSubscription(jobId, businessId);
+    console.log('Subscription details:', subscription);
+
+    const jobDetails = await getJobDetails(jobId);
+    console.log('Job details:', jobDetails);
+
     closeDB();
-
-  }
-  catch (err) {
-    console.error('Error:', err.message);
+  } catch (err) {
+    console.error('Error during testing:', err.message);
   }
 };
 
