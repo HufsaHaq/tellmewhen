@@ -42,7 +42,7 @@ const addNotification = async (userId, jobId, notificationContent) => {
 // jobs per user or all jobs if no user ID 
 const getOpenJobs = async (businessId, userId = null) => {
   let sql = `
-    SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_TABLE.URL, JOB_TABLE.Due_Date, MAPPING_TABLE.Random_ID
+    SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_TABLE.URL, JOB_TABLE.Due_Date
     FROM JOB_TABLE
     LEFT JOIN CURRENT_JOB ON JOB_TABLE.Job_ID = CURRENT_JOB.Job_ID
     WHERE JOB_TABLE.Business_ID = ?
@@ -61,7 +61,7 @@ const getOpenJobs = async (businessId, userId = null) => {
 // job history
 const getJobHistory = async (businessId, userId = null) => {
   let sql = `
-    SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_HISTORY.Completion_Date, JOB_HISTORY.Remarks, MAPPING_TABLE.Random_ID
+    SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_HISTORY.Completion_Date, JOB_HISTORY.Remarks
     FROM JOB_HISTORY
     JOIN JOB_TABLE ON JOB_HISTORY.Job_ID = JOB_TABLE.Job_ID
     WHERE JOB_TABLE.Business_ID = ?
