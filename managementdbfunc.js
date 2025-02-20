@@ -55,7 +55,7 @@ export const login = async (buisness, username, password) => {
   const sql = 'SELECT * FROM WORKER_TABLE WHERE Username =? AND Hashed_Password =? AND Business_ID =? ;';
   const businessIdResult = await executeQuery(selectbusinessid, [buisness]);
   const result = await executeQuery(sql, [username, password, businessIdResult]);
-  return result[0];
+  return result;
 };
 
 //Add new business
@@ -78,18 +78,18 @@ export const addUser = async (username, hashedPassword, businessId, privilegeLev
 
 // Delete worker/manager/admin
 export const deleteUser = async (workerId, currID) => {
-  const sql = `DELETE FROM WORKER_TABLE WHERE Worker_ID = ? AND Worker_ID <> ?;`;
+  const sql = `DELETE FROM WORKER_TABLE WHERE User_ID = ? AND User_ID <> ?;`;
   return executeQuery(sql, [workerId, currID]);
 };
 
 /*export const getLoginCredentials = async (username, password) => {
-  const sql = `SELECT Worker_ID, Business_ID, Privilege_level, Hashed_Password FROM WORKER_TABLE WHERE Username = ?; `;
+  const sql = `SELECT User_ID, Business_ID, Privilege_level, Hashed_Password FROM WORKER_TABLE WHERE Username = ?; `;
   return executeQuery(sql, [username, password]);
 };
 */
 // Edit worker/manager/admin login details
 export const editUserLogin = async (workerId, Username, newPassword) => {
-  const sql = `UPDATE WORKER_TABLE SET Hashed_Password = ? WHERE Worker_ID = ? AND Username = ?;`;
+  const sql = `UPDATE WORKER_TABLE SET Hashed_Password = ? WHERE User_ID = ? AND Username = ?;`;
   return executeQuery(sql, [newPassword, workerId, Username]);
 };
 
@@ -135,14 +135,14 @@ export const countOpenJobs = async () => {
 
 // Search for employees by name or ID
 export const searchEmployees = async (searchTerm, businessId) => {
-  const sql = `SELECT * FROM WORKER_TABLE WHERE Username LIKE ? OR Worker_ID = ? AND BuisnessID = ?;`;
+  const sql = `SELECT * FROM WORKER_TABLE WHERE Username LIKE ? OR User_ID = ? AND BuisnessID = ?;`;
   const params = [searchTerm, searchTerm, businessId]
   return executeQuery(sql, params);
 };
 
 // Change privilege levels
 export const changePrivilegeLevel = async (workerId, newPrivilegeLevel) => {
-  const sql = `UPDATE WORKER_TABLE SET Privilege_level = ? WHERE Worker_ID = ?;`;
+  const sql = `UPDATE WORKER_TABLE SET Privilege_level = ? WHERE User_ID = ?;`;
   return executeQuery(sql, [newPrivilegeLevel, workerId]);
 };
 
