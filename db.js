@@ -91,6 +91,45 @@ export const createaccesstoken = async () => {
   return executeQuery(sql);
 };
 
+export const deleteBusinesstable = async () => {
+  const sql = 'DROP TABLE IF EXISTS BUSINESS_TABLE';
+  return executeQuery(sql);
+};
+
+export const deleteWorkerstable = async () => {
+  const sql = 'DROP TABLE IF EXISTS WORKER_TABLE';
+  return executeQuery(sql);
+};
+
+export const deletejobstable = async () => {
+  const sql = 'DROP TABLE IF EXISTS JOB_TABLE';
+  return executeQuery(sql);
+};
+
+export const deletecurrentjobtable = async () => {
+  const sql = 'DROP TABLE IF EXISTS CURRENT_JOB';
+  return executeQuery(sql);
+};
+
+export const deletejobhistorytable = async () => {
+  const sql = 'DROP TABLE IF EXISTS JOB_HISTORY';
+  return executeQuery(sql);
+};
+
+export const deleteAccessTable = async () => {
+  const sql = 'DROP TABLE IF EXISTS ACCESS_TOKENS';
+  return executeQuery(sql);
+};
+
+export const deleteSubscriptionstable = async () => {
+  const sql = 'DROP TABLE IF EXISTS SUBSCRIPTION_TABLE';
+  return executeQuery(sql);
+};
+
+export const deleteNotificationstable = async () => {
+  const sql = 'DROP TABLE IF EXISTS NOTIFICATIONS';
+  return executeQuery(sql);
+};
 
 
 export const populateDatabase = async () => {
@@ -173,6 +212,14 @@ export const populateDatabase = async () => {
   await createsubscription_table();
   await createnotification();
   await createaccesstoken();
+  await deleteBusinesstable();
+  await deleteWorkerstable();
+  await deletejobstable();
+  await deletecurrentjobtable();
+  await deletejobhistorytable();
+  await deleteAccessTable();
+  await deleteSubscriptionstable();
+  await deleteNotificationstable();
   await populateDatabase(); 
 })();
 
