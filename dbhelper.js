@@ -51,7 +51,7 @@ const getOpenJobs = async (businessId, userId = null) => {
   const params = [businessId];
 
   if (userId) {
-    sql += ' AND CURRENT_JOB.User_ID = ?';
+    sql += ' AND JOB_TABLE.User_ID = ?';
     params.push(userId);
   }
 

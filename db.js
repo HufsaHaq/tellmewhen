@@ -42,38 +42,23 @@ export const createbusiness = async () => {
 };
 
 export const createworker = async () => {
-  const sql =     `CREATE TABLE IF NOT EXISTS WORKER_TABLE (Worker_ID INT AUTO_INCREMENT PRIMARY KEY,Username VARCHAR(255) NOT NULL,Business_ID INT,Privilege_level INT,Hashed_Password VARCHAR(255) NOT NULL,FOREIGN KEY (Business_ID) REFERENCES BUSINESS_TABLE(Business_ID));`;
+  const sql =     `CREATE TABLE IF NOT EXISTS WORKER_TABLE (User_ID INT AUTO_INCREMENT PRIMARY KEY,Username VARCHAR(255) NOT NULL,Business_ID INT,Privilege_level INT,Hashed_Password VARCHAR(255) NOT NULL,FOREIGN KEY (Business_ID) REFERENCES BUSINESS_TABLE(Business_ID));`;
 
   return executeQuery(sql);
 
 };
 
 export const createjob = async () => {
-  const sql =     `CREATE TABLE IF NOT EXISTS JOB_TABLE (Job_ID INT PRIMARY KEY, Description VARCHAR(255) NOT NULL,URL VARCHAR(255) NOT NULL,Due_Date DATETIME);`;
-
-  return executeQuery(sql);
-};
-
-export const createcurrentjob = async () => {
-  const sql =     `CREATE TABLE IF NOT EXISTS CURRENT_JOB (User_ID INT,Job_ID INT,PRIMARY KEY (User_ID, Job_ID),FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(Worker_ID),FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
+  const sql =     `CREATE TABLE IF NOT EXISTS JOB_TABLE (Job_ID INT PRIMARY KEY, Business_ID INT, User_ID INT, Description VARCHAR(255) NOT NULL,URL VARCHAR(255) NOT NULL,Due_Date DATETIME,FOREIGN KEY (Business_ID) REFERENCES BUSINESS_TABLE(Business_ID), FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(User_ID));`;
 
   return executeQuery(sql);
 };
 
 export const createjobhistory = async () => {
-  const sql =     `CREATE TABLE IF NOT EXISTS JOB_HISTORY (History_ID INT AUTO_INCREMENT PRIMARY KEY,User_ID INT,Job_ID INT,Completion_Date DATETIME,Remarks VARCHAR(255),FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(Worker_ID),FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
+  const sql =     `CREATE TABLE IF NOT EXISTS JOB_HISTORY (History_ID INT AUTO_INCREMENT PRIMARY KEY,User_ID INT,Job_ID INT,Completion_Date DATETIME,Remarks VARCHAR(255),FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(User_ID),FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
 
   return executeQuery(sql);
 };
-
-/*export const createchat_messages = async () => {
-  const sql =     `CREATE TABLE IF NOT EXISTS CHAT_MESSAGES (Message_ID INT AUTO_INCREMENT PRIMARY KEY,User_ID INT,Job_ID INT,Message_Content VARCHAR(255) NOT NULL,Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,Is_Read BOOLEAN DEFAULT FALSE,FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(Worker_ID),FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
-  return executeQuery(sql);
-};
-export const createmapping = async () => {
-  const sql =  `CREATE TABLE IF NOT EXISTS MAPPING_TABLE (Random_ID INT AUTO_INCREMENT PRIMARY KEY, Job_ID INT,FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
-  return executeQuery(sql);
-}*/
 
 export const createsubscription_table = async () => {
   const sql =     `CREATE TABLE IF NOT EXISTS SUBSCRIPTION_TABLE (Subscription_ID INT AUTO_INCREMENT PRIMARY KEY,Endpoint VARCHAR(255) NOT NULL,Auth_Key1 VARCHAR(255) NOT NULL,Auth_Key2 VARCHAR(255) NOT NULL,Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,Job_ID INT,FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
@@ -82,12 +67,12 @@ export const createsubscription_table = async () => {
 };
 
 export const createnotification = async () => {
-  const sql =     `CREATE TABLE IF NOT EXISTS NOTIFICATIONS (Notification_ID INT AUTO_INCREMENT PRIMARY KEY,User_ID INT,Job_ID INT,Notification_Content VARCHAR(255) NOT NULL,Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,Is_Read BOOLEAN DEFAULT FALSE,FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(Worker_ID),FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
+  const sql =     `CREATE TABLE IF NOT EXISTS NOTIFICATIONS (Notification_ID INT AUTO_INCREMENT PRIMARY KEY,User_ID INT,Job_ID INT,Notification_Content VARCHAR(255) NOT NULL,Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,Is_Read BOOLEAN DEFAULT FALSE,FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(User_ID),FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID));`;
   return executeQuery(sql);
 };
 
 export const createaccesstoken = async () => {
-  const sql =     `CREATE TABLE IF NOT EXISTS ACCESS_TOKENS (Token_ID INT AUTO_INCREMENT PRIMARY KEY,User_ID INT NOT NULL,Access_Token VARCHAR(255) NOT NULL,Expiration_Time DATETIME NOT NULL,FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(Worker_ID));`;
+  const sql =     `CREATE TABLE IF NOT EXISTS ACCESS_TOKENS (Token_ID INT AUTO_INCREMENT PRIMARY KEY,User_ID INT NOT NULL,Access_Token VARCHAR(255) NOT NULL,Expiration_Time DATETIME NOT NULL,FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(User_ID));`;
   return executeQuery(sql);
 };
 
@@ -103,11 +88,6 @@ export const deleteWorkerstable = async () => {
 
 export const deletejobstable = async () => {
   const sql = 'DROP TABLE IF EXISTS JOB_TABLE';
-  return executeQuery(sql);
-};
-
-export const deletecurrentjobtable = async () => {
-  const sql = 'DROP TABLE IF EXISTS CURRENT_JOB';
   return executeQuery(sql);
 };
 
@@ -150,16 +130,10 @@ export const populateDatabase = async () => {
 
       // Insert into JOB_TABLE
       const jobResult = await executeQuery(
-          "INSERT INTO JOB_TABLE (Description, URL, Due_Date) VALUES (?, ?, ?)",
-          ['Fix server issues', 'https://techcorp.com/job/1', '2025-03-01 12:00:00']
+          "INSERT INTO JOB_TABLE (Job_ID, Description, URL, Due_Date) VALUES (?,?, ?, ?)",
+          [10,'Fix server issues', 'https://techcorp.com/job/1', '2025-03-01 12:00:00']
       );
-      const jobId = jobResult.insertId;
-
-      // Insert into CURRENT_JOB
-      await executeQuery(
-          "INSERT INTO CURRENT_JOB (User_ID, Job_ID) VALUES (?, ?)",
-          [workerId, jobId]
-      );
+      const jobId = jobResult.Job_ID;
 
       // Insert into JOB_HISTORY
       await executeQuery(
@@ -167,11 +141,6 @@ export const populateDatabase = async () => {
           [workerId, jobId, '2025-02-01 18:00:00', 'Job completed successfully']
       );
 
-      // Insert into CHAT_MESSAGES
-      /*await executeQuery(
-          "INSERT INTO CHAT_MESSAGES (User_ID, Job_ID, Message_Content) VALUES (?, ?, ?)",
-          [workerId, jobId, 'Is this issue still happening?']
-      );*/
 
       // Insert into SUBSCRIPTION_TABLE
       await executeQuery(
@@ -203,23 +172,20 @@ export const populateDatabase = async () => {
 //run create func
 
 (async () => {
+  //await deleteNotificationstable();
+  //await deleteSubscriptionstable();
+  //await deleteAccessTable();
+  //await deletejobhistorytable();
+  //await deletejobstable();
+  //await deleteWorkerstable();
+  //await deleteBusinesstable();
   await createbusiness();
   await createworker(); 
   await createjob();
-  await createcurrentjob();
   await createjobhistory();
-  //await createchat_messages();
   await createsubscription_table();
   await createnotification();
   await createaccesstoken();
-  //await deleteBusinesstable();
-  //await deleteWorkerstable();
-  //await deletejobstable();
-  //await deletecurrentjobtable();
-  //await deletejobhistorytable();
-  //await deleteAccessTable();
-  //await deleteSubscriptionstable();
-  //await deleteNotificationstable();
   await populateDatabase(); 
 })();
 
