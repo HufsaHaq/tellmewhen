@@ -212,14 +212,14 @@ export const populateDatabase = async () => {
   await createsubscription_table();
   await createnotification();
   await createaccesstoken();
-  await deleteBusinesstable();
-  await deleteWorkerstable();
-  await deletejobstable();
-  await deletecurrentjobtable();
-  await deletejobhistorytable();
-  await deleteAccessTable();
-  await deleteSubscriptionstable();
-  await deleteNotificationstable();
+  //await deleteBusinesstable();
+  //await deleteWorkerstable();
+  //await deletejobstable();
+  //await deletecurrentjobtable();
+  //await deletejobhistorytable();
+  //await deleteAccessTable();
+  //await deleteSubscriptionstable();
+  //await deleteNotificationstable();
   await populateDatabase(); 
 })();
 
