@@ -71,10 +71,6 @@ export const createnotification = async () => {
   return executeQuery(sql);
 };
 
-export const createaccesstoken = async () => {
-  const sql =     `CREATE TABLE IF NOT EXISTS ACCESS_TOKENS (Token_ID INT AUTO_INCREMENT PRIMARY KEY,User_ID INT NOT NULL,Access_Token VARCHAR(255) NOT NULL,Expiration_Time DATETIME NOT NULL,FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(User_ID));`;
-  return executeQuery(sql);
-};
 
 export const deleteBusinesstable = async () => {
   const sql = 'DROP TABLE IF EXISTS BUSINESS_TABLE';
@@ -93,11 +89,6 @@ export const deletejobstable = async () => {
 
 export const deletejobhistorytable = async () => {
   const sql = 'DROP TABLE IF EXISTS JOB_HISTORY';
-  return executeQuery(sql);
-};
-
-export const deleteAccessTable = async () => {
-  const sql = 'DROP TABLE IF EXISTS ACCESS_TOKENS';
   return executeQuery(sql);
 };
 
@@ -174,7 +165,6 @@ export const populateDatabase = async () => {
 (async () => {
   //await deleteNotificationstable();
   //await deleteSubscriptionstable();
-  //await deleteAccessTable();
   //await deletejobhistorytable();
   //await deletejobstable();
   //await deleteWorkerstable();
@@ -185,7 +175,6 @@ export const populateDatabase = async () => {
   await createjobhistory();
   await createsubscription_table();
   await createnotification();
-  await createaccesstoken();
   await populateDatabase(); 
 })();
 

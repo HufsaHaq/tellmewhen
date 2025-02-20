@@ -9,6 +9,7 @@
 // need to add func to return buisness name and pfp DONE
 import mysql from 'mysql';
 import dotenv from 'dotenv';
+import { access } from 'fs';
 dotenv.config();
 
 const db = mysql.createConnection({
@@ -104,9 +105,9 @@ export const deleteBusiness = async (businessId) => {
 };
 
 // Get the number of open jobs
-export const countOpenJobs = async () => {
+export const countOpenJobs = async (businessId) => {
     // SQL query to count the number of open jobs
-    const sql = `SELECT COUNT(*) AS openJobs FROM CURRENT_JOB;`;
+    const sql = `SELECT COUNT(*) AS openJobs FROM JOB_TABLE WHERE Business_ID = ?;`;
     
     const result = await executeQuery(sql);
     
@@ -116,28 +117,26 @@ export const countOpenJobs = async () => {
     } else {
       return 0;
     }
-  };
+};
   
-  // Get the total number of jobs created
-  export const countTotalJobs = async () => {
+// Get the total number of jobs created
+export const countTotalJobs = async (businessId) => {
     // SQL query to count the total number of jobs
-    const sql = `SELECT COUNT(*) AS totalJobs FROM JOB_TABLE;`;
-    
-    const result = await executeQuery(sql);
-    
+    const sql = `SELECT COUNT(*) AS totalopenJobs FROM JOB_TABLE WHERE Business_ID = ?;`;
+    const sqluserID = 'SELECT User_ID FROM WORkER_TABLE WHERE Business_ID = ?;';
+    const sqlCOUNT = `SELECT COUNT(*) AS totalclosedJobs FROM JOB_HISTORY WHERE User_ID = ?;`;   
+    const OPEN = await executeQuery(sql, [businessId]);
+    const userIDResult = await executeQuery(sqluserID, [businessId]);
+    const totalClosedJobsResult = await executeQuery(sqlCOUNT, [userIDResult[0].User_ID]);
     // if there is a result return the totalJobs count or need to return 0 to prevent error
-    if (result[0]) {
-      return result[0].totalJobs;
-    } else {
-      return 0;
-    }
-  };
+    return totalClosedJobsResult + OPEN
+};
 
-// Search for employees by name or ID
+
 export const searchEmployees = async (searchTerm, businessId) => {
-  const sql = `SELECT * FROM WORKER_TABLE WHERE Username LIKE ? OR User_ID = ? AND BuisnessID = ?;`;
-  const params = [searchTerm, searchTerm, businessId]
-  return executeQuery(sql, params);
+    const sql = `SELECT * FROM WORKER_TABLE WHERE (Username LIKE ? OR User_ID = ?) AND Business_ID = ?;`;
+    const params = [`%${searchTerm}%`, searchTerm, businessId];
+    return executeQuery(sql, params);
 };
 
 // Change privilege levels
