@@ -1,7 +1,7 @@
 import axios from "axios";
 import { RefreshAccessToken } from "./session_management";
 
-function AddWorker(name, password, businessID, privilegeLevel, accessToken)
+export function AddWorker(name, password, businessID, privilegeLevel, accessToken)
 {
     /* 
     Adds a worker to the business
@@ -53,7 +53,7 @@ function AddWorker(name, password, businessID, privilegeLevel, accessToken)
 
 }
 
-async function DeleteWorker(workeridTARGET, accessToken) {
+export async function DeleteWorker(workeridTARGET, accessToken) {
     /*
     Deletes a worker
 
@@ -93,7 +93,7 @@ async function DeleteWorker(workeridTARGET, accessToken) {
     )
 }
 
-function EditUserLogin(workerID, username, password, accessToken)
+export function EditUserLogin(workerID, username, password, accessToken)
 {
     /*
     :)
@@ -101,7 +101,7 @@ function EditUserLogin(workerID, username, password, accessToken)
     */
 }
 
-async function DeleteBusiness(businessID, accessToken) {
+export async function DeleteBusiness(businessID, accessToken) {
     /*
     Deletes the business
     Returns:
@@ -137,29 +137,29 @@ async function DeleteBusiness(businessID, accessToken) {
     });
 }
 
-function CountOpenJobs(businessID, accessToken)
+export function CountOpenJobs(businessID, accessToken)
 {
 
 }
 
-function CountTotalJobs(businessID, accessToken)
+export function CountTotalJobs(businessID, accessToken)
 {
 
 }
 
-function SearchEmployees(searchTerm, accessToken)
+export function SearchEmployees(searchTerm, accessToken)
 {
 
 }
 
-function GetBusinessDetails(businessID, accessToken) {
+export function GetBusinessDetails(businessID, accessToken) {
 
 }
 
-function RenameBusiness(businessID, newName, accessToken) {
+export function RenameBusiness(businessID, newName, accessToken) {
 
 }
 
-function ChangeBusinessProfilePhoto(businessID, base64img, accessToken) {
+export function ChangeBusinessProfilePhoto(businessID, base64img, accessToken) {
 
 }

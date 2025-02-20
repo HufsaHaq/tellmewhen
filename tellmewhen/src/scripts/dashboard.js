@@ -1,55 +1,6 @@
 import axios from "axios";
 import { GetTokens, RefreshAccessToken } from "./session_management";
-
-//THIS ONE DONE, USE AS TEMPLATE!!!!! :)
-async function GetAllCurrentJobs(businessID, accessToken) {
-    /*
-    Gets all the current jobs for a business
-    Parameters:
-        businessID: the businesses ID
-        accessToken: the access token from the backend
-    Returns:
-        string: json object with all the current jobs
-
-    */
-    let base = localStorage["endpoint"];
-    let attempt = await axios.get(
-        base + "/current_jobs/" + businessID,
-        {
-            headers: {
-                Authorization: "Bearer " + accessToken,
-            },
-        },
-    )
-        .then((res) => {
-            // if the token is invalid or expired
-            if (res.statusCode === 401) {
-                console.log(res.message);
-                // checks to see if the refresh access token was valid
-                if (RefreshAccessToken(accessToken) === true) {
-                    // Recalls the function with the correct access token
-                    return GetAllCurrentJobs(businessID, localStorage["accessToken"]);
-                }
-                else {
-                    // If the access token passed is completely invalid, then we need to get a valid one
-                    window.location.href = "/auth";
-                    return null;
-                }
-            }
-            // if the API call returned valid data
-            else if (res.statusCode === 200) {
-                return res;
-            }
-        });
-}
-
-async function GetActiveJobs(userID, accessToken)
-{
-    let base = localStorage["endpoint"];
-    
-}
-
-async function GetAllJobHistory(businessID, accessToken) {
+export async function GetAllJobHistory(businessID, accessToken) {
     /*
     Gets all the current jobs for a business
     Parameters:
@@ -59,99 +10,45 @@ async function GetAllJobHistory(businessID, accessToken) {
         string: json object with all the job history
     */
     let base = localStorage["endpoint"];
+    let data = null;
     let attempt = await axios.get(
-        base + "/job_history/" + businessID, // REQUEST ENDPOINT
+        base + "/jobs/history/" + businessID, // REQUEST ENDPOINT
         {
             headers: {
                 // REQUEST HEADERS
-                Authorization: "Bearer " + accessToken,
+                "Authorization": "Bearer " + accessToken,
             },
         },
     )
         .then((res) => {
-            // if the token is invalid or expired
-            if (res.statusCode === 401) {
-                console.log(res.message);
-                // checks to see if the refresh access token was valid
-                if (RefreshAccessToken(accessToken) === true) {
-                    // Recalls the function with the correct access token
-                    return GetAllCurrentJobs(businessID, localStorage["accessToken"]);
-                }
-                else {
-                    // If the access token passed is completely invalid, then we need to get a valid one
-                    window.location.href = "/auth";
-                    return null;
-                }
+            if(res.statusCode === 200)
+            {
+                data = res.data
             }
-            // if the API call returned valid data
-            else if (res.statusCode === 200) {
-                return res;
+            else{
+                data = res;
             }
+            
         });
-}
-function GetJobHistory(workerID, accessToken) {
-    /* 
-
-    :)
-
-    Gets the current job history that is assigned to a specific worker 
-    Parameters:
-        workerID: employees ID
-        accessToken: access token from the backend
-    Returns:
-        string: json object with job history
-    */
-
-    let base = localStorage["endpoint"];
-
+    return data;
 }
 
-function AddJob(workerID, description, dueDate, accessToken) {
-    /*
-
-    :)
-
-    Adds a new job for a given user
-    Parameters:
-        workerID: employees ID
-        jobID: job ID
-        description: job description
-        url: job URL
-        dueDate: job due date
-        accessToken: access token from the backend
-    Returns:
-        bool: whether the action was successful
-    */
-}
-
-function AssignJobToWorker(workerID, accessToken) {
-    /*
-
-    :)
-
-    Assigns a job to a worker 
-    Parameters:
-        workerID: employees ID
-        jobID: job ID
-        accessToken: access token from the backend
-    Returns:
-        bool: whether the action was successful
-    */
-}
-
-function CompleteJob(workerID, jobID, remarks, accessToken)
+export async function GetNumberOfOpenJobs(businessID, accessToken)
 {
     /*
-
-    :>
-
-    Completes a job
-    Parameters:
-        workerID: employees ID
-        jobID: job ID
-        remarks: job completion remarks
-        accessToken: access token from the backend
-    Returns:
-        bool: whether the action was successful
+    Gets the number of open jobs for a business (used on accounts page)
     */
+   let base = localStorage["endpoint"]
+   let data = null;
+   let attempt = await axios.get(
+       base + "/jobs/open_jobs/" + businessID, // REQUEST ENDPOINT
+       {
+            headers:{
+                "Authorization": "Bearer " + accessToken
+            }
+       }
+    ).then(res => {
+        data = res.data;
+    })
+    return data;
 }
