@@ -83,11 +83,7 @@ export const deleteUser = async (workerId, currID) => {
   return executeQuery(sql, [workerId, currID]);
 };
 
-/*export const getLoginCredentials = async (username, password) => {
-  const sql = `SELECT User_ID, Business_ID, Privilege_level, Hashed_Password FROM WORKER_TABLE WHERE Username = ?; `;
-  return executeQuery(sql, [username, password]);
-};
-*/
+
 // Edit worker/manager/admin login details
 export const editUserLogin = async (workerId, Username, newPassword) => {
   const sql = `UPDATE WORKER_TABLE SET Hashed_Password = ? WHERE User_ID = ? AND Username = ?;`;
@@ -121,17 +117,30 @@ export const countOpenJobs = async (businessId) => {
   
 // Get the total number of jobs created
 export const countTotalJobs = async (businessId) => {
-    // SQL query to count the total number of jobs
-    const sql = `SELECT COUNT(*) AS totalopenJobs FROM JOB_TABLE WHERE Business_ID = ?;`;
-    const sqluserID = 'SELECT User_ID FROM WORkER_TABLE WHERE Business_ID = ?;';
-    const sqlCOUNT = `SELECT COUNT(*) AS totalclosedJobs FROM JOB_HISTORY WHERE User_ID = ?;`;   
-    const OPEN = await executeQuery(sql, [businessId]);
-    const userIDResult = await executeQuery(sqluserID, [businessId]);
-    const totalClosedJobsResult = await executeQuery(sqlCOUNT, [userIDResult[0].User_ID]);
-    // if there is a result return the totalJobs count or need to return 0 to prevent error
-    return totalClosedJobsResult + OPEN
-};
+  try {
+    const openJobsSql = `
+      SELECT COUNT(*) AS totalOpenJobs
+      FROM JOB_TABLE
+      WHERE Business_ID = ?;
+    `;
+    const openJobsResult = await executeQuery(openJobsSql, [businessId]);
+    const closedJobsSql = `
+      SELECT COUNT(*) AS totalClosedJobs
+      FROM JOB_HISTORY
+      WHERE Business_ID = ?;
+    `;
+    const closedJobsResult = await executeQuery(closedJobsSql, [businessId]);
 
+    const totalOpenJobs = openJobsResult[0]?.totalOpenJobs || 0;
+    const totalClosedJobs = closedJobsResult[0]?.totalClosedJobs || 0;
+
+    // Return the counts as an object
+    return totalOpenJobs + totalClosedJobs;
+  } catch (error) {
+    console.error('Error counting jobs:', error.message);
+    throw error; 
+  }
+};
 
 export const searchEmployees = async (searchTerm, businessId) => {
     const sql = `SELECT * FROM WORKER_TABLE WHERE (Username LIKE ? OR User_ID = ?) AND Business_ID = ?;`;
