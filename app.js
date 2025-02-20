@@ -5,10 +5,11 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
-
+import cors from "cors";
 import {indexRouter} from "./routes/index.js";
 import {qrRouter} from './routes/qr.js';
 import {deletionRouter} from './routes/delRoutes.js';
+import cors from "cors";
 
 dotenv.config();
 
@@ -19,8 +20,10 @@ const __dirname = import.meta.dirname;
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug'); // do we need a view engine
 
+app.use(cors({ origin: "*" }));
 app.use(logger('dev'));
 app.use(express.json());
+app.use(cors({ origin: "*" }));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(bodyParser.json());
