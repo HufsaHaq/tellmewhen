@@ -91,6 +91,8 @@ export const createaccesstoken = async () => {
   return executeQuery(sql);
 };
 
+
+
 export const populateDatabase = async () => {
   try {
       // Insert into BUSINESS_TABLE
@@ -167,7 +169,6 @@ export const populateDatabase = async () => {
   await createjob();
   await createcurrentjob();
   await createjobhistory();
-  await createmapping(); 
   //await createchat_messages();
   await createsubscription_table();
   await createnotification();

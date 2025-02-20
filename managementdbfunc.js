@@ -134,10 +134,10 @@ export const countOpenJobs = async () => {
   };
 
 // Search for employees by name or ID
-export const searchEmployees = async (searchTerm) => {
-  const sql = `SELECT * FROM WORKER_TABLE WHERE Username LIKE ? OR Worker_ID = ?;`;
-  const term = `%${searchTerm}%`;
-  return executeQuery(sql, [term, searchTerm]);
+export const searchEmployees = async (searchTerm, businessId) => {
+  const sql = `SELECT * FROM WORKER_TABLE WHERE Username LIKE ? OR Worker_ID = ? AND BuisnessID = ?;`;
+  const params = [searchTerm, searchTerm, businessId]
+  return executeQuery(sql, params);
 };
 
 // Change privilege levels
