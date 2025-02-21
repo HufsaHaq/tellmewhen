@@ -116,31 +116,49 @@ export const populateDatabase = async () => {
           ['johndoe', businessId, 1, 'hashed_password']
       );
       const workerId = workerResult.insertId;
-
+      /*
       // Insert into JOB_TABLE
-      const jobResult = await executeQuery(
-          "INSERT INTO JOB_TABLE (Job_ID, Description, URL, Due_Date) VALUES (?,?, ?, ?)",
-          [10,'Fix server issues', 'https://techcorp.com/job/1', '2025-03-01 12:00:00']
+      await executeQuery(
+          "INSERT INTO JOB_TABLE (Job_ID, Business_ID, Description, URL, Due_Date) VALUES (?,?,?, ?, ?)",
+          ['9', 2,'Fix server issues', 'https://techcorp.com/job/1', '2025-03-01 12:00:00']
       );
-      const jobId = jobResult.Job_ID;
+      await executeQuery(
+        "INSERT INTO JOB_TABLE (Job_ID,  Business_ID,Description, URL, Due_Date) VALUES (?,?,?, ?, ?)",
+        ['202',3,'Fix server issues', 'https://techcorp.com/job/1', '2025-03-01 12:00:00']
+      );
+     
+      await executeQuery(
+        "INSERT INTO JOB_TABLE (Job_ID, Business_ID,Description, URL, Due_Date) VALUES (?,?,?, ?, ?)",
+        ['228', 2,'Fix server issues', 'https://techcorp.com/job/1', '2025-03-01 12:00:00']
+      );
+      */
+      await executeQuery(
+        "INSERT INTO JOB_HISTORY (User_ID, Job_ID, Business_ID, Completion_Date, Remarks) VALUES (?, ?, ?, ?, ?)",
+        [workerId, '202',2, '2025-02-01 18:00:00', 'https://techcorp.com/job/1']
+      );
 
       // Insert into JOB_HISTORY
       await executeQuery(
-          "INSERT INTO JOB_HISTORY (User_ID, Job_ID, Completion_Date, Remarks) VALUES (?, ?, ?, ?)",
-          [workerId, jobId, '2025-02-01 18:00:00', 'Job completed successfully']
+          "INSERT INTO JOB_HISTORY (User_ID, Job_ID, Business_ID, Completion_Date, Remarks) VALUES (?, ?, ?, ?, ?)",
+          [workerId, '1', 2, '2025-02-01 18:00:00', 'Job completed successfully']
+      );
+
+      await executeQuery(
+        "INSERT INTO JOB_HISTORY (User_ID, Job_ID, Business_ID, Completion_Date, Remarks) VALUES (?, ?, ?, ?, ?)",
+        [workerId, '232', 2,'2025-02-01 18:00:00', 'Job completed successfully']
       );
 
 
       // Insert into SUBSCRIPTION_TABLE
       await executeQuery(
           "INSERT INTO SUBSCRIPTION_TABLE (Endpoint, Auth_Key1, Auth_Key2, Job_ID) VALUES (?, ?, ?, ?)",
-          ['https://pushservice.com', 'authkey1', 'authkey2', jobId]
+          ['https://pushservice.com', 'authkey1', 'authkey2', '202']
       );
 
       // Insert into NOTIFICATIONS
       await executeQuery(
           "INSERT INTO NOTIFICATIONS (User_ID, Job_ID, Notification_Content) VALUES (?, ?, ?)",
-          [workerId, jobId, 'New job assigned to you']
+          [workerId, '202', 'New job assigned to you']
       );
 
       console.log('Database populated successfully!');
