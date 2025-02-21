@@ -14,7 +14,7 @@ import { error } from 'console';
 //provide path to .env file
 dotenv.config('../')
 
-businessRouter = express.Router();
+const businessRouter = express.Router();
 
 businessRouter.get('/info/:bid', authMiddleWare,adminMiddleWare, async (req,res) =>{
     // return info about business
@@ -112,6 +112,8 @@ businessRouter.post('/addUser/:bid',authMiddleWare,adminMiddleWare,(req,res) =>{
     res.status(200).json({message:`New user added: username:${name} privillige level:${privLevel}`})
   
   })
+
+  export { businessRouter }
 
 
 

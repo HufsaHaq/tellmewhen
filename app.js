@@ -9,6 +9,8 @@ import cors from "cors";
 import {indexRouter} from "./routes/index.js";
 import {qrRouter} from './routes/qr.js';
 import {deletionRouter} from './routes/delRoutes.js';
+import { jobRouter } from './routes/jobs.js';
+import {businessRouter} from './routes/manageBusiness.js';
 
 dotenv.config();
 
@@ -30,6 +32,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/qr', qrRouter);
 app.use('/delete', deletionRouter)
+app.use('/jobs', jobRouter)
+app.use("/business", businessRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

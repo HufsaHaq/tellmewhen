@@ -45,13 +45,8 @@ indexRouter.post('/login', async (req, res) => {
   if (loginCredentials){
     const privilige = loginCredentials.Privilege_level;
 
-    let isMatch;
+    let isMatch = bcrypt.compare(password, loginCredentials.Hashed_Password)
 
-    if(process.env.NODE_ENV === "development"){
-       isMatch = await loginCredentials.Hashed_Password === password;
-    }else{
-       isMatch = bcrypt.compare(password, loginCredentials.Hashed_Password)
-    }
     
     if (isMatch){
       // create new jwt
