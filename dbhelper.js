@@ -44,7 +44,6 @@ const getOpenJobs = async (businessId, userId = null) => {
   let sql = `
     SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_TABLE.URL, JOB_TABLE.Due_Date
     FROM JOB_TABLE
-    LEFT JOIN CURRENT_JOB ON JOB_TABLE.Job_ID = CURRENT_JOB.Job_ID
     WHERE JOB_TABLE.Business_ID = ?
   `;
 
@@ -81,13 +80,47 @@ const getJobHistory = async (businessId, userId = null) => {
 };
 
 // Function to create a new job
-const createNewJob = async (businessId, userId = null, description, url, dueDate) => {
-  const sql = `
-    INSERT INTO JOB_TABLE (Business_ID, User_ID, Description, URL, Due_Date)
-    VALUES (?, ?, ?, ?, ?);
-  `;
+const generateUniqueJobId = async () => {
+  let isUnique = false;
+  let randomJobId;
 
-  return execute(sql, [businessId, userId, description, url, dueDate]);
+  while (!isUnique) {
+    random_job_id = randomBytes(16).toString('hex');
+
+    const checkJobTableSql = `
+      SELECT COUNT(*) AS count
+      FROM JOB_TABLE
+      WHERE Job_ID = ?;
+    `;
+    const checkHistoryTableSql = `
+      SELECT COUNT(*) AS count
+      FROM JOB_HISTORY
+      WHERE Job_ID = ?;
+    `;
+
+    const jobTableResult = await executeQuery(checkJobTableSql, [randomJobId]);
+    const historyTableResult = await executeQuery(checkHistoryTableSql, [randomJobId]);
+
+    if (jobTableResult[0].count === 0 && historyTableResult[0].count === 0) {
+      isUnique = true;
+    }
+  }
+
+  return randomJobId;
+};
+
+const createNewJob = async (businessId, userId = null, description, url, dueDate) => {
+    const randomJobId = await generateUniqueJobId();
+
+    // Insert the new job into JOB_TABLE
+    const sql = `
+      INSERT INTO JOB_TABLE (Job_ID, Business_ID, User_ID, Description, URL, Due_Date)
+      VALUES (?, ?, ?, ?, ?, ?);
+    `;
+
+    const result = await executeQuery(sql, [randomJobId, businessId, userId, description, url, dueDate]);
+    console.log('New job created with ID:', randomJobId);
+    return result;
 };
 //----------------------------------------------------------------
 const getJobDetails = async (jobId) => {
