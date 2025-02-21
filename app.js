@@ -34,13 +34,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/qr', qrRouter);
 app.use('/delete', deletionRouter)
-<<<<<<< Updated upstream
+
 app.use('/jobs', jobRouter)
 app.use("/business", businessRouter);
-=======
+
 app.use('/jobs',jobRouter)
 app.use('/customer',customerRouter)
->>>>>>> Stashed changes
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
