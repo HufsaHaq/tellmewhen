@@ -3,8 +3,8 @@ To Do:
 - Decrypt  */
 import express from 'express';
 import { getJobHistory, getOpenJobs, getNotifications } from '../dbhelper.js';
-import { sendNotification } from 'web-push';
-import { job_id_to_random_job_id } from 'qr_generation.js'
+// import { sendNotification } from 'web-push'
+// import { job_id_to_random_job_id } from '../qr_generation.js'
 
 const customerRouter = express.Router();
 

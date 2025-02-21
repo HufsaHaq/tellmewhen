@@ -113,8 +113,5 @@ businessRouter.post('/addUser/:bid',authMiddleWare,adminMiddleWare,(req,res) =>{
   
   })
 
-  export { businessRouter }
-
-
 export {businessRouter};
 

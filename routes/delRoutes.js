@@ -1,12 +1,10 @@
 import express from "express";
 import { deleteBusiness,deleteUser } from "../managementdbfunc.js";
-import {authMiddleWare} from '../authMiddleWare.js';
+import {authMiddleWare, adminMiddleWare} from '../authMiddleWare.js';
 
 const deletionRouter = express.Router()
 
-deletionRouter.post("/:bid",authMiddleWare,(req,res) =>{
-    const access_token = req.access_token;
-
+deletionRouter.post("/:bid",authMiddleWare,adminMiddleWare,(req,res) =>{
     //do validaion
     res.json('')
     const businessId = req.params.bid
