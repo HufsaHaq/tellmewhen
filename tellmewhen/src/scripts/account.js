@@ -1,165 +1,174 @@
 import axios from "axios";
-import { RefreshAccessToken } from "./session_management";
 
-export function AddWorker(name, password, businessID, privilegeLevel, accessToken)
-{
-    /* 
-    Adds a worker to the business
-
-    Parameters:
-        name: The name of the worker
-        password: The password for the worker (THIS NEEDS TO BE UNHASHED, THIS IS HANDLED IN THIS FUNCTION!)
-        businessID: The ID of the business the worker will be added to
-        privilegeLevel: The privilege level of the worker
-        accessToken: The access token for the user performing the operation
-    Returns:
-        bool: Whether the operation was successful
-
-    */
-    let base = localStorage["endpoint"];
-    let attempt = axios.post(
-        base + "/" + businessID + "/addUser",
-        {
-            headers:
-            {
-                'Authorization': 'Bearer' + accessToken
-            },
-            body:{
-                name: name,
-                password:  "",// NEED TO IMPLEMENT THE PASSWORD HASH
-                privLevel: privilegeLevel
-            }
-        }
-    ).then((res) => {
-        // if the token is invalid or expired
-        if (res.statusCode === 401) {
-            console.log(res.message);
-            // checks to see if the refresh access token was valid
-            if (RefreshAccessToken(accessToken) === true) {
-                // Recalls the function with the correct access token
-                return AddWorker(name, password, businessID, privilegeLevel, localStorage["accessToken"]);
-            }
-            else {
-                // If the access token passed is completely invalid, then we need to get a valid one
-                GetTokens()
-                return false;
-            }
-        }
-        // if the API call returned valid data
-        else {
-            return true;
-        }
-    })
-
-}
-
-export async function DeleteWorker(workeridTARGET, accessToken) {
+export async function GetNumberOfOpenJobs(businessID, accessToken) {
     /*
-    Deletes a worker
-
-    Returns:
-        bool: whether the operation was successful
+    Gets the number of open jobs for a business (used on accounts page)
     */
-    let base = localStorage["endpoint"];
-    let attempt = await axios.post(
-        base + "/delete/user/" + workeridTARGET,
+
+
+    let base = localStorage["endpoint"]
+    let data = null;
+    await axios.get(
+        base + "/jobs/open_jobs/" + businessID, // REQUEST ENDPOINT
         {
             headers: {
-                'Authorization': 'Bearer' + accessToken
+                "Authorization": "Bearer " + accessToken
             }
-        }.then((res) => {
-            // if the token is invalid or expired
-            if (res.statusCode === 401) {
-                console.log(res.message);
-                // checks to see if the refresh access token was valid
+        }
+    ).then(res => {
+        data = res.data;
+    })
+    return data;
+}
 
-                newTokens = RefreshAccessToken(accessToken);
-                
-                if (newTokens !== null) {
-                    // Recalls the function with the correct access token
-                    return DeleteWorker(workerID, localStorage["accessToken"]);
-                }
-                else {
-                    // If the access token passed is completely invalid, then we need to get a valid one
-                    window.location.href = "/auth";
-                    return false;
-                }
+export async function GetNumberOfTotalJobs(businessID, accessToken) {
+    /*
+    Gets the number of open jobs for a business (used on accounts page)
+    */
+    let base = localStorage["endpoint"]
+    let data = null;
+    await axios.get(
+        base + "/jobs/total_jobs/" + businessID, // REQUEST ENDPOINT
+        {
+            headers: {
+                "Authorization": "Bearer " + accessToken
             }
-            // if the API call returned valid data
-            else {
-                return true;
-            }
+        }).then(res => {
+            data = res.data;
         })
-    )
+    return data;
 }
 
-export function EditUserLogin(workerID, username, password, accessToken)
+export async function DeleteBusiness(businessID, accessToken)
 {
-    /*
-    :)
-
-    */
-}
-
-export async function DeleteBusiness(businessID, accessToken) {
-    /*
-    Deletes the business
-    Returns:
-        bool: whether the action was successful or not
-    */
+    //THIS NEEDS UPDATING ON BACKEND
+    let data = null;
     let base = localStorage["endpoint"];
-    let attempt = await axios.post(
+    await axios.post(
         base + "/delete/" + businessID,
         {
             headers: {
-                'Authorization': 'Bearer' + accessToken
+                'Authorization': 'Bearer'+ accessToken
             }
         }
     ).then((res) => {
-        // if the token is invalid or expired
-        if (res.statusCode === 401) {
-            console.log(res.message);
-            // checks to see if the refresh access token was valid
-            if (RefreshAccessToken(accessToken) === true) {
-                // Recalls the function with the correct access token
-                return GetAllCurrentJobs(businessID, localStorage["accessToken"]);
-            }
-            else {
-                // If the access token passed is completely invalid, then we need to get a valid one
-                window.location.href = "/auth";
-                return null;
+        data = res
+    })
+    return data;
+}
+
+export async function DeleteUser(businessID, userid, accessToken)
+{
+
+    // THIS NEEDS UPDATING ON BACKEND
+    let data = null;
+    let base = localStorage["endpoint"];
+    await axios.post(
+        base + "/delete/user/" + businessID,
+        {
+            headers: {
+                'Authorization': 'Bearer'+ accessToken
             }
         }
-        // if the API call returned valid data
-        else if (res.statusCode === 200) {
-            return res;
+    ).then((res) => {
+        data = res
+    })
+    return data;
+}
+
+export async function GetProfileData(businessID)
+{
+    let base = localStorage["endpoint"];
+    let data = null;
+    await axios.get(
+        base + "/business/info"/ + businessID,
+        {
+            headers: {
+                'Authorization': 'Bearer'+ localStorage["accessToken"]
+            }
         }
-    });
+    ).then((res) => {
+        data = res.data;
+    })
+    return data;
 }
 
-export function CountOpenJobs(businessID, accessToken)
+export async function ChangeEmployeePassword(employeeID, username, password, accessToken)
 {
-
+    return;
+    // On backend, remove the data field in body
+    let base = localStorage["endpoint"];
+    let data = null;
+    await axios.post(
+        base + "/business/change_password",
+        {
+            headers: {
+                'Authorization': 'Bearer'+ localStorage["accessToken"]
+            }
+        }
+    ).then((res) => {
+        data = res
+    })
+    
 }
 
-export function CountTotalJobs(businessID, accessToken)
+export async function ChangeBusinessName(name, businessID, accessToken)
 {
-
+    let base = localStorage["endpoint"];
+    let data = null;
+    await axios.post(
+        base + "/business/change_name",
+        {
+            name: name,
+            bid: businessID,
+            headers: {
+                'Authorization': 'Bearer'+ accessToken
+            }
+        }
+    ).then((res) => {
+        data = res
+    })
+    return data;
 }
 
-export function SearchEmployees(searchTerm, accessToken)
+export async function ChangeProfilePhoto(photo, businessID, accessToken)
 {
-
+    let base = localStorage["endpoint"];
+    let data = null;
+    await axios.post(
+        base + "/business/change_photo",
+        {
+            newPhoto: photo,
+            bid: businessID,
+            headers: {
+                'Authorization': 'Bearer'+ accessToken
+            }
+        }
+    ).then((res) => {
+        data = res
+    })
+    return data;
 }
 
-export function GetBusinessDetails(businessID, accessToken) {
+export async function SearchEmployee(){}
 
-}
-
-export function RenameBusiness(businessID, newName, accessToken) {
-
-}
-
-export function ChangeBusinessProfilePhoto(businessID, base64img, accessToken) {
-
+export async function AddEmployee(name, emails, password, privilege, businessID, accessToken)
+{
+    let base = localStorage["endpoint"];
+    let data = null;
+    await axios.post(
+        base + "/business/addUser" + businessID,
+        {
+            name: name,
+            email: emails,
+            password: password,
+            privLevel: privilege,
+            headers: {
+                'Authorization': 'Bearer'+ accessToken
+            }
+        }
+    ).then((res) => {
+        data = res
+    })
+    return data;
 }

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GetTokens, RefreshAccessToken } from "./session_management";
+
 export async function GetAllJobHistory(businessID, accessToken) {
     /*
     Gets all the current jobs for a business
@@ -11,7 +11,7 @@ export async function GetAllJobHistory(businessID, accessToken) {
     */
     let base = localStorage["endpoint"];
     let data = null;
-    let attempt = await axios.get(
+    await axios.get(
         base + "/jobs/history/" + businessID, // REQUEST ENDPOINT
         {
             headers: {
@@ -21,32 +21,65 @@ export async function GetAllJobHistory(businessID, accessToken) {
         },
     )
         .then((res) => {
-            if(res.statusCode === 200)
-            {
+            if (res.statusCode === 200) {
                 data = res.data
             }
-            else{
+            else {
                 data = res;
             }
-            
+
         });
     return data;
 }
 
-export async function GetNumberOfOpenJobs(businessID, accessToken)
+export async function GetJobsForEmployee(businessID, employeeID, accessToken)
 {
-    /*
-    Gets the number of open jobs for a business (used on accounts page)
-    */
-   let base = localStorage["endpoint"]
-   let data = null;
-   let attempt = await axios.get(
-       base + "/jobs/open_jobs/" + businessID, // REQUEST ENDPOINT
-       {
-            headers:{
-                "Authorization": "Bearer " + accessToken
-            }
-       }
+    let data = null;
+    let base = localStorage["endpoint"];
+    await axios.get(
+        base + "/jobs/current/" + businessID + "/" + employeeID,
+        {
+            headers: {
+                "Authorization": "Bearer " + accessToken,
+            },
+        }
+    ).then(res => {
+        data = res.data;
+    })
+    return data;
+}
+
+export async function AssignJobToEmployee(businessID, employeeID, accessToken)
+{
+    let data = null;
+    let base = localStorage["endpoint"];
+    await axios.post(
+        base + "/jobs/assign_job/" + businessID + "/" + employeeID,
+        {
+
+            headers: {
+                "Authorization": "Bearer " + accessToken,
+            },
+        }
+    ).then(res => {
+        data = res.data;
+    })
+    return data;
+}
+
+export async function Notify(businessID, jobID, accessToken, messageBody = null, messageTitle = null)
+{
+    let data = null;
+    let base = localStorage["endpoint"];
+    await axios.post(
+        base + "/notify/" + businessID + "/" + jobID,
+        {
+            title: messageTitle,
+            message: messageBody,
+            headers: {
+                "Authorization": "Bearer " + accessToken,
+            },
+        }
     ).then(res => {
         data = res.data;
     })
