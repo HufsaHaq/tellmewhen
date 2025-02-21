@@ -64,12 +64,12 @@ export const login = async (buisness, username, password) => {
 export const registerBusinessAndAdmin= async (businessName, username , password) => {
   const defaultPhoto = 'base64photo_url';
   const selectbusinessid = 'SELECT Business_ID FROM BUSINESS_TABLE WHERE Business_Name =?;';
-  if (selectbusinessid[0]){
-    throw new Error('Business already exists');
-  }  
-  else{
+  if (selectbusinessid[0] != null){
     const insertBusinessQuery = `INSERT INTO BUSINESS_TABLE (Business_Name, Business_Photo) VALUES (?, ?);`;
     const businessResult = await executeQuery(insertBusinessQuery, [businessName, defaultPhoto]);
+  }  
+  else{
+    throw new Error('Business exists');
   }
 
   const businessId = businessResult.insertId;
