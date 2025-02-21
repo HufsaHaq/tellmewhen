@@ -63,8 +63,14 @@ export const login = async (buisness, username, password) => {
 // links to register page - this creates admin user - new users can be added through admin management page
 export const registerBusinessAndAdmin= async (businessName, username , password) => {
   const defaultPhoto = 'base64photo_url';
-  const insertBusinessQuery = `INSERT INTO BUSINESS_TABLE (Business_Name, Business_Photo) VALUES (?, ?);`;
-  const businessResult = await executeQuery(insertBusinessQuery, [businessName, defaultPhoto]);
+  const selectbusinessid = 'SELECT Business_ID FROM BUSINESS_TABLE WHERE Business_Name =?;';
+  if (selectbusinessid[0]){
+    throw new Error('Business already exists');
+  }  
+  else{
+    const insertBusinessQuery = `INSERT INTO BUSINESS_TABLE (Business_Name, Business_Photo) VALUES (?, ?);`;
+    const businessResult = await executeQuery(insertBusinessQuery, [businessName, defaultPhoto]);
+  }
 
   const businessId = businessResult.insertId;
   const insertAdminQuery = `INSERT INTO WORKER_TABLE (Username, Hashed_Password, Business_ID, Privilege_level) VALUES (?, ?, ?, ?);`;
