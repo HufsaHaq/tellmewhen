@@ -40,7 +40,7 @@ jobRouter.get('/total_jobs/:bid', authMiddleWare, async(req,res) => {
 
     try{
       countTotalJobs();
-    }catch {err} {
+    }catch (err) {
       res.json( {error:err});
     }
 })

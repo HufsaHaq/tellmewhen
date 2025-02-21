@@ -83,6 +83,7 @@ export const deleteUser = async (workerId, currID) => {
   return executeQuery(sql, [workerId, currID]);
 };
 
+//export const workernames = async (businessId)
 
 // Edit worker/manager/admin login details
 export const editUserLogin = async (workerId, Username, newPassword) => {
