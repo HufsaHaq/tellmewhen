@@ -28,7 +28,7 @@ const indexRouter = express.Router();
 indexRouter.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
-
+  
 indexRouter.post('/login', async (req, res) => {
   // authenticate the user through their credentials and generate a JWT token
 

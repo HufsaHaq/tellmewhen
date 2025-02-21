@@ -137,4 +137,3 @@ jobRouter.post('/notify/:bid/:jid',authMiddleWare, async (req, res) => {
    
 })
 
-export {jobRouter}

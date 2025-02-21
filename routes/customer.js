@@ -17,4 +17,6 @@ customerRouter.get('/my_job/:job_id', async (req, res) => {
     .catch((err) => res.json({ error: err }));
 })
 
+export {customerRouter};
+
 
