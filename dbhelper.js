@@ -122,6 +122,26 @@ const createNewJob = async (businessId, userId = null, description, url, dueDate
     console.log('New job created with ID:', randomJobId);
     return result;
 };
+
+const deletefromjobtable = async (jobId) => {
+  const sql = `
+    DELETE FROM JOB_TABLE
+    WHERE Job_ID =?;
+  `;
+  return executeQuery(sql, [jobId]);
+  console.log('Job deleted with ID:', jobId);
+};
+
+const deletefromjobhistorytable = async (jobId) => {
+  const sql = `
+    DELETE FROM JOB_HISTORY
+    WHERE Job_ID =?;
+  `;
+  return executeQuery(sql, [jobId]);
+  console.log('Job history deleted with ID:', jobId);
+};
+
+
 //----------------------------------------------------------------
 const getJobDetails = async (jobId) => {
   const sql = `
@@ -261,7 +281,10 @@ testFunctions();
 
 export {
   addNotification,
+  generateUniqueJobId,
   createNewJob,
+  deletefromjobtable,
+  deletefromjobhistorytable,
   getNotifications,
   getOpenJobs,
   getJobHistory,

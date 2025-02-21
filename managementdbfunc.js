@@ -105,7 +105,7 @@ export const countOpenJobs = async (businessId) => {
     // SQL query to count the number of open jobs
     const sql = `SELECT COUNT(*) AS openJobs FROM JOB_TABLE WHERE Business_ID = ?;`;
     
-    const result = await executeQuery(sql);
+    const result = await executeQuery(sql, [businessId]);
     
     // if there is a result return the openJobs count or need to return 0 to prevent error
     if (result[0]) {

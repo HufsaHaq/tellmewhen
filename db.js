@@ -143,12 +143,6 @@ export const populateDatabase = async () => {
           [workerId, jobId, 'New job assigned to you']
       );
 
-      // Insert into ACCESS_TOKENS
-      await executeQuery(
-          "INSERT INTO ACCESS_TOKENS (User_ID, Access_Token, Expiration_Time) VALUES (?, ?, ?)",
-          [workerId, 'randomaccesstoken', '2025-03-01 23:59:59']
-      );
-
       console.log('Database populated successfully!');
   } catch (error) {
       console.error('Error populating database:', error.message);
