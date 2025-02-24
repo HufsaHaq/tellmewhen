@@ -5,6 +5,7 @@ import {Button, Select, Input, Option} from "@mui/joy";
 import { Search } from "@mui/icons-material";
 import ChangeName from "@/components/ChangeName"
 import ChangeProfilePhoto from "@/components/ChangeProfilePhoto"
+import ChangePassword from "@/components/ChangePassword"
 import { Menu } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import { motion, useScroll } from "framer-motion";
@@ -64,6 +65,9 @@ function Account()
     const [isChangeProfilePhotoOpen, setIsChangeProfilePhotoOpen] = useState(false);
     const [profilePhoto, setProfilePhoto] = useState(null);
 
+    const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+    const [Password, setPassword] = useState("[Enter Password]");
+
     const handleSaveBusinessName = (newBusinessName) => {
     setBusinessName(newBusinessName);
     setIsChangeNameOpen(false);
@@ -71,6 +75,11 @@ function Account()
 
     const handleSaveProfilePhoto = (newImage) => {
     setProfilePhoto(newImage);
+    };
+
+    const handleSavePassword = (newPassword) => {
+    setPassword(newPassword);
+    setIsChangePasswordOpen(false);
     };
 
     //Modals Part here
@@ -196,7 +205,7 @@ function Account()
                                         <h1 className="font-semibold">Change Admin Password</h1>
                                         <h1 className="">Changes the password for business</h1>
                                     </div>
-                                    <Button variant="solid" color="primary" className="w-[75px]">Change</Button>
+                                    <Button variant="solid" color="primary" className="w-[75px]" onClick ={() => setIsChangePasswordOpen(true)}>Change</Button>
                                 </span>
                                 {/* DELETE ACCOUNT */}
                                 <span className="flex w-full items-center justify-between px-[12px] py-[7px] rounded-md">
@@ -219,6 +228,13 @@ function Account()
                                 isOpen={isChangeProfilePhotoOpen}
                                 onClose={() => setIsChangeProfilePhotoOpen(false)}
                                 onSave={handleSaveProfilePhoto}
+                              />
+
+                            <ChangePassword
+                                isOpen={isChangePasswordOpen}
+                                Password={Password}
+                                onClose={() => setIsChangePasswordOpen(false)}
+                                onSave={handleSavePassword}
                               />
                         </>
                     }
