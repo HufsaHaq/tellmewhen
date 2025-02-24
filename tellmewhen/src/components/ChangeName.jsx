@@ -6,8 +6,11 @@ function ChangeName({ isOpen, businessName, onClose, onSave }) {
   const [tempBusinessName, setTempBusinessName] = useState(businessName);
 
   useEffect(() => {
+    if (isOpen){
+      setIsEditing(false);
+    }
     setTempBusinessName(businessName);
-  }, [businessName]);
+  }, [isOpen,businessName]);
 
   if (!isOpen) return null;
 
@@ -17,11 +20,6 @@ function ChangeName({ isOpen, businessName, onClose, onSave }) {
 
   const handleSave = () => {
     onSave(tempBusinessName);
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    setTempBusinessName(businessName);
     setIsEditing(false);
   };
 
@@ -39,6 +37,7 @@ function ChangeName({ isOpen, businessName, onClose, onSave }) {
             <input
               type="text"
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+              placeholder="Enter New Business Name"
               value={tempBusinessName}
               disabled={!isEditing}
               onChange={(e) => setTempBusinessName(e.target.value)}
@@ -61,14 +60,6 @@ function ChangeName({ isOpen, businessName, onClose, onSave }) {
 
             {isEditing && (
               <div className="space-x-3">
-                <Button
-                  onClick={handleCancel}
-                  variant="soft"
-                  color="neutral"
-                  className="px-4 py-2"
-                >
-                  Cancel
-                </Button>
                 <Button
                   onClick={handleSave}
                   variant="solid"
