@@ -3,13 +3,17 @@ import { Button } from "@mui/joy";
 
 function ChangePassword({ isOpen, password, onClose, onSave }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [tempPassword, setTempPassword] = useState(password);
+  const [tempPassword, setTempPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   useEffect(() => {
     if (isOpen){
       setIsEditing(false);
     }
     setTempPassword(password);
+    setConfirmPassword("");
+    setPasswordError("");
   }, [isOpen,password]);
 
   if (!isOpen) return null;
@@ -19,8 +23,13 @@ function ChangePassword({ isOpen, password, onClose, onSave }) {
   };
 
   const handleSave = () => {
+    if (tempPassword !== confirmPassword) {
+      setPasswordError("Passwords do not match.");
+      return;
+    }
     onSave(tempPassword);
     setIsEditing(false);
+    setPasswordError("");
   };
 
 
@@ -36,7 +45,7 @@ function ChangePassword({ isOpen, password, onClose, onSave }) {
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">Password:</label>
             <input
-              type="text"
+              type="password"
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
               placeholder="Enter New Password"
               value={tempPassword}
@@ -44,6 +53,24 @@ function ChangePassword({ isOpen, password, onClose, onSave }) {
               onChange={(e) => setTempPassword(e.target.value)}
             />
           </div>
+
+          {/* Confirm Password */}
+          <div className="mb-4">
+            <label className="block text-gray-700 font-medium mb-2">Confirm Password:</label>
+            <input
+              type="password"
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+              placeholder="Confirm New Password"
+              value={confirmPassword}
+              disabled={!isEditing}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
+
+          {/* Password Error Message */}
+          {passwordError && (
+            <div className="text-red-500 text-sm mt-2">{passwordError}</div>
+          )}
 
           <div className="flex justify-between">
             {!isEditing && (
