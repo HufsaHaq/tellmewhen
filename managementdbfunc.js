@@ -61,7 +61,7 @@ export const login = async (buisness, username, password) => {
 
 //Add new business
 // links to register page - this creates admin user - new users can be added through admin management page
-export const registerBusinessAndAdmin= async (businessName, username , password) => {
+/*export const registerBusinessAndAdmin= async (businessName, username , password) => {
   const defaultPhoto = 'base64photo_url';
   const selectbusinessid = 'SELECT Business_ID FROM BUSINESS_TABLE WHERE Business_Name =?;';
   if (selectbusinessid[0] != null){
@@ -75,6 +75,37 @@ export const registerBusinessAndAdmin= async (businessName, username , password)
   const businessId = businessResult.insertId;
   const insertAdminQuery = `INSERT INTO WORKER_TABLE (Username, Hashed_Password, Business_ID, Privilege_level) VALUES (?, ?, ?, ?);`;
   return await executeQuery(insertAdminQuery, [username, password, businessId, 1]); // Privilege level 1 = admin
+}; */
+
+export const registerBusinessAndAdmin = async (businessName, username, password) => {
+  const defaultPhoto = 'base64photo_url';
+  
+  try {
+    const checkBusinessSql = `SELECT Business_ID FROM BUSINESS_TABLE WHERE Business_Name = ?;`;
+    const existingBusiness = await executeQuery(checkBusinessSql, [businessName]);
+
+    if (existingBusiness.length > 0) {
+      throw new Error('Business already exists');
+    }
+
+    const insertBusinessSql = `INSERT INTO BUSINESS_TABLE (Business_Name, Business_Photo) VALUES (?, ?);`;
+    const businessResult = await executeQuery(insertBusinessSql, [businessName, defaultPhoto]);
+
+    const businessId = businessResult.insertId;
+    
+    const insertAdminSql = `INSERT INTO WORKER_TABLE (Username, Hashed_Password, Business_ID, Privilege_level) VALUES (?, ?, ?, ?);`;
+    
+    return await executeQuery(insertAdminSql, [
+      username, 
+      password, 
+      businessId, 
+      1 // Privilege level 1 = admin
+    ]);
+
+  } catch (error) {
+    console.error('Registration failed:', error.message);
+    throw error;
+  }
 };
 
 // Add worker/manager/admin
