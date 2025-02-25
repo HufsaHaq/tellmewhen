@@ -85,6 +85,7 @@ export const registerBusinessAndAdmin = async (businessName, username, password)
     const existingBusiness = await executeQuery(checkBusinessSql, [businessName]);
 
     if (existingBusiness.length > 0) {
+      console.log('Business already exists');
       throw new Error('Business already exists');
     }
 
@@ -103,8 +104,8 @@ export const registerBusinessAndAdmin = async (businessName, username, password)
     ]);
 
   } catch (error) {
-    console.error('Registration failed:', error.message);
-    throw error;
+    console.log('Registration failed:', error.message);
+    return null;
   }
 };
 
