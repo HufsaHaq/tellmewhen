@@ -62,10 +62,10 @@ indexRouter.post('/login', async (req, res) => {
       const accessToken = jwt.sign({ username: username, role: privilige, workerId  }, privateKey, { expiresIn: '1h', algorithm: 'RS256' })
       res.status(200).json({ accessToken: accessToken })
     }else{
-      res.json({error: "Passwords do not match"});
+      res.status(401).json({error: "Passwords do not match"});
     }
   }else{
-    res.json({error: "Unable to retrieve credentials from DB"});
+    res.status(401).json({error: "Unable to retrieve credentials from DB"});
   }
 
 });
@@ -92,7 +92,7 @@ indexRouter.post('/register', async (req, res) => {
   
 
   }else{
-    res.sendStatus(400).json({message: "missing fields"})
+    res.status(400).json({message: "missing fields"})
   }
 });
 
