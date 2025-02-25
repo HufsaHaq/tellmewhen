@@ -19,20 +19,11 @@ export async function GetAllJobHistory(businessID, accessToken) {
                 "Authorization": "Bearer " + accessToken,
             },
         },
-    )
-        .then((res) => {
-            if (res.statusCode === 200) {
-                data = res.data
-            }
-            else {
-                data = res;
-            }
-
-        });
+    ).then((res) => data = res);
     return data;
 }
 
-export async function GetJobsForEmployee(businessID, employeeID, accessToken)
+export async function GetCurrentJobsForEmployee(businessID, employeeID, accessToken)
 {
     let data = null;
     let base = localStorage["endpoint"];
@@ -43,9 +34,7 @@ export async function GetJobsForEmployee(businessID, employeeID, accessToken)
                 "Authorization": "Bearer " + accessToken,
             },
         }
-    ).then(res => {
-        data = res.data;
-    })
+    ).then(res => data = res.data)
     return data;
 }
 
@@ -61,9 +50,7 @@ export async function AssignJobToEmployee(businessID, employeeID, accessToken)
                 "Authorization": "Bearer " + accessToken,
             },
         }
-    ).then(res => {
-        data = res.data;
-    })
+    ).then(res => data = res.data)
     return data;
 }
 
@@ -80,8 +67,6 @@ export async function Notify(businessID, jobID, accessToken, messageBody = null,
                 "Authorization": "Bearer " + accessToken,
             },
         }
-    ).then(res => {
-        data = res.data;
-    })
+    ).then(res => data = res.data)
     return data;
 }

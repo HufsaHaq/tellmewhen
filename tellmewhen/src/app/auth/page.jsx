@@ -1,4 +1,5 @@
 'use client'
+import { Login, Register } from '@/scripts/login';
 import React, { useState } from 'react';
 
 const AuthPage = () => {
@@ -9,6 +10,24 @@ const AuthPage = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
+    function handleLogin(){
+        Login(email, businessName, password).then((res) => {
+            if(res.statusCode === 200)
+            {
+                window.location.href = '/dashboard';
+                setErrorMessage("");
+            }
+            else if(res.statusCode === 401){
+                setErrorMessage("The username and/or password are incorrect.")
+            }
+            else if(res.statusCode === 500){
+                setErrorMessage("An error occurred while connecting to the server.")
+            }
+            else{
+                setErrorMessage("An unknown error occurred.")
+            }
+        })
+    }
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrorMessage('');
@@ -20,51 +39,26 @@ const AuthPage = () => {
     
         try {
             if (activeTab === 'login') {
-                const response = await fetch('/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        businessName: businessName,
-                        username: username,
-                        password: password,
-                    })
-                });
-    
-                const data = await response.json();
-    
-                if (response.ok) {
-                    localStorage.setItem('token', data.accessToken);
-                    window.location.href = '/dashboard';
-                } else {
-                    setErrorMessage(data.error || 'Login failed');
-                }
+                handleLogin();
             } else {
- 
-                const response = await fetch(`/manage/${businessName}/addUser`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        businessName: businessName,
-                        username: username,
-                        password: password
-                    })
+                Register(email, businessName, password).then((res) => { 
+                    if(res.statusCode === 200)
+                    {
+                        handleLogin();
+                    }
+                    else if(res.statusCode === 401){
+                        setErrorMessage(res.body)
+                    }
+                    else if(res.statusCode === 500){
+                        setErrorMessage("An error occurred while connecting to the server.")
+                    }
+                    else{
+                        setErrorMessage("An unknown error occurred.")
+                    }
                 });
-    
-                const data = await response.json();
-    
-                if (response.ok) {
-                    window.location.href = '/login';
-                } else {
-                    setErrorMessage(data.error || 'Registration failed');
-                }
             }
         } catch (err) {
-            setErrorMessage('Connection error');
+            
         }
     };
     

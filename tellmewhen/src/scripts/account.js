@@ -96,7 +96,6 @@ export async function GetProfileData(businessID)
 export async function ChangeEmployeePassword(employeeID, username, password, accessToken)
 {
     return;
-    // On backend, remove the data field in body
     let base = localStorage["endpoint"];
     let data = null;
     await axios.post(
@@ -152,7 +151,7 @@ export async function ChangeProfilePhoto(photo, businessID, accessToken)
 
 export async function SearchEmployee(){}
 
-export async function AddEmployee(name, emails, password, privilege, businessID, accessToken)
+export async function AddEmployee(name, email, password, privilege, businessID, accessToken)
 {
     let base = localStorage["endpoint"];
     let data = null;
@@ -160,7 +159,7 @@ export async function AddEmployee(name, emails, password, privilege, businessID,
         base + "/business/addUser" + businessID,
         {
             name: name,
-            email: emails,
+            email: email,
             password: password,
             privLevel: privilege,
             headers: {

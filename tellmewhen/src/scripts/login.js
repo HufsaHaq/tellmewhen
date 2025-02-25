@@ -12,7 +12,7 @@ export async function Login(email, username, password)
         }
     ).then(res => {
         data = res
-        localStorage["accessToken"] = res.data["accessToken"];
+        localStorage["token"] = res.data["accessToken"];
     })
     return data;
 }

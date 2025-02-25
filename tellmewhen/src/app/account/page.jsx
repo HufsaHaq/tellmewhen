@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import { motion, useScroll } from "framer-motion";
 import EmployeeCreationModal from "@/components/EmployeeCreationModal";
 import EmployeeDetailsModal from "@/components/EmployeeDetailsModal";
+import {Leaderboard, Numbers, NotificationsActive} from "@mui/icons-material"
 
 function Account()
 {
@@ -118,14 +119,14 @@ function Account()
                 )}
                 <h1 className="align-top inline-block text-[30px] ml-[20px] mb-[70px] font-semibold mt-auto text-black">{businessName}</h1>
             </span>
-            <span onClick={()=>{SetSideMenuOpen(!SideMenuOpen)}} className="tablet620:absolute tablet620:opacity-0 tablet620:top-[-1000px] cursor-pointer w-[100%] inline flex justify-center space-x-[25px] outline outline-[1px] rounded-md items-center py-[15px] mb-[10px]">
+            <span onClick={()=>{SetSideMenuOpen(!SideMenuOpen)}} className="tablet620:absolute tablet620:opacity-0 tablet620:top-[-1000px] cursor-pointer w-[100%] inline flex justify-center space-x-[25px] outline outline-[#A9A9A9] outline-[1.5px] rounded-md items-center py-[15px] mb-[10px]">
                 <Menu className="scale-[1.5]"/>
                 <h1 className="font-semibold">{SelectedMenu}</h1>
             </span>
 
             {/* PAGE MENU LIST ON THE LEFT */}
             <span className="content mt-[20px] flex justify-between">
-                <motion.div className={`max-tablet620:!absolute max-tablet620:left-[0px] max-tablet620:w-[100%] max-tablet620:bg-[#E6EBF3] max-tablet620:h-full max-tablet620:overflow-y-hidden max-tablet620:pr-[10px] max-tablet620:z-[15] tablet620:w-[25%] left-list overflow-visible outline outline-0 rounded-md px-[5px] pt-[2px]`}
+                <motion.div className={`max-tablet620:!absolute max-tablet620:left-[0px] max-tablet620:w-[100%] max-tablet620:bg-[#F5F5F5] max-tablet620:h-full max-tablet620:overflow-y-hidden max-tablet620:pr-[10px] max-tablet620:z-[15] tablet620:w-[25%] left-list overflow-visible rounded-md px-[5px] pt-[2px]`}
                     initial={{transform: SideMenuOpen ? "translateX(0px)" : "translateX(-700px)"}}
                     animate={{
                         transform: SideMenuOpen ? `translateX(0px)` : "translateX(-700px)",
@@ -146,7 +147,7 @@ function Account()
                                     SetSelectedMenu(item);
                                     windowWidth < WindowBoundaries[1] && SetSideMenuOpen(false)
                                 }}
-                                        className={`${SelectedMenu == item && "bg-[#D6DBE3]"} hover:bg-[#D6DBE3] rounded-md transition ease-in-out w-[100%] h-full text-left pl-[10px]`}>{item}</button>
+                                        className={`${SelectedMenu == item && "bg-[#D6D5D4]"} hover:bg-[#D6D5D4] rounded-md transition ease-in-out w-[100%] h-full text-left text-nowrap overflow-hidden px-[10px]`}>{item}</button>
                             </span>
                         );
                     })}
@@ -156,22 +157,41 @@ function Account()
 
                     {/* TITLEBAR FOR THE PAGE CONTENT*/}
                     <h1 className="text-[25px] font-semibold mt-auto text-black mb-[5px]">{SelectedMenu}</h1>
-                    <div className="w-full h-[1px] mb-[20px] bg-[#949495]">‎</div>
+                    <div className="w-full h-[1px] mb-[20px] bg-[#A9A9A9]">‎</div>
 
                     {/* ACCOUNT MANAGEMENT PAGE */}
                     {SelectedMenu == MenuItems[0] &&
                         <>
                             {/* JOB STATISTICS */}
                             <h1 className="font-semibold mb-[15px] w-[100%] sticky text-[20px] mt-[20px]">Statistics</h1>
-                            <span className="">
-                                <h1 className="">Active Jobs: 0</h1>
-                                <h1 className="">Jobs Completed: 0</h1>
+                            <span className="grid gap-3 grid-flow-cols tablet620:grid-cols-2">
+                                <div className="align-middle rounded-xl outline outline-[#A9A9A9] outline-[1.5px] p-[30px] shadow-md">
+                                    <div className="inline flex justify-left space-x-5 h-full">
+                                        <NotificationsActive color="primary" className="my-auto text-[#0A5397] text-[45px]" fontSize="50px"/>
+                                        <div className="justify-center my-auto">
+                                            <h1 className="grid font-bold text-xl">0</h1>
+                                            <h1 className="grid font-semibold text-[#A0A0A0] text-lg">Active Jobs</h1>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="align-middle rounded-xl outline outline-[#A9A9A9] outline-[1.5px] p-[30px] shadow-md">
+                                    <div className="inline flex justify-left space-x-5 h-full">
+                                        <Numbers color="primary" className="my-auto text-[#0A5397] text-[50px]" fontSize="50px"/>
+                                        <div className="justify-center my-auto">
+                                            <h1 className="grid font-bold text-xl">0</h1>
+                                            <h1 className="grid font-semibold text-[#A0A0A0] text-lg">Total Jobs</h1>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                
+
                             </span>
-                            <div className="w-full h-[1px] my-[20px] bg-[#949495]">‎</div>
+                            <div className="w-full h-[1px] my-[20px] bg-[#A9A9A9]">‎</div>
 
                             {/* ACCOUNT CONTROLS */}
                             <h1 className="font-semibold mb-[15px] w-[100%] sticky text-[20px] mt-[20px]">Manage</h1>
-                            <div className="outline rounded-md outline-[1px] outline-[#505050]">
+                            <div className="outline rounded-md outline-[#A9A9A9] outline-[1.5px]">
                                 {/* RENAME ACCOUNT*/}
                                 <span className="flex w-full items-center justify-between px-[12px] py-[7px] rounded-md">
                                     <div>
@@ -245,9 +265,9 @@ function Account()
                                     </span>
                                 </span>
                                 {/* EMPLOYEE DATA TABLE */}
-                                <div className="overscroll-none max-h-[450px] overflow-y-scroll rounded-md outline outline-[1px]">
-                                    <table className="w-[100%] outline outline-[1px] ">
-                                        <thead className="sticky bg-[rgb(210,214,218)] text-[#0E0E0E] text-left">
+                                <div className="overscroll-none max-h-[450px] overflow-y-scroll rounded-md outline outline-[#A9A9A9] outline-[1.5px]">
+                                    <table className="w-[100%] outline outline-[#A9A9A9] outline-[1.5px] ">
+                                        <thead className="sticky bg-[#D6D5D4] text-[#0E0E0E] text-left">
                                             <tr className="sticky px-[10px] py-[5px]">
                                                 <th className="sticky ml-[10px] px-[10px] py-[5px] w-[70%]">Name</th>
                                                 <th className="sticky ml-[10px] px-[10px] py-[5px] w-[15%]">Employee ID</th>
@@ -262,7 +282,7 @@ function Account()
                                                     <tr key={index1} className="cursor-pointer" onClick={()=> handleEmployeeRowClick(employee)}>
                                                         {employee.map((element, index2) => {
                                                             return(
-                                                                <td key={index2} className={`${index1 % 2 == 1 ? "bg-[rgb(210,214,218)]" : "bg-[rgb(230,234,243)]"} overflow-hidden pl-[10px] ${index2 == 0 && "py-[10px]"} ${index2 != 0 && "border-l-[2px] border-[rgba(0,0,0,0.2)]"}`}>
+                                                                <td key={index2} className={`${index1 % 2 == 1 ? "bg-[#DFDEDD]" : "bg-[#f0f0f0]"} overflow-hidden pl-[10px] ${index2 == 0 && "py-[10px]"} ${index2 != 0 && "border-l-[2px] border-[rgba(0,0,0,0.2)]"}`}>
                                                                     <span className={`${index2 == 0 && "max-w-[85%]"} flex inline items-center`}>
                                                                         <h1>{element}</h1>
                                                                     </span>

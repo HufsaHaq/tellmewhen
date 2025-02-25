@@ -34,8 +34,8 @@ function Page() {
         tertiary: "bg-[rgba(233,233,233,1)]", //used when highlighting a secondary colour item (switcher)
         "tertiary-semi-transparent": "bg-[rgba(233,233,233,0.9)]",
         //Table Colours
-        "rows-colour1": `bg-[rgb(210,214,218)]`,
-        "rows-colour2": `bg-[rgb(230,234,243)]`,
+        "rows-colour1": `bg-[#DFDEDD]`,
+        "rows-colour2": `bg-[#f0f0f0]`,
         "rows-text-colour": `text-[${colours["rows-text-colour"]}]`,
     };
     colours["primaryTailwind"] = "bg-[" + colours["primary"] + "]";
