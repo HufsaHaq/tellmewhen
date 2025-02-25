@@ -51,11 +51,13 @@ export const closeDB = () => {
 };
 
 //login need to crosscheck with business tabvle to check if user belongs to business
-export const login = async (buisness, username, password) => {
-  const selectbusinessid = 'SELECT Business_ID FROM BUSINESS_TABLE WHERE Business_Name =?;';
-  const sql = 'SELECT * FROM WORKER_TABLE WHERE Username =? AND Hashed_Password =? AND Business_ID =? ;';
+export const login = async (buisness, username) => {
+  const selectbusinessid = 'SELECT Business_Id FROM BUSINESS_TABLE WHERE Business_Name = ?;';
+  const sql = 'SELECT Hashed_Password, Privilege_level FROM WORKER_TABLE WHERE Username =? AND Business_ID =? ;';
   const businessIdResult = await executeQuery(selectbusinessid, [buisness]);
-  const result = await executeQuery(sql, [username, password, businessIdResult]);
+  console.log(businessIdResult)
+  const result = await executeQuery(sql, [username, businessIdResult]);
+  console.log(result)
   return result;
 };
 
@@ -100,7 +102,7 @@ export const registerBusinessAndAdmin = async (businessName, username, password)
       username, 
       password, 
       businessId, 
-      1 // Privilege level 1 = admin
+      1 // Privilege level 1 = admin2s
     ]);
 
   } catch (error) {
