@@ -205,6 +205,17 @@ export const getBusinessPhoto = async (businessId) => {
   }
 }
 
+export const getBusinessId = async (businessName) => {
+  const sql = `SELECT Business_Id FROM BUSINESS_TABLE WHERE Business_Name = ?;`;
+
+  const result = await executeQuery(sql, [businessName]);
+
+  if (result[0]) {
+    return result[0].Business_ID;
+  } else {
+    return null
+  }
+}
 //----------------------------------------------------------------
 const testFunctions = async () => {
   try {

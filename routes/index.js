@@ -11,7 +11,7 @@ import webPush from 'web-push';
 import dotenv from 'dotenv';
 import { getJobHistory, getOpenJobs, getNotifications, closeDB } from '../dbhelper.js';
 // import { sendNotification } from 'web-push'; 
-import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmin} from '../managementdbfunc.js';
+import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmin, getBusinessId} from '../managementdbfunc.js';
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
 import { checkData } from '../datacheck.js';
 
@@ -32,25 +32,30 @@ indexRouter.get('/', function(req, res) {
 indexRouter.post('/login', async (req, res) => {
   // authenticate the user through their credentials and generate a JWT token
 
-  const name = req.body.name;
+  const businessName = req.body.name;
   const username = req.body.username;
-  const password = req.body.password; 
+  const password = req.body.password;
+
+  const businessId = await getBusinessId(businessName);
+  
   if(!(username||password)){
     res.status(400).json({message: "Missing fields from client"});
     return 0;
   }
+  
   // check the database for the user
   const loginCredentials = await login(name,username, password)
-
+  
   if (loginCredentials){
     const privilige = loginCredentials.Privilege_level;
 
     let isMatch = bcrypt.compare(password, loginCredentials.Hashed_Password)
-
-    
+    console.log(`Password Match: ${isMatch}`)
     if (isMatch){
       // create new jwt
-      const accessToken = jwt.sign({ username: username, role: privilige }, privateKey, { expiresIn: '1h', algorithm: 'RS256' })
+      const accessToken = jwt.sign({ username: username, role: privilige, workerId  }, privateKey, { expiresIn: '1h', algorithm: 'RS256' })
+      res.sendStatus(200)
+
       res.json({ accessToken: accessToken })
     }else{
       res.json({error: "Passwords do not match"});
