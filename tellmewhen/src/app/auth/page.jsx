@@ -12,53 +12,56 @@ const AuthPage = () => {
 
     function handleLogin(){
         Login(email, businessName, password).then((res) => {
-            if(res.statusCode === 200)
+            if(res.status === 200)
             {
                 window.location.href = '/dashboard';
                 setErrorMessage("");
             }
-            else if(res.statusCode === 401){
+            else if(res.status === 401){
                 setErrorMessage("The username and/or password are incorrect.")
             }
-            else if(res.statusCode === 500){
+            else if(res.status === 500){
                 setErrorMessage("An error occurred while connecting to the server.")
             }
             else{
                 setErrorMessage("An unknown error occurred.")
+                console.log(res)
             }
         })
     }
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrorMessage('');
-    
+        console.log("form submitted");
         if (activeTab === 'register' && password !== confirmPassword) {
             setErrorMessage("Passwords don't match!");
             return;
         }
     
         try {
+            console.log("Attempting...");
             if (activeTab === 'login') {
                 handleLogin();
             } else {
                 Register(email, businessName, password).then((res) => { 
-                    if(res.statusCode === 200)
+                    if(res.status === 200)
                     {
                         handleLogin();
                     }
-                    else if(res.statusCode === 401){
+                    else if(res.status === 401){
                         setErrorMessage(res.body)
                     }
-                    else if(res.statusCode === 500){
+                    else if(res.status === 500){
                         setErrorMessage("An error occurred while connecting to the server.")
                     }
                     else{
                         setErrorMessage("An unknown error occurred.")
+                        console.log(res)
                     }
                 });
             }
         } catch (err) {
-            
+            console.log(err);
         }
     };
     
@@ -111,15 +114,6 @@ const AuthPage = () => {
                         />
                     )}
 
-                    <input
-                        type="email"
-                        placeholder="Enter your username"
-                        style={styles.input}
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-
                     {activeTab == 'register' && (
                         <input
                             type="text"
@@ -130,6 +124,16 @@ const AuthPage = () => {
                             required
                         />
                     )}
+                    <input
+                        type="email"
+                        placeholder="Enter your email"
+                        style={styles.input}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+
+                    
 
                     <input
                         type="password"

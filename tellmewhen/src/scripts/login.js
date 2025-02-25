@@ -12,7 +12,7 @@ export async function Login(email, username, password)
         }
     ).then(res => {
         data = res
-        localStorage["token"] = res.data["accessToken"];
+        localStorage["accessToken"] = res.data["accessToken"];
     })
     return data;
 }
@@ -23,8 +23,8 @@ export async function Register(email, username, password)
     let base = localStorage["endpoint"];
     await axios.post(base + "/register",
         {
-            name: email,
-            username: username,
+            name: username,
+            username: email,
             password: password
         }
     ).then(res => {

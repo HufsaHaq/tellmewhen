@@ -53,6 +53,9 @@ function Header() {
                                     className="bg-white px-[30px] py-[7px] text-[#0A5397] text-[17px] font-semibold rounded-md"
                                     onClick={() => {
                                         SetLoggedIn(false);
+                                        localStorage.removeItem("accessToken");
+                                        window.location.href="/auth";
+
                                     }}
                                 >
                                     Log Out
@@ -121,6 +124,8 @@ function Header() {
                                         className={`tablet500:right-[0px] tablet500:absolute max-tablet500:w-[100%] max-tablet500:mt-[15px] m-auto bg-white px-[30px] h-[40px] text-[17px] py-[7px] text-[#063660] font-semibold rounded-md mr-[50px]`}
                                         onClick={() => {
                                             SetLoggedIn(false);
+                                            localStorage.removeItem("accessToken");
+                                            window.location.href="/auth";
                                         }}
                                     >
                                         Log Out

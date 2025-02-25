@@ -27,6 +27,13 @@ npm run dev
 ```
 This then should host the webpage on your localhost, usually at "localhost:3000", although this will be clearly stated in the terminal which port it is being hosted on.<br>
 
+## Connecting to the Backend
+On the "/debugger" page, there is a field for the endpoint. This should store the url that the server is being hosted on.
+Currently, this would be
+```url
+http://localhost:4000
+```
+Once filled, save the data to local storage with the button at the bottom of the screen.
 ## Project Structure
 ### Pages/Routes
 The different webpages can be found in the "src/app" folder, where each webpage is contained in a corresponding folder under the same name, and the content in a "page.jsx" file.<br><br>
