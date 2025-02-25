@@ -1,8 +1,9 @@
 import React from "react";
-import { Button } from "@mui/joy";
+import { Button, Autocomplete, TextField } from "@mui/joy";
 
 const JobModal = ({ isOpen, onClose, onConfirm, formData, onInputChange }) => {
     if (!isOpen) return null;
+const worker_Options = ["Hufsa Haq","Archie Calvert","Palak Singh","Varvara Frolenkova","Vuk Stojkovic","Nurassyl Molshin","Muhammed Choudhary"]
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -25,11 +26,19 @@ const JobModal = ({ isOpen, onClose, onConfirm, formData, onInputChange }) => {
                         {!formData.deadline && <p className="text-red-500 text-sm">Deadline is required.</p>}
                     </div>
 
+                    <div className="mb-6">
+                        <label htmlFor="assigning-worker" className="block text-gray-700 font-medium mb-2">
+                            Assign Worker:
+                        </label>
+                        <Autocomplete id="assigning-worker" options={worker_Options} sx={{ width: 300 }} value={formData.worker} onChange={(event, newValue) => onInputChange(event, 'worker', newValue)}/>
+                        {!formData.worker && <p className="text-red-500 text-sm">Assigning a worker is required.</p>}
+                    </div>
+
                     <div className="flex justify-end space-x-4">
                         <Button onClick={onClose} variant="soft" color="neutral" className="px-4 py-2">
                             Cancel
                         </Button>
-                        <Button onClick={onConfirm} variant="solid" color="primary" className="px-4 py-2" disabled={!formData.description || !formData.deadline}>
+                        <Button onClick={onConfirm} variant="solid" color="primary" className="px-4 py-2" disabled={!formData.description || !formData.deadline || !formData.worker}>
                             Generate QR Code
                         </Button>
                     </div>

@@ -42,7 +42,7 @@ function Page() {
 
     //Job Creation Modal State
     const [isCreationModalOpen, setIsCreationModalOpen] = useState(false);
-    const [formData, setFormData] = useState({ description: "", deadline: "" });
+    const [formData, setFormData] = useState({ description: "", deadline: "", worker: ""  });
 
     //Job Detail Modal State
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); // For Current Jobs
@@ -156,7 +156,7 @@ function Page() {
     //Function to close the modal
     const handleCloseModal = () => {
         setIsCreationModalOpen(false);
-        setFormData({ description: "", deadline: "" });
+        setFormData({ description: "", deadline: "", worker: "" });
     };
 
     //Function to handle the confirm button in the modal
@@ -168,7 +168,14 @@ function Page() {
     };
 
     //Function to handle the input change in the modal
-    const handleInputChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+    const handleInputChange = (e, fieldName, newValue) => {
+        if (newValue !== undefined ) {
+            setFormData({ ...formData, [fieldName]: newValue });
+        }
+        else{
+            setFormData({ ...formData, [e.target.name]: e.target.value });
+        }
+    };
 
     //Function to handle the row click in the table
     const handleRowClick = (job) => {
