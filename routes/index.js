@@ -82,12 +82,12 @@ indexRouter.post('/register', async (req, res) => {
   if(name && username && password){
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    try{
-      registerBusinessAndAdmin(name, username, hashedPassword)
-      res.sendStatus(200)
-    }catch (err){
-        console.error(err)
-      }
+    registerBusinessAndAdmin(name, username, hashedPassword).then((attempt) => {
+      console.log(attempt)
+      if(attempt != null){res.sendStatus(200).json({message: 'Success Business Registered'})} 
+      else{res.status(400).json({message: "Error registering business and admin"})}
+    })
+
   }else{
     res.status(400).json({message: "missing fields"})
   }
