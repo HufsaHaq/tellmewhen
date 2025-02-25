@@ -52,13 +52,13 @@ export const closeDB = () => {
 
 //login need to crosscheck with business tabvle to check if user belongs to business
 export const login = async (buisness, username) => {
-  const selectbusinessid = 'SELECT Business_Id FROM BUSINESS_TABLE WHERE Business_Name = ?;';
+  const selectbusinessid = 'SELECT Business_ID FROM BUSINESS_TABLE WHERE Business_Name = ?;';
   const sql = 'SELECT Hashed_Password, Privilege_level FROM WORKER_TABLE WHERE Username =? AND Business_ID =? ;';
   const businessIdResult = await executeQuery(selectbusinessid, [buisness]);
-  console.log(businessIdResult)
-  const result = await executeQuery(sql, [username, businessIdResult]);
+  console.log(businessIdResult[0].Business_ID)
+  const result = await executeQuery(sql, [username, businessIdResult[0].Business_ID]);
   console.log(result)
-  return result;
+  return result[0];
 };
 
 //Add new business
@@ -240,7 +240,7 @@ export const getBusinessPhoto = async (businessId) => {
 }
 
 export const getBusinessId = async (businessName) => {
-  const sql = `SELECT Business_Id FROM BUSINESS_TABLE WHERE Business_Name = ?;`;
+  const sql = `SELECT Business_ID FROM BUSINESS_TABLE WHERE Business_Name = ?;`;
 
   const result = await executeQuery(sql, [businessName]);
 

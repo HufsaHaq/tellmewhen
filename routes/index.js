@@ -60,7 +60,7 @@ indexRouter.post('/login', async (req, res) => {
 
       // create new jwt
       const accessToken = jwt.sign({ username: username, role: privilige, workerId  }, privateKey, { expiresIn: '1h', algorithm: 'RS256' })
-      res.sendStatus(200).json({ accessToken: accessToken })
+      res.status(200).json({ accessToken: accessToken })
     }else{
       res.json({error: "Passwords do not match"});
     }
@@ -83,13 +83,16 @@ indexRouter.post('/register', async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     registerBusinessAndAdmin(name, username, hashedPassword).then((attempt) => {
-      console.log(attempt)
-      if(attempt != null){res.sendStatus(200).json({message: 'Success Business Registered'})} 
-      else{res.status(400).json({message: "Error registering business and admin"})}
-    })
+      if (attempt != null) {
+          res.status(200).json({ message: 'Success Business Registered' });
+      } else {
+          res.status(400).json({ message: 'Error registering business and admin' });
+      }
+  })
+  
 
   }else{
-    res.status(400).json({message: "missing fields"})
+    res.sendStatus(400).json({message: "missing fields"})
   }
 });
 
