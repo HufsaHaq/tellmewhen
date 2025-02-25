@@ -6,12 +6,12 @@ export async function Login(email, username, password)
     let base = localStorage["endpoint"];
     await axios.post(base + "/login",
         {
-            name: email,
-            username: username,
+            name: username,
+            username: email,
             password: password
         }
     ).then(res => {
-        data = res
+        data = res;
         localStorage["accessToken"] = res.data["accessToken"];
     })
     return data;

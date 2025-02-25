@@ -34,7 +34,7 @@ export async function GetCurrentJobsForEmployee(businessID, employeeID, accessTo
                 "Authorization": "Bearer " + accessToken,
             },
         }
-    ).then(res => data = res.data)
+    ).then(res => data = res)
     return data;
 }
 
@@ -50,7 +50,7 @@ export async function AssignJobToEmployee(businessID, employeeID, accessToken)
                 "Authorization": "Bearer " + accessToken,
             },
         }
-    ).then(res => data = res.data)
+    ).then(res => data = res)
     return data;
 }
 
@@ -67,6 +67,6 @@ export async function Notify(businessID, jobID, accessToken, messageBody = null,
                 "Authorization": "Bearer " + accessToken,
             },
         }
-    ).then(res => data = res.data)
+    ).then(res => data = res)
     return data;
 }

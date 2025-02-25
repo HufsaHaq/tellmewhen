@@ -15,9 +15,7 @@ export async function GetNumberOfOpenJobs(businessID, accessToken) {
                 "Authorization": "Bearer " + accessToken
             }
         }
-    ).then(res => {
-        data = res.data;
-    })
+    ).then(res => { data = res; })
     return data;
 }
 
@@ -33,9 +31,7 @@ export async function GetNumberOfTotalJobs(businessID, accessToken) {
             headers: {
                 "Authorization": "Bearer " + accessToken
             }
-        }).then(res => {
-            data = res.data;
-        })
+        }).then(res => { data = res; })
     return data;
 }
 
@@ -48,12 +44,10 @@ export async function DeleteBusiness(businessID, accessToken)
         base + "/delete/" + businessID,
         {
             headers: {
-                'Authorization': 'Bearer'+ accessToken
+                'Authorization': 'Bearer '+ accessToken
             }
         }
-    ).then((res) => {
-        data = res
-    })
+    ).then((res) => { data = res })
     return data;
 }
 
@@ -67,29 +61,25 @@ export async function DeleteUser(businessID, userid, accessToken)
         base + "/delete/user/" + businessID,
         {
             headers: {
-                'Authorization': 'Bearer'+ accessToken
+                'Authorization': 'Bearer '+ accessToken
             }
         }
-    ).then((res) => {
-        data = res
-    })
+    ).then((res) => { data = res })
     return data;
 }
 
-export async function GetProfileData(businessID)
+export async function GetProfileData(businessID, accessToken)
 {
     let base = localStorage["endpoint"];
     let data = null;
     await axios.get(
-        base + "/business/info"/ + businessID,
+        base + "/business/info/" + businessID,
         {
             headers: {
-                'Authorization': 'Bearer'+ localStorage["accessToken"]
+                'Authorization': 'Bearer ' + accessToken
             }
         }
-    ).then((res) => {
-        data = res.data;
-    })
+    ).then((res) => { data = res; })
     return data;
 }
 
@@ -166,8 +156,6 @@ export async function AddEmployee(name, email, password, privilege, businessID, 
                 'Authorization': 'Bearer'+ accessToken
             }
         }
-    ).then((res) => {
-        data = res
-    })
+    ).then((res) => { data = res })
     return data;
 }

@@ -20,8 +20,16 @@ const AuthPage = () => {
         Login(email, businessName, password).then((res) => {
             if(res.status === 200)
             {
-                window.location.href = '/dashboard';
-                setErrorMessage("");
+                if((localStorage["accessToken"] == undefined || localStorage["accessToken"] == "undefined")){
+                    setErrorMessage("The username and/or password are incorrect.")
+                    setProcessingData(false);
+                }
+                else{
+                    console.log(res)
+                    window.location.href = '/dashboard';
+                    setErrorMessage("");
+                }
+                
             }
             else if(res.status === 401){
                 setProcessingData(false);
@@ -59,7 +67,7 @@ const AuthPage = () => {
                     setProcessingData(false);
                     if(res.status === 200)
                     {
-                        handleLogin();
+                        window.href.location = "/auth";
                     }
                     else if(res.status === 401){
                         setErrorMessage("Business with that name already exists")

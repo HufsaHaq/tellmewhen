@@ -74,7 +74,7 @@ function Debugger() {
                 <Button color="primary" className="w-[100%]" onClick={()=>{GetCurrentJobsForEmployee(ID, EmpID, localStorage["accessToken"]).then(res => console.log(res))}}>Get Employee Current Jobs<h1 className="ml-[5px] italic font-bold">(Business ID, Employee ID, Token)</h1></Button>
 
                 <h1 className="font-bold">ACCOUNT</h1>
-                <Button color="primary" className="w-[100%]" onClick={()=>{console.log("hiii"); GetNumberOfOpenJobs(ID, localStorage["accessToken"]).then(res=>console.log(res))}}>Get No. Open Jobs <h1 className="ml-[5px] italic font-bold">(Business ID, Token)</h1></Button>
+                <Button color="primary" className="w-[100%]" onClick={()=>{GetNumberOfOpenJobs(ID, localStorage["accessToken"]).then(res=>console.log(res))}}>Get No. Open Jobs <h1 className="ml-[5px] italic font-bold">(Business ID, Token)</h1></Button>
                 <Button color="primary"className="w-[100%]" onClick={()=>{GetNumberOfTotalJobs(ID, localStorage["accessToken"]).then(res=>console.log(res))}}>Get No. Total Jobs <h1 className="ml-[5px] italic font-bold">(Business ID, Token)</h1></Button>
                 <Button color="danger" className="w-[100%]" onClick={()=>{DeleteBusiness(ID, localStorage["accessToken"]).then(res=>console.log(res))}}>Delete Business <h1 className="ml-[5px] italic font-bold">(Business ID, Token)</h1></Button>
                 <Button color="danger" className="w-[100%]" onClick={()=>{DeleteUser(ID, EmpID, localStorage["accessToken"]).then(res=>console.log(res))}}>Delete User <h1 className="ml-[5px] italic font-bold">(Business ID, Employee ID, Token)</h1></Button>
