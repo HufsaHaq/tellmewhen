@@ -47,6 +47,19 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish })
             />
           </div>
 
+          {/*Assigned Worker*/}
+          <div className="mb-4">
+            <label className="block text-gray-700 font-medium mb-2">
+              Worker Name:
+            </label>
+            <input
+              type="text"
+              readOnly
+              className="w-full p-3 border rounded-lg disabled:bg-gray-100 cursor-not-allowed"
+              value={tempData.worker || ""}
+            />
+          </div>
+
           {/* Description */}
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">

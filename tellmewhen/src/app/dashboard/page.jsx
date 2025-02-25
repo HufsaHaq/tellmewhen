@@ -51,7 +51,7 @@ function Page() {
     //Stores the data for the tables
     const [CurrentTableData, SetCurrentTableData] = useState([]);
     const [HistoryTableData, SetHistoryTableData] = useState([]);
-    const [selectedJob, setSelectedJob] = useState({ id: "", description: "", deadline: "", status: "" });
+    const [selectedJob, setSelectedJob] = useState({ id: "", description: "", deadline: "", status: "", worker: "" });
     
     //Finish Job Modal State
     const [isFinishModalOpen, setIsFinishModalOpen] = useState(false);
@@ -161,10 +161,10 @@ function Page() {
 
     //Function to handle the confirm button in the modal
     const handleConfirmModal = () => {
-        const newJob = ["ID" + (CurrentTableData.length + 1), formData.description, formData.deadline, formData.status];
+        const newJob = ["ID" + (CurrentTableData.length + 1), formData.description, formData.deadline, formData.status, formData.worker];
         SetCurrentTableData([...CurrentTableData, newJob]);
         setIsCreationModalOpen(false);
-        setFormData({ description: "", deadline: "", status: "" });
+        setFormData({ description: "", deadline: "", status: "", worker: "" });
     };
 
     //Function to handle the input change in the modal
@@ -186,6 +186,7 @@ function Page() {
                 description: job[1],
                 deadline: job[2],
                 status: job[3],
+                worker: job[4],
             });
             setIsDetailModalOpen(true);
         } else if (CurrentIndex === 1) {
@@ -195,6 +196,7 @@ function Page() {
                 userId: job[1],
                 remarks: job[2],
                 completionDate: job[3],
+                worker: job[4],
             });
             setIsHistoryModalOpen(true);
         }
@@ -204,7 +206,7 @@ function Page() {
     const handleUpdateJob = (updatedData) => {
         const updatedJobs = CurrentTableData.map((job) => (
             job[0] === updatedData.id 
-                ? [updatedData.id, updatedData.description, updatedData.deadline, updatedData.status] 
+                ? [updatedData.id, updatedData.description, updatedData.deadline, updatedData.status, updatedData.worker] 
                 : job
         ));
         SetCurrentTableData(updatedJobs);
@@ -234,6 +236,7 @@ function Page() {
             "UserXYZ", // or some real user from your system
             remarks,
             new Date().toISOString().slice(0, 10), // e.g. "2025-01-27"
+            jobToFinish.worker,
         ];
 
         SetCurrentTableData(newCurrent);
@@ -369,7 +372,7 @@ function Page() {
                                 >
                                     {item1.map((item2, index2) => (
                                         <td className={`${index2 !== 0 ? "border-l-[2px]" : ""} overflow-hidden max-w-[0px] text-pretty px-[10px] py-[5px] border-[rgba(0,0,0,0.2)]`} key={index2}>
-                                            {item2}
+                                            {index2 !== 4 && item2}
                                         </td>
                                     ))}
                                 </tr>

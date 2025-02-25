@@ -4,7 +4,7 @@ import { Button } from "@mui/joy";
 const HistoryJobDetailModal = ({ isOpen, jobData, onClose }) => {
     if (!isOpen) return null;
 
-    const { id, userId, remarks, completionDate } = jobData;
+    const { id, userId, remarks, completionDate, worker } = jobData;
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -17,6 +17,10 @@ const HistoryJobDetailModal = ({ isOpen, jobData, onClose }) => {
                 <div className="mb-4">
                     <p className="text-gray-700 font-medium">User ID:</p>
                     <p className="p-3 border rounded-lg bg-gray-100">{userId}</p>
+                </div>
+                <div className="mb-4">
+                    <p className="text-gray-700 font-medium">Worker Name:</p>
+                    <p className="p-3 border rounded-lg bg-gray-100">{worker}</p>
                 </div>
                 <div className="mb-4">
                     <p className="text-gray-700 font-medium">Remarks:</p>
