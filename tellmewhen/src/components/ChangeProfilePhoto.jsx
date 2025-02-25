@@ -20,12 +20,6 @@ function ChangeProfilePhoto({isOpen, profilePhoto, onClose, onSave}) {
     	onClose();
     };
 
-    const handleCancel = () => {
-	    setImage(null); 
-	    setPreviewImage(null); 
-	    onClose();
-	};
-
 	if (!isOpen) return null;
 
 	return (
@@ -50,9 +44,6 @@ function ChangeProfilePhoto({isOpen, profilePhoto, onClose, onSave}) {
 	        )}
 
 	        <div className="flex justify-between">
-	          <Button onClick={handleCancel} variant="soft" color="neutral" className="px-4 py-2">
-	            Cancel
-	          </Button>
 	          <Button onClick={handleSave} variant="solid" color="primary" className="px-4 py-2">
 	            Save
 	          </Button>
