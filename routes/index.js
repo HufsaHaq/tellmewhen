@@ -50,7 +50,7 @@ indexRouter.post('/login', async (req, res) => {
   if (loginCredentials){
     const privilige = loginCredentials.Privilege_level;
     console.log(loginCredentials)
-    let isMatch = bcrypt.compare(password, loginCredentials.Hashed_Password)
+    let isMatch = await bcrypt.compare(password, loginCredentials.Hashed_Password)
     console.log(`Password Match: ${isMatch}`)
     if (isMatch){
       // get the workerId
