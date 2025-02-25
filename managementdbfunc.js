@@ -213,7 +213,7 @@ export const getBusinessId = async (businessName) => {
   if (result[0]) {
     return result[0].Business_ID;
   } else {
-    return null
+    return null;
   }
 }
 //----------------------------------------------------------------
