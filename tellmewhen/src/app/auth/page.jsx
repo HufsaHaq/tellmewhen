@@ -9,6 +9,12 @@ const AuthPage = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [processingData, setProcessingData] = useState(false);
+    if (typeof window !== "undefined"){
+        if(activeTab == "login") document.title = "Log In | Tell Me When";
+        else document.title = "Register | Tell Me When";
+    }
+
 
     function handleLogin(){
         Login(email, businessName, password).then((res) => {
@@ -18,50 +24,60 @@ const AuthPage = () => {
                 setErrorMessage("");
             }
             else if(res.status === 401){
+                setProcessingData(false);
                 setErrorMessage("The username and/or password are incorrect.")
             }
-            else if(res.status === 500){
+            else if(res.status === 500 || res.status === null || res === null){
+                setProcessingData(false);
                 setErrorMessage("An error occurred while connecting to the server.")
             }
             else{
+                setProcessingData(false);
                 setErrorMessage("An unknown error occurred.")
-                console.log(res)
             }
+        }).catch((err)=>{
+            setErrorMessage("An error occurred while connecting to the server.")
+            setProcessingData(false);
         })
     }
     const handleSubmit = async (e) => {
+        setProcessingData(true);
         e.preventDefault();
         setErrorMessage('');
-        console.log("form submitted");
         if (activeTab === 'register' && password !== confirmPassword) {
             setErrorMessage("Passwords don't match!");
+            setProcessingData(false);
             return;
         }
     
         try {
-            console.log("Attempting...");
             if (activeTab === 'login') {
                 handleLogin();
-            } else {
-                Register(email, businessName, password).then((res) => { 
+            }
+            else {
+                Register(email, businessName, password).then((res) => {
+                    setProcessingData(false);
                     if(res.status === 200)
                     {
                         handleLogin();
                     }
                     else if(res.status === 401){
-                        setErrorMessage(res.body)
+                        setErrorMessage("Business with that name already exists")
                     }
-                    else if(res.status === 500){
+                    else if(res.status === 500 || res === null || res.status === null){
                         setErrorMessage("An error occurred while connecting to the server.")
                     }
                     else{
                         setErrorMessage("An unknown error occurred.")
-                        console.log(res)
                     }
+                }).catch((err)=>{
+                    setErrorMessage("An error occurred while connecting to the server.");
+                    setProcessingData(false);
                 });
             }
         } catch (err) {
             console.log(err);
+            setProcessingData(false);
         }
     };
     
@@ -76,11 +92,12 @@ const AuthPage = () => {
                             ...(activeTab === 'login' && styles.activeTab)
                         }}
                         onClick={() => {
+                            if(processingData) return;
                             setActiveTab('login');
                             setErrorMessage('');
                         }}
                     >
-                        Login
+                        Log In
                     </button>
                     <button
                         style={{
@@ -88,6 +105,7 @@ const AuthPage = () => {
                             ...(activeTab === 'register' && styles.activeTab)
                         }}
                         onClick={() => {
+                            if(processingData) return;
                             setActiveTab('register');
                             setErrorMessage('');
                         }}
@@ -161,8 +179,8 @@ const AuthPage = () => {
                         />
                     )}
 
-                    <button type="submit" style={styles.submitButton}>
-                        {activeTab === 'login' ? 'Login' : 'Register'}
+                    <button type="submit" className={`${processingData?"animate-pulse":""} transition ease-in-out`} style={processingData ? styles.submitButtonDisabled:styles.submitButton} disabled={processingData}>
+                        {activeTab === 'login' ? (!processingData ? 'Log In' : "Logging In...") : (!processingData ? 'Register' : "Registering...")}
                     </button>
                 </form>
             </div>
@@ -235,9 +253,15 @@ const styles = {
         fontSize: '1rem',
         cursor: 'pointer',
         marginTop: '1rem',
-        ':hover': {
-            backgroundColor: '#0056b3',
-        },
+    },
+    submitButtonDisabled: {
+        padding: '12px',
+        backgroundColor: 'rgb(195, 195, 195)',
+        color: 'white',
+        border: 'none',
+        borderRadius: '4px',
+        fontSize: '1rem',
+        marginTop: '1rem',
     },
 
     errorMessage: {
