@@ -16,7 +16,7 @@ async function saveSubscription(subscription) {
     let endpoint = localStorage["endpoint"];
     const response = await fetch(endpoint + '/save-new-subscription',{
         method:"POST",
-        headers:{ 'Content-type': 'application.json'},
+        headers:{ 'Content-type': 'application/json'},
         body: JSON.stringify(subscription)
     })
 }
