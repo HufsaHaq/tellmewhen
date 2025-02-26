@@ -18,8 +18,11 @@ import { checkData } from '../datacheck.js';
 dotenv.config('../')
 console.log(process.env.NODE_ENV)
 // set up the keys for authentication
-const privateKey = fs.readFileSync('jwtRSA256-private.pem','utf-8');
+const accessPrivateKey = fs.readFileSync('jwtRSA256-private.pem','utf-8');
 const publicKey = fs.readFileSync('jwtRSA256-public.pem','utf-8');
+// set up keys for refresh
+const refreshPrivateKey = fs.readFileSync('refresh-private.pem');
+const refreshPublicKey = fs.readFileSync('refresh-public.pem');
 
 
 const indexRouter = express.Router();
@@ -59,7 +62,9 @@ indexRouter.post('/login', async (req, res) => {
       const workerId = employeeInfo.User_ID
 
       // create new jwt
-      const accessToken = jwt.sign({ username: username, role: privilige, workerId  }, privateKey, { expiresIn: '1h', algorithm: 'RS256' })
+      const accessToken = jwt.sign({ username: username, role: privilige, workerId  }, accessPrivateKey, { expiresIn: '1h', algorithm: 'RS256' })
+      // create new refresh token
+      const refreshToken = jwt.sign({ username: username,})
       res.status(200).json({ accessToken: accessToken })
     }else{
       res.status(401).json({error: "Passwords do not match"});
@@ -95,5 +100,38 @@ indexRouter.post('/register', async (req, res) => {
     res.status(400).json({message: "missing fields"})
   }
 });
+
+//refresh the current access token using a refresh token
+indexRouter.post('/refresh', (req,res) => {
+  //check if refresh token is valid, if so then return a new access token
+
+  //extract request data
+
+  const username = req.body.username;
+  const id = req.body.workerId;
+  const privilegeLevel = req.body.privilegeLevel;
+
+  if(req.cookies?.jwt){
+    const token = req.cookies.jwt
+
+    jwt.verify(token, refreshPublicKey,
+      (err,decoded) => {
+        if (err) {
+          // Wrong Refesh Token
+          return res.status(406).json({ message: 'Unauthorized' });
+      }
+      else {
+          // Correct token we send a new access token
+          const accessToken = jwt.sign({ username:username, workerId: id, privilegeLevel:privilegeLevel }, accessPrivateKey, {expiresIn: '1hr'});
+          const newRefreshToken = jwt.sign({ username:username }, refreshPrivateKey, {expiresIn:'1d'} )
+          return res.status(200).json({ accessToken:accessToken, refreshToken:newRefreshToken });
+      }
+      }
+    )
+
+  }else{
+    res.status(406).json({ message: "Unauthorised, no refresh token provided. Please sign out and login again"})
+  }
+})
 
 export { indexRouter }; 

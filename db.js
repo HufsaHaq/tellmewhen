@@ -70,6 +70,11 @@ export const createnotification = async () => {
   return executeQuery(sql);
 };
 
+export const createRefreshTokensTable = async () => {
+  const sql = 'CREATE TABLE IF NOT EXISTS TOKENS( ID INT AUTO_INCRIMENT PRIMARY KEY, User_ID INT, Revoked_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE;';
+  return executeQuery(sql)
+}
+
 export const deleteBusinesstable = async () => {
   const sql = 'DROP TABLE IF EXISTS BUSINESS_TABLE';
   return executeQuery(sql);
@@ -100,7 +105,9 @@ export const deleteNotificationstable = async () => {
   return executeQuery(sql);
 };
 
-
+export const deleteTokensTable = async () => {
+  const sql = 'DROP TABLE IF EXISTS TOKENS';
+}
 export const populateDatabase = async () => {
   try {
       // Insert into BUSINESS_TABLE
