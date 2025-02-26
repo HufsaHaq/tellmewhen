@@ -55,10 +55,14 @@ export const login = async (buisness, username) => {
   const selectbusinessid = 'SELECT Business_ID FROM BUSINESS_TABLE WHERE Business_Name = ?;';
   const sql = 'SELECT Hashed_Password, Privilege_level FROM WORKER_TABLE WHERE Username =? AND Business_ID =? ;';
   const businessIdResult = await executeQuery(selectbusinessid, [buisness]);
-  console.log(businessIdResult[0].Business_ID)
-  const result = await executeQuery(sql, [username, businessIdResult[0].Business_ID]);
-  console.log(result)
-  return result[0];
+  if(businessIdResult.length > 0){
+    const result = await executeQuery(sql, [username, businessIdResult[0].Business_ID]);
+    console.log(result)
+    return result[0];
+  }else{
+    console.log('No such name')
+    return 0;
+  }
 };
 
 //Add new business

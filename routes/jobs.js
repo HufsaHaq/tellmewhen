@@ -64,7 +64,7 @@ jobRouter.post('/assign_job',authMiddleWare, moderatorMiddleWare, async (req,res
     }catch (err) {
         res.json({error: err})
     }
-    res.sendStatus(200).json({message : `Job ${jobId} assigned to worker with id: ${userId}`})
+    res.status(200).json({message : `Job ${jobId} assigned to worker with id: ${userId}`})
 
 })
 
@@ -82,7 +82,7 @@ jobRouter.post('/new', authMiddleWare, async (req,res) => {
         res.json({error : err})
     }
 
-    res.sendStatus(200).json({message: "New job succesfully registered"})
+    res.status(200).json({message: "New job succesfully registered"})
     // Notify the user that the job has been registered
 })
 
@@ -100,7 +100,7 @@ jobRouter.post('/complete/:jid',authMiddleWare, async (req,res) =>{
         res.json( { error : err } )
     }
 
-    res.sendStatus(200).json( { message: 'Job marked as complete'})
+    res.status(200).json( { message: 'Job marked as complete'})
 })
 
 //send customer a notification
