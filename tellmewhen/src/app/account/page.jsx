@@ -121,18 +121,17 @@ function Account()
     return(
         <div className = {`page-content max-tablet620:w-[90%] tablet620:w-[75%] m-auto mt-[25px]`}>
         {/* TITLEBAR */}
-            <span className="header-content flex mt-auto items-center ">   
+            <span className="header-content mb-[25px] ml-[15px] items-center flex mt-auto items-center ">   
                 {profilePhoto ? (
-                    <div className="my-4"><img src={URL.createObjectURL(profilePhoto)} alt="Profile" className="w-[150px] h-[150px] rounded-full object-cover"/>
-                    </div>) : (<div className="my-4 w-[150px] h-[150px] bg-[#909090] rounded-full animate-pulse"></div>
+                    <img src={URL.createObjectURL(profilePhoto)} alt="Profile" className="w-[70px] min-w-[70px] h-[70px] rounded-full object-cover"/>
+                    ) : (<div className="my-auto w-[70px] min-w-[70px] h-[70px] bg-[#909090] rounded-full animate-pulse"></div>
                 )}
-                <h1 className="align-top inline-block text-[30px] ml-[20px] mb-[70px] font-semibold mt-auto text-black">{businessName}</h1>
+                <h1 className="text-nowrap overflow-x-hidden align-top inline-block my-auto text-[30px] ml-[20px] font-semibold mt-auto text-black">{businessName}</h1>
             </span>
             <span onClick={()=>{SetSideMenuOpen(!SideMenuOpen)}} className="tablet620:absolute tablet620:opacity-0 tablet620:top-[-1000px] cursor-pointer w-[100%] inline flex justify-center space-x-[25px] outline outline-[#A9A9A9] outline-[1.5px] rounded-md items-center py-[15px] mb-[10px]">
                 <Menu className="scale-[1.5]"/>
                 <h1 className="font-semibold">{SelectedMenu}</h1>
             </span>
-
             {/* PAGE MENU LIST ON THE LEFT */}
             <span className="content mt-[20px] flex justify-between">
                 <motion.div className={`max-tablet620:!absolute max-tablet620:left-[0px] max-tablet620:w-[100%] max-tablet620:bg-[#F5F5F5] max-tablet620:h-full max-tablet620:overflow-y-hidden max-tablet620:pr-[10px] max-tablet620:z-[15] tablet620:w-[25%] left-list overflow-visible rounded-md px-[5px] pt-[2px]`}
@@ -179,7 +178,7 @@ function Account()
                                         <NotificationsActive color="primary" className="my-auto text-[#0A5397] text-[45px]" fontSize="50px"/>
                                         <div className="justify-center my-auto">
                                             <h1 className="grid font-bold text-xl">0</h1>
-                                            <h1 className="grid font-semibold text-[#A0A0A0] text-lg">Active Jobs</h1>
+                                            <h1 className="grid font-semibold text-[#808080] text-lg">Active Jobs</h1>
                                         </div>
                                     </div>
                                 </div>
@@ -188,7 +187,7 @@ function Account()
                                         <Numbers color="primary" className="my-auto text-[#0A5397] text-[50px]" fontSize="50px"/>
                                         <div className="justify-center my-auto">
                                             <h1 className="grid font-bold text-xl">0</h1>
-                                            <h1 className="grid font-semibold text-[#A0A0A0] text-lg">Total Jobs</h1>
+                                            <h1 className="grid font-semibold text-[#808080] text-lg">Total Jobs</h1>
                                         </div>
                                     </div>
                                 </div>
@@ -205,7 +204,7 @@ function Account()
                                 <span className="flex w-full items-center justify-between px-[12px] py-[7px] rounded-md">
                                     <div>
                                         <h1 className="font-semibold">Rename Account</h1>
-                                        <h1 className="">Changes the name of the business</h1>
+                                        <h1 className="text-[#808080]">Changes the name of the business</h1>
                                     </div>
                                     <Button variant="solid" color="primary" className="w-[75px]" onClick={() => setIsChangeNameOpen(true)} >Change</Button>
                                 </span>
@@ -214,7 +213,7 @@ function Account()
                                 <span className="flex w-full items-center justify-between px-[12px] py-[7px] rounded-md">
                                     <div>
                                         <h1 className="font-semibold">Change Account Profile Photo</h1>
-                                        <h1 className="">Changes the profile photo for business</h1>
+                                        <h1 className="text-[#808080]">Changes the profile photo for business</h1>
                                     </div>
                                     <Button variant="solid" color="primary" className="w-[75px]" onClick ={() => setIsChangeProfilePhotoOpen(true)}>Change</Button>
                                     
@@ -223,7 +222,7 @@ function Account()
                                 <span className="flex w-full items-center justify-between px-[12px] py-[7px] rounded-md">
                                     <div>
                                         <h1 className="font-semibold">Change Admin Password</h1>
-                                        <h1 className="">Changes the password for business</h1>
+                                        <h1 className="text-[#808080]">Changes the password for business</h1>
                                     </div>
                                     <Button variant="solid" color="primary" className="w-[75px]" onClick ={() => setIsChangePasswordOpen(true)}>Change</Button>
                                 </span>
@@ -231,7 +230,7 @@ function Account()
                                 <span className="flex w-full items-center justify-between px-[12px] py-[7px] rounded-md">
                                     <div>
                                         <h1 className="font-semibold text-[#C41C1C]">Delete Account</h1>
-                                        <h1 className="">Warning! This action cannot be undone.</h1>
+                                        <h1 className="text-[#C41C1C]">Warning! This action cannot be undone.</h1>
                                     </div>
                                     <Button variant="solid" className="w-[75px]" color="danger">Delete</Button>
                                 </span>
@@ -264,8 +263,8 @@ function Account()
                         <div className="">
                                 <h1 className="font-semibold mb-[2px] w-[100%] sticky text-[20px]">Employee Management</h1>
                                 <span className={`max-tablet620:block tablet620:flex items-center mb-[10px]`}>
-                                    <h1 className="text-[15px] w-[100%] mb-[15px]">Modify the details of each employee.</h1>
-                                    <span className={`max-tablet620:justify-between max-tablet620:space-x-[5px] flex inline`}>
+                                    <h1 className="text-[#808080] flex text-[15px] w-[100%] mb-[15px]">Modify the details of each employee.</h1>
+                                    <span className={`max-tablet620:justify-between space-x-[5px] flex inline`}>
                                         <Button className="mr-[50px] h-[10px]"
                                                 onClick={() => setIsEmployeeCreationModalOpen(true)}
                                         >
@@ -298,7 +297,7 @@ function Account()
                                                     <tr key={index1} className="cursor-pointer" onClick={()=> handleEmployeeRowClick(employee)}>
                                                         {employee.map((element, index2) => {
                                                             return(
-                                                                <td key={index2} className={`${index1 % 2 == 1 ? "bg-[#DFDEDD]" : "bg-[#f0f0f0]"} overflow-hidden pl-[10px] ${index2 == 0 && "py-[10px]"} ${index2 != 0 && "border-l-[2px] border-[rgba(0,0,0,0.2)]"}`}>
+                                                                <td key={index2} className={`${index1 % 2 == 1 ? "bg-[#DFDEDD]" : "bg-[#f0f0f0]"} overflow-hidden px-[10px] ${index2 == 0 && "py-[10px]"} ${index2 != 0 && "border-l-[2px] border-[rgba(0,0,0,0.2)]"}`}>
                                                                     <span className={`${index2 == 0 && "max-w-[85%]"} flex inline items-center`}>
                                                                         <h1>{element}</h1>
                                                                     </span>

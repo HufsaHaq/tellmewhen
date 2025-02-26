@@ -21,7 +21,7 @@ const AuthPage = () => {
             if(res.status === 200)
             {
                 if((localStorage["accessToken"] == undefined || localStorage["accessToken"] == "undefined")){
-                    setErrorMessage("The username and/or password are incorrect.")
+                    setErrorMessage("Your credentials are incorrect.")
                     setProcessingData(false);
                 }
                 else{
@@ -33,7 +33,7 @@ const AuthPage = () => {
             }
             else if(res.status === 401){
                 setProcessingData(false);
-                setErrorMessage("The username and/or password are incorrect.")
+                setErrorMessage("Your credentials are incorrect.")
             }
             else if(res.status === 500 || res.status === null || res === null){
                 setProcessingData(false);
@@ -41,10 +41,17 @@ const AuthPage = () => {
             }
             else{
                 setProcessingData(false);
-                setErrorMessage("An unknown error occurred.")
+                setErrorMessage("An error occurred while connecting to the server.")
             }
-        }).catch((err)=>{
-            setErrorMessage("An error occurred while connecting to the server.")
+        }).catch((res)=>{
+            if(res.status === 401){
+                setProcessingData(false);
+                setErrorMessage("Your credentials are incorrect.")
+            }
+            else{
+                setProcessingData(false);
+                setErrorMessage("An error occurred while connecting to the server.")
+            }
             setProcessingData(false);
         })
     }
@@ -67,19 +74,24 @@ const AuthPage = () => {
                     setProcessingData(false);
                     if(res.status === 200)
                     {
-                        window.href.location = "/auth";
+                        handleLogin();
                     }
-                    else if(res.status === 401){
-                        setErrorMessage("Business with that name already exists")
+                    else if(res.status === 401 || res.status === 400){
+                        setErrorMessage("A business with that name already exists")
                     }
                     else if(res.status === 500 || res === null || res.status === null){
                         setErrorMessage("An error occurred while connecting to the server.")
                     }
                     else{
-                        setErrorMessage("An unknown error occurred.")
+                        setErrorMessage("An error occurred while connecting to the server.")
                     }
-                }).catch((err)=>{
-                    setErrorMessage("An error occurred while connecting to the server.");
+                }).catch((res)=>{
+                    if(res.status === 401 || res.status === 400){
+                        setErrorMessage("A business with that name already exists")
+                    }
+                    else{
+                        setErrorMessage("An error occurred while connecting to the server.")
+                    }
                     setProcessingData(false);
                 });
             }
@@ -200,9 +212,12 @@ const AuthPage = () => {
 const styles = {
     container: {
         display: 'flex',
+        position: "fixed",
         justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
+        top: "50vh",
+        left: "50vw",
+        transform: "translate(-50%,-50%)",
+        width: "100%",
         backgroundColor: '#f5f5f5',
         padding: '20px',
     },

@@ -7,7 +7,7 @@ const worker_Options = ["Hufsa Haq","Archie Calvert","Palak Singh","Varvara Frol
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white w-1/3 rounded-lg shadow-lg p-6">
+            <div className="bg-white max-tablet620:w-full min-w-[33%] max-w-[90%] rounded-lg shadow-lg p-6">
                 <h2 className="text-center text-2xl font-semibold mb-6">Create a job</h2>
                 <form>
                     <div className="mb-4">
