@@ -4,6 +4,7 @@ Chats are stored on the Stream Chat service automatically
 
 
 Frontend:
+
 On the frontend, there are two new pages which are
                         /debugger/chat/business 
                         /debugger/chat/user
@@ -52,7 +53,9 @@ app.use(bodyParser.json());
 // This allows requests to be made from the frontend
 // Currently this is allowing requests from anywhere (not so good :( )
 // For security, replace the origin with allowed URLs
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: "*" })); 
+// app.use(cors({ origin: process.env.FRONTEND_URL || "*" }));
+
 
 // Routes
 app.use("/chat", chatRouter);
