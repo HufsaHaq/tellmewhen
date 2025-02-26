@@ -33,6 +33,16 @@ const execute = (sql, params = []) =>
         }
       });
     });
+
+const addAccessToken = async (userId, token, expiry) => {
+  let sql = `INSERT INTO ACCESS_TOKENS (User_ID, Access_Token, Expiration_Time) VALUES (?,?,?);`;
+  return executeQuery(sql, [userId, token, expiry]);
+};
+
+const deleteAccessToken = async (token) => {
+  let sql = `DELETE FROM ACCESS_TOKENS WHERE Access_Token =?;`;
+  return executeQuery(sql, [token]);
+};
     
 const addNotification = async (userId, jobId, notificationContent) => {
     let sql = `INSERT INTO NOTIFICATIONS (User_ID, Job_ID, Notification_Content) VALUES (?, ?, ?);`;
