@@ -28,11 +28,16 @@ const authMiddleWare = (req, res, next) => {
 };
 
 const adminMiddleWare = (req, res, next)=>{
+  //passed from previous middleware
   const privilege = req.body.privilege_level;
+  if(privilege != null){
   if(privilege === 1){
     next();
   }else{
     res.status(401).json({ message: "Unauthorized: Invalid privilege level" });
+  }
+  }else{
+    return res.status(401).json({ message: "Unauthorized: No privilige level assigned"})
   }
 }
 
