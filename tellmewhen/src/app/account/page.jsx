@@ -6,6 +6,7 @@ import { Search } from "@mui/icons-material";
 import ChangeName from "@/components/ChangeName"
 import ChangeProfilePhoto from "@/components/ChangeProfilePhoto"
 import ChangePassword from "@/components/ChangePassword"
+import { ChangeBusinessName, ChangeProfilePhoto as ChangeProfilePhotoFromScripts } from "@/scripts/account"
 import { Menu } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import { motion, useScroll } from "framer-motion";
@@ -47,6 +48,9 @@ function Account()
     // Value held inside of the Search Bar on the "Employee Management" page
     const [SearchParameter, SetSearchParameter] = useState("");
 
+    // Hold the error message
+    const [errorMessage, setErrorMessage] = useState('');
+    
     useEffect(() => {
 
         // TO-DO: Fetch employee data from the database here
@@ -69,13 +73,66 @@ function Account()
     const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
     const [Password, setPassword] = useState("[Enter Password]");
 
-    const handleSaveBusinessName = (newBusinessName) => {
-    setBusinessName(newBusinessName);
-    setIsChangeNameOpen(false);
-    };
+    const handleSaveBusinessName =  async(newBusinessName) => {
+        const businessId = localStorage["businessId"];
+        const accessToken = localStorage["accessToken"];
 
-    const handleSaveProfilePhoto = (newImage) => {
-    setProfilePhoto(newImage);
+        try {
+            const res = await ChangeBusinessName(newBusinessName, businessId, accessToken);
+
+            if (res.status === 200) {
+                setBusinessName(newBusinessName);
+                setErrorMessage("");
+                setIsChangeNameOpen(false);
+            }
+            else if (res.status === 401) {
+                setErrorMessage("Unauthorized request. Please log in to make changes");
+                window.location.href = '/auth'; 
+            }
+            else if (res.status === 500 || res.status === null || res === null || res === 404) {
+                setErrorMessage("An error occurred while connecting to the server.");
+            }
+            else {
+                setErrorMessage("An unknown error occurred.");
+            }
+        }
+        catch (error) {
+            setErrorMessage("Ann error occurred while connecting to the server.");
+        }
+    };
+    
+    const handleSaveProfilePhoto = async(newImage) => {
+
+        if(!newImage){
+            setErrorMessage("Please select an image before saving");
+            return;
+        }
+
+        const businessId = localStorage["businessId"];
+        const accessToken = localStorage["accessToken"];
+
+        try {
+            const res = await ChangeProfilePhotoFromScripts(newImage, businessId, accessToken);
+
+            if (res.status === 200) {
+                setProfilePhoto(newImage);
+                setErrorMessage("");
+                setIsChangeProfilePhotoOpen("false");
+            }
+            else if (res.status === 401) {
+                setErrorMessage("Unauthorized request. Please log in to make changes");
+                window.location.href = '/auth'; 
+            }
+            else if (res.status === 500 || res.status === null || res === null || res === 404) {
+                setErrorMessage("An error occurred while connecting to the server.");
+            }
+            else {
+                setErrorMessage("An unknown error occurred.");
+            }
+        }
+        catch (error) {
+            setErrorMessage("Ann error occurred while connecting to the server.");
+        }
     };
 
     const handleSavePassword = (newPassword) => {
@@ -123,7 +180,8 @@ function Account()
         {/* TITLEBAR */}
             <span className="header-content flex mt-auto items-center ">   
                 {profilePhoto ? (
-                    <div className="my-4"><img src={URL.createObjectURL(profilePhoto)} alt="Profile" className="w-[150px] h-[150px] rounded-full object-cover"/>
+                    <div className="my-4"><img src={profilePhoto
+                } alt="Profile" className="w-[150px] h-[150px] rounded-full object-cover"/>
                     </div>) : (<div className="my-4 w-[150px] h-[150px] bg-[#909090] rounded-full animate-pulse"></div>
                 )}
                 <h1 className="align-top inline-block text-[30px] ml-[20px] mb-[70px] font-semibold mt-auto text-black">{businessName}</h1>
@@ -240,13 +298,22 @@ function Account()
                             <ChangeName
                                 isOpen={isChangeNameOpen}
                                 businessName={businessName}
-                                onClose={() => setIsChangeNameOpen(false)}
+                                errorMessage={errorMessage}
+                                onClose={() => {
+                                    setErrorMessage('');
+                                    setIsChangeNameOpen(false);
+                                }}
                                 onSave={handleSaveBusinessName}
                               />
 
                             <ChangeProfilePhoto 
                                 isOpen={isChangeProfilePhotoOpen}
-                                onClose={() => setIsChangeProfilePhotoOpen(false)}
+                                profilePhoto={profilePhoto}
+                                errorMessage={errorMessage}
+                                onClose={() => {
+                                    setErrorMessage('');
+                                    setIsChangeProfilePhotoOpen(false);
+                                }}
                                 onSave={handleSaveProfilePhoto}
                               />
 

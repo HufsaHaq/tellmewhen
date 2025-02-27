@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@mui/joy";
 import { Input } from "@mui/joy";
 
-function ChangeProfilePhoto({isOpen, profilePhoto, onClose, onSave}) {
+function ChangeProfilePhoto({isOpen, profilePhoto, errorMessage, onClose, onSave}) {
 
 	const [image, setImage] = useState(null);
 	const [previewImage, setPreviewImage] = useState(null);
@@ -10,15 +10,26 @@ function ChangeProfilePhoto({isOpen, profilePhoto, onClose, onSave}) {
 	const handleImageChange = (event) => {
 		const file = event.target.files[0];
 	    if (file) {
-	      setImage(file);
-	      setPreviewImage(URL.createObjectURL(file)); 
+		    setPreviewImage(URL.createObjectURL(file)); 
+
+		    const reader = new FileReader();
+		    reader.onloadend = () => {
+		    	const base64String = reader.result;
+		    	setImage(base64String);
+		    };
+		    reader.readAsDataURL(file);
     	}
 	};
 
 	const handleSave = () => {
     	onSave(image);
-    	onClose();
     };
+
+    const handleClose = () => {
+    	setPreviewImage(null);
+    	setImage(null);
+    	onClose();
+    }
 
 	if (!isOpen) return null;
 
@@ -42,12 +53,12 @@ function ChangeProfilePhoto({isOpen, profilePhoto, onClose, onSave}) {
 	            <img src={previewImage} alt="Preview" className="w-full h-[200px] object-cover rounded-md" />
 	          </div>
 	        )}
-
+	        {errorMessage && ( <div className="text-red-500 text-sm mt-2">{errorMessage}</div> )}
 	        <div className="flex justify-between">
 	          <Button onClick={handleSave} variant="solid" color="primary" className="px-4 py-2">
 	            Save
 	          </Button>
-	          <Button onClick={onClose} variant="soft" color="neutral" className="px-4 py-2">
+	          <Button onClick={handleClose} variant="soft" color="neutral" className="px-4 py-2">
 	            Close
 	          </Button>
 	        </div>

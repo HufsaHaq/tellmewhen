@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@mui/joy";
 
-function ChangeName({ isOpen, businessName, onClose, onSave }) {
+function ChangeName({ isOpen, businessName, errorMessage, onClose, onSave }) {
   const [isEditing, setIsEditing] = useState(false);
   const [tempBusinessName, setTempBusinessName] = useState(businessName);
 
@@ -42,6 +42,7 @@ function ChangeName({ isOpen, businessName, onClose, onSave }) {
               disabled={!isEditing}
               onChange={(e) => setTempBusinessName(e.target.value)}
             />
+            {errorMessage && ( <div className="text-red-500 text-sm mt-2">{errorMessage}</div> )}
           </div>
 
           <div className="flex justify-between">
