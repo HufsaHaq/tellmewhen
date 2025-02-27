@@ -248,11 +248,11 @@ function Page() {
     };
 
     return (
-        <div className={"page-content w-[80%] m-auto"}>
+        <div className={"page-content max-tablet620:w-[90%] tablet620:w-[80%] m-auto"}>
             {/* Span element is for the controls above the table (Switcher and Button) to keep them inline*/}
-            <span className={`z-10 transition ease-in-out hover:scale-[100.75%] sticky top-[15px] ${coloursTailwind["tertiary"]} border-[1px] mb-[10px] border-[#A0A0A0] w-[98%] m-auto rounded-lg shadow-lg flex mt-[20px] justify-between items-center h-[60px]`}>
+            <span className={`z-10 transition ease-in-out hover:scale-[100.75%] sticky top-[15px] ${coloursTailwind["tertiary"]} border-[1px] mb-[10px] border-[#A0A0A0] w-[98%] m-auto rounded-lg shadow-lg mt-[20px] grid grid-cols-2 items-center min-h-[60px] max-tablet620:space-y-[10px] max-tablet620:py-[10px] tablet620:py-[5px] max-tablet620:px-[15px] tablet620:px-[5px]`}>
                 <Tabs
-                    className="w-[200px] outline ml-[6px] outline-[1px] outline-[#B8B8B8] rounded-[10px]"
+                    className="tablet620:justify-self-start max-tablet620:justify-self-center max-tablet620:w-full tablet620:w-[200px] max-tablet620:col-span-full outline outline-[1px] outline-[#B8B8B8] rounded-[10px]"
                     onChange={(event, index) => {
                         SetIndex(index);
                         SetPageNumber(1);
@@ -289,15 +289,15 @@ function Page() {
                         <Tab disableIndicator>History</Tab>
                     </TabList>
                 </Tabs>
-                <span className="mr-[10px] inline flex my-auto">
+                <span className="mt-[0px] max-tablet620:w-full max-tablet620:justify-self-center tablet620:justify-self-end max-tablet620:col-span-full inline flex space-x-[15px] items-center">
                     {/* Dropdown for the number of rows per page */}
                     <Select
-                        className="outline outline-[1px] mr-[15px] my-auto"
+                        className="max-tablet620:w-full tablet620:w-[90px] outline outline-[1px]"
                         action={RowsAction}
                         value={RowsCount}
                         placeholder="Rows"
                         sx={{
-                            width: "90px",
+                            
                             height: "10px",
                             fontSize: "15px",
                         }}
@@ -333,7 +333,7 @@ function Page() {
                             bgcolor: colours["primary"],
                             color: colours["primary-text-colour"],
                         }}
-                        className="h-[40px] font-bold"
+                        className="h-[40px] max-tablet620:w-[100%] font-bold"
                         onClick={handleOpenCreationModal}
                     >
                         New Job

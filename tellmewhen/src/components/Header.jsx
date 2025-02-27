@@ -10,9 +10,11 @@ function Header() {
             SetWindowWidth(window.innerWidth);
         });
     const [NavigationOpen, SetNavigationOpen] = useState(false);
-    const [LoggedIn, SetLoggedIn] = useState((localStorage["accessToken"] !== undefined && localStorage["accessToken"] != "undefined") ? true : false);
+    const [LoggedIn, SetLoggedIn] = useState(false);
 
     useEffect(() => {
+        if(typeof window === "undefined") return;
+        SetLoggedIn((localStorage["accessToken"] !== undefined && localStorage["accessToken"] != "undefined") ? true : false);
         if (windowWidth > 1080 && NavigationOpen) SetNavigationOpen(false);
         SetWindowWidth(window.innerWidth);
 

@@ -3,11 +3,11 @@ import { Button, Autocomplete, TextField } from "@mui/joy";
 
 const JobModal = ({ isOpen, onClose, onConfirm, formData, onInputChange }) => {
     if (!isOpen) return null;
-const worker_Options = ["Hufsa Haq","Archie Calvert","Palak Singh","Varvara Frolenkova","Vuk Stojkovic","Nurassyl Molshin","Muhammed Choudhary"]
+const worker_Options = ["worker1", "worker2", "worker3", "worker4", "worker5", "worker6", "worker7", "worker8", "worker9", "worker10"];
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white w-1/3 rounded-lg shadow-lg p-6">
+            <div className="bg-white max-h-[95vh] overflow-y-scroll max-tablet620:w-full min-w-[33%] max-w-[90%] rounded-lg shadow-lg p-6">
                 <h2 className="text-center text-2xl font-semibold mb-6">Create a job</h2>
                 <form>
                     <div className="mb-4">
