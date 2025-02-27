@@ -1,122 +1,91 @@
 import QRCode from 'qrcode'
-import {createjob, executeQuery} from './db.js';
-// import { insert_job } from './db.js'
+import crypto from 'crypto';
 
+const ENCRYPTION_KEY = Buffer.from(process.env.ENCRYPTION_KEY, 'base64'); // Decode Base64 key
+const ENCRYPTION_IV = Buffer.from(process.env.ENCRYPTION_IV, 'base64'); // Decode Base64 IV
+const ALGO = 'aes-128-cbc';
 
-/**
- * Retrieves the random job ID from the DB for a given jobId.
- * @param job_id
- * @returns {Promise<unknown>}
- */
-async function job_id_to_random_job_id(job_id) {
-  const sql = `
-    SELECT Random_Job_ID
-    FROM JOB_TABLE
-    WHERE Job_ID = ?
-  `;
-
-  // This returns an array of row objects
-  const rows = await executeQuery(sql, [job_id]);
-
-  // rows[0] is { Random_Job_ID: 'da3ba4b6933e7a0cd9c1' }
-  // so rows[0].Random_Job_ID is the string value you want.
-  if (rows.length === 0) {
-    // Handle the case where no matching job is found
-    throw new Error('No job found for Job_ID ' + job_id);
-  }
-
-  return rows[0].Random_Job_ID;
+if (!ENCRYPTION_KEY || ENCRYPTION_KEY.length !== 16 || !ENCRYPTION_IV || ENCRYPTION_IV.length !== 16) {
+    throw new Error('Invalid or missing ENCRYPTION_KEY or ENCRYPTION_IV in .env file. Ensure it is a 16-byte (Base64-encoded) key/iv. To generate, run: openssl rand -base64 16');
 }
+
 /**
- * Retrieves the job ID from the DB for a given random jobId.
- * @param random_job_id
- * @returns {Promise<unknown>}
+ * Encrypt Job ID using ALGO constant (AES-128), ENCRYPTION_KEY and ENCRYPTION_IV from .env file. 
+ * @param jobId
+ * @returns {string}
  */
-async function random_job_id_to_job_id(random_job_id){
-     const sql = `
-    SELECT Job_ID
-    FROM JOB_TABLE
-    WHERE Random_Job_ID = ?
-  `;
-     const job_id = await executeQuery(sql, [random_job_id])
-    return job_id
+export function encryptJobId(jobId) {
+    try {
+        // Create an AES cipher using the encryption key and IV
+        const cipher = crypto.createCipheriv(ALGO, ENCRYPTION_KEY, ENCRYPTION_IV);
+
+        // Encrypt the job ID
+        let encrypted = cipher.update(jobId, 'utf8', 'base64');
+        encrypted += cipher.final('base64');
+
+        // Return the IV (Base64 encoded) and encrypted data combined
+        return encrypted;
+    } catch (err) {
+        console.error('Error encrypting job ID:', err);
+        throw err;
+    }
 }
 
 export function generate_url(id) {
-  return `https://tellmewhen.co.uk/${id}`;
+    return `https://tellmewhen.co.uk/${id}`;
 }
 
 /**
- * takes job_id, generates fetches random id from db and generates url and qr-code directing to this url and represents in base 64
- * @param url
+ * takes job_id, enrypts it and returns qr-code as base-64 string
  * @returns {Promise<string>}
+ * @param job_id
  */
 export async function generate_qr(job_id) {
-    const rand = await job_id_to_random_job_id(job_id);
-    const url = generate_url(rand);
+    const encryptedJobId = encryptJobId(job_id);
+    const url = generate_url(encryptedJobId);
     return QRCode.toDataURL(url, {
-    color: {
-      dark: '#00F',
-      light: '#0000'
+        color: {
+            dark: '#00F',
+            light: '#0000'
+        }
+    });
+}
+
+
+/**
+ * Decrypt Job ID using ALGO constant (AES-128), ENCRYPTION_KEY and ENCRYPTION_IV from .env file.
+ * @param encryptedJobId
+ * @returns {string}
+ */
+export function decryptJobId(encryptedJobId) {
+    try {
+        // Create a decipher using the encryption key and IV
+        const decipher = crypto.createDecipheriv(ALGO, ENCRYPTION_KEY, ENCRYPTION_IV);
+
+        // Decrypt the data
+        let decrypted = decipher.update(encryptedJobId, 'base64', 'utf8');
+        decrypted += decipher.final('utf8');
+
+        return decrypted;
+    } catch (err) {
+        console.error('Error decrypting job ID:', err);
+        throw err;
     }
-  });
 }
 
 
 
-
-
-/*
-async function test_insert_job(){
-    const job_id = await insert_job(  'Fix server issues', 'https://techcorp.com/job/1', '2025-03-01 12:00:00');
-    const sql = `SELECT  FROM JOB_TABLE WHERE Job_ID = ?`;
-
-    const res = await executeQuery(sql, [job_id]);
-    console.log(res)
-    return await res;
-}
-*/
-
-/*
-async function test_job_id_to_randon_job(){
-      const jobid = await insert_job(  'Fix server issues', 'https://techcorp.com/job/1', '2025-03-01 12:00:00');
-      const rand = await job_id_to_random_job_id(jobid)
-      console.log(rand)
-
-}
-
-//await test_job_id_to_randon_job();
-*/
-
-
-/*
-async function test_generate_url() {
-  const jobid = await insert_job('Fix server issues', 'https://techcorp.com/job/1', '2025-03-01 12:00:00');
-
-  const randomId = await job_id_to_random_job_id(jobid);
-
-  const url = await generate_url(randomId);
-  console.log(url);
-  return url;
-}
-
-await test_generate_url();
-*/
 
 /*
 async function test_qr() {
-  // 1. Insert => get normal job ID
-  const jobid = await insert_job('Fix server issues', 'https://techcorp.com/job/1', '2025-03-01 12:00:00');
-
-
-  // 4. Convert URL -> QR code
-  const qr = await generate_qr(jobid);
-  console.log(qr);
+    const jobid = '12345';
+    const encrypted = encryptJobId(jobid);
+    const decrypted = decryptJobId(encrypted);
+    console.log(decrypted);
+  //const qr = await generate_qr(jobid)
+  //console.log(qr);
 }
 
 await test_qr();
 //await test_insert_job();
-await createjob();
-
-
 */
