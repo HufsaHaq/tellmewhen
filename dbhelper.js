@@ -237,6 +237,14 @@ const getSubscription = async (jobId, businessId) => {
   return execute(sql, [jobId, businessId]);
 };
 
+const addSubscription = async (jobId, businessId, endpoint, authKey1, authKey2) => {
+  const sql = `
+    INSERT INTO SUBSCRIPTION_TABLE (Job_ID, Business_ID, Endpoint, Auth_Key1, Auth_Key2)
+    VALUES (?,?,?,?,?);
+  `;
+  return execute(sql, [jobId, businessId, endpoint, authKey1, authKey2]);
+};
+
 const closeDB = () => {
   db.end((err) => {
     if (err) {
@@ -301,6 +309,7 @@ export {
   assignJobToUser,
   completeJob,
   getSubscription,
+  addSubscription,
   closeDB,
   getJobDetails,
 };
