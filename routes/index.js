@@ -9,11 +9,12 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import webPush from 'web-push';
 import dotenv from 'dotenv';
-import { getJobHistory, getOpenJobs, getNotifications, closeDB } from '../dbhelper.js';
+import { getJobHistory, getOpenJobs, getNotifications, closeDB, freezeUser, addToken, blockToken } from '../dbhelper.js';
 // import { sendNotification } from 'web-push'; 
 import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmin, getBusinessId, searchEmployees} from '../managementdbfunc.js';
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
-import { checkData } from '../datacheck.js';
+import { blackListToken, checkToken } from '../blacklist.js';
+import { token } from 'morgan';
 
 dotenv.config('../')
 console.log(process.env.NODE_ENV)
@@ -24,6 +25,19 @@ const publicKey = fs.readFileSync('jwtRSA256-public.pem','utf-8');
 const refreshPrivateKey = fs.readFileSync('refresh-private.pem');
 const refreshPublicKey = fs.readFileSync('refresh-public.pem');
 
+const accessCookieOptions = {
+  httpOnly: true,  // Prevent access via JavaScript
+  secure: process.env.NODE_ENV === "production", // Only in HTTPS
+  sameSite: "Strict",  // Prevent CSRF
+  maxAge:  60 * 60 * 1000 // 1 hour
+};
+
+const refreshCookieOptions = {
+  httpOnly: true,  // Prevent access via JavaScript
+  secure: process.env.NODE_ENV === "production", // Only in HTTPS
+  sameSite: "Strict",  // Prevent CSRF
+  maxAge: 24 * 60 * 60 * 1000 // 1 day
+};
 
 const indexRouter = express.Router();
 
@@ -64,8 +78,18 @@ indexRouter.post('/login', async (req, res) => {
       // create new jwt
       const accessToken = jwt.sign({ username: username, role: privilige, workerId  }, accessPrivateKey, { expiresIn: '1h', algorithm: 'RS256' })
       // create new refresh token
-      const refreshToken = jwt.sign({ username: username,})
-      res.status(200).json({ accessToken: accessToken })
+      const refreshToken = jwt.sign({ username: username }, refreshPrivateKey, {expiresIn: '1d', algorithm: 'RS256' })
+      try{
+        await addToken(loginCredentials.User_ID,accessToken);
+        await blockToken(accessToken)
+        await addToken(loginCredentials.User_ID,refreshToken);
+      }catch(err){
+        console.log(`Error when populating tokens: ${err}`)
+        res.status(500).json({ message:'Unable to append tokens to db'})
+      }
+      res.status(200).cookie('access',accessToken,accessCookieOptions).
+      cookie('refresh',refreshToken,refreshCookieOptions).
+      json({message:'access token and refresh cookie sent in cookies'});
     }else{
       res.status(401).json({error: "Passwords do not match"});
     }
@@ -102,29 +126,51 @@ indexRouter.post('/register', async (req, res) => {
 });
 
 //refresh the current access token using a refresh token
-indexRouter.post('/refresh', (req,res) => {
+indexRouter.post('/refresh', async(req,res) => {
   //check if refresh token is valid, if so then return a new access token
 
   //extract request data
 
   const username = req.body.username;
   const id = req.body.workerId;
-  const privilegeLevel = req.body.privilegeLevel;
+  // const privilegeLevel = req.body.privilegeLevel;
 
-  if(req.cookies?.jwt){
-    const token = req.cookies.jwt
-
+  if(req.cookies?.refresh){
+    const token = req.cookies.refresh
     jwt.verify(token, refreshPublicKey,
-      (err,decoded) => {
+      async(err,decoded) => {
         if (err) {
           // Wrong Refesh Token
           return res.status(406).json({ message: 'Unauthorized' });
       }
       else {
+        const validToken = await checkToken(token)
+        if(!validToken){
+          await freezeUser(id);
+          return res.status(400).json({ message:"Invalid token used"});
+        }
           // Correct token we send a new access token
-          const accessToken = jwt.sign({ username:username, workerId: id, privilegeLevel:privilegeLevel }, accessPrivateKey, {expiresIn: '1hr'});
-          const newRefreshToken = jwt.sign({ username:username }, refreshPrivateKey, {expiresIn:'1d'} )
-          return res.status(200).json({ accessToken:accessToken, refreshToken:newRefreshToken });
+          if(decoded.username === username){
+
+            const accessToken = jwt.sign({ username:username, workerId: id, privilegeLevel:1 }, accessPrivateKey, {expiresIn: '1hr',algorithm:'RS256'});
+            const newRefreshToken = jwt.sign({ username:username }, refreshPrivateKey, {expiresIn:'1d',algorithm:'RS256'});
+            // add new token to db
+            await addToken(id, newRefreshToken);
+            // blacklist used token
+            await blackListToken(token);
+            //return new tokens to client
+            return res.status(200).cookie('access',accessToken,accessCookieOptions).
+            cookie('refresh',newRefreshToken,refreshCookieOptions).
+            json({message:"New token generated"})
+
+          }else{
+
+            //logs user out
+            freezeUser(id) //check this before prod.
+            blackListToken(token)
+            
+            return res.status(406).json({message: 'The refresh token provided does not match the user'})
+          }
       }
       }
     )

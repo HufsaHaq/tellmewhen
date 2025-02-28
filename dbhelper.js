@@ -1,6 +1,7 @@
 // Get all open jobs for certain user id ( send empty paeameter for manager)
 import mysql from 'mysql';
 import dotenv from 'dotenv';
+import { exec } from 'node:child_process';
 dotenv.config();
 
 const {
@@ -236,6 +237,50 @@ const getSubscription = async (jobId, businessId) => {
 
   return execute(sql, [jobId, businessId]);
 };
+//----------------------------------------------------------------
+//Token table helper functions
+//----------------------------------------------------------------
+
+//add a new valid token
+const addToken = async(userId, token) => {
+  const sql = `
+  INSERT INTO TOKENS (User_ID,Token,Valid) 
+  VALUES (?,?,1)`
+  return execute(sql,[userId,token])
+}
+//add a newly blacklisted token
+const blockToken = async(token) =>{
+    const sql = `
+    UPDATE TOKENS
+    SET Valid = 0
+    WHERE Token = ?
+    `
+    return execute(sql,[token])
+}
+
+//freeze a user's tokens
+const freezeUser = async(userId) =>{
+  const sql = `
+  UPDATE TOKENS
+  SET Valid = 0
+  WHERE User_ID = ?
+  `
+
+  return execute(sql,[userId])
+}
+
+//Get the status of a token, returns true if token is valid
+const getTokenStatus = async (token) =>{
+
+  const sql = `SELECT Valid FROM TOKENS WHERE Token = ?`
+
+  const result = await execute(sql,[token]);
+  if(result){
+    return result[0].Valid
+  }else{
+    return 0;
+  }
+}
 
 const addSubscription = async (jobId, businessId, endpoint, authKey1, authKey2) => {
   const sql = `
@@ -312,4 +357,8 @@ export {
   addSubscription,
   closeDB,
   getJobDetails,
+  addToken,
+  getTokenStatus,
+  freezeUser,
+  blockToken
 };

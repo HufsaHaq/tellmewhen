@@ -53,7 +53,7 @@ export const closeDB = () => {
 //login need to crosscheck with business tabvle to check if user belongs to business
 export const login = async (buisness, username) => {
   const selectbusinessid = 'SELECT Business_ID FROM BUSINESS_TABLE WHERE Business_Name = ?;';
-  const sql = 'SELECT Hashed_Password, Privilege_level FROM WORKER_TABLE WHERE Username =? AND Business_ID =? ;';
+  const sql = 'SELECT Hashed_Password, Privilege_level, User_ID FROM WORKER_TABLE WHERE Username =? AND Business_ID =? ;';
   const businessIdResult = await executeQuery(selectbusinessid, [buisness]);
   if(businessIdResult.length > 0){
     const result = await executeQuery(sql, [username, businessIdResult[0].Business_ID]);
