@@ -34,7 +34,6 @@ chatRouter.get("/worker/login/:userId", async (req, res) => {
             return res.status(400).json({ message: "Invalid User ID" });
         }
 
-        // Authenticate the worker (check if they exist in the database)
         const workerQuery = 'SELECT * FROM WORKER_TABLE WHERE User_ID = ?;';
         const workerResult = await executeQuery(workerQuery, [userId]);
 
@@ -70,7 +69,7 @@ chatRouter.get("/worker/login/:userId", async (req, res) => {
         res.status(200).json({ token, channels });
     } catch (error) {
         console.error("Worker login error:", error.message);
-        res.status(500).json({ message: "Server error" });
+        res.status(404).json({ message: "Server error" });
     }
 });
 

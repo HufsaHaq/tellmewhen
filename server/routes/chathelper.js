@@ -27,17 +27,17 @@ const generateGuestToken = (jobId) => {
   };
 
 // a channel for a job
-const createJobChannel = async (jobId, businessUserId) => {
+const createJobChannel = async (jobId, userId) => {
     const channel = streamChat.channel("messaging", `job-${jobId}`, {
-      name: `Job Chat - ${jobId}`,
-      members: [
-        {user_id : `guest-${jobId}`, role: "guest"},
-        {user_id : businessUserId, role: "channel_moderator"},
-    ], // Add customer and business worker
+        name: `Job Chat - ${jobId}`,
+        members: [
+            { user_id: `worker-${userId}`, role: "channel_moderator" }, 
+            { user_id: `guest-${jobId}`, role: "guest" }, // Guest (customer)
+        ],
     });
 
     return await channel.create();
-  };
+};
 
 export{
   chatRouter,
