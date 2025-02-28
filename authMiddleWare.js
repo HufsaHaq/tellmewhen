@@ -9,21 +9,21 @@ import fs from 'fs';
 const publicKey = fs.readFileSync('jwtRSA256-public.pem','utf-8');
 
 const authMiddleWare = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  
-  //check the header 
-  if(!authHeader || !authHeader.startsWith("Bearer")){
-    return res.status(401).json({ message: "Unauthorized: No token provided" });
-  }
+  //check that authorisation token is present in cookies
+  if(req.cookie?.access){
+    const token = req.cookie.access
 
-  const token = authHeader.split(' ')[1]; // extact the token from the header
-
-  try{
-    const decoded = jwt.verify(token,publicKey,{ algorithms: ['RS256'] });
-    req.user = decoded;
-    next();
-  }catch(err){
-    res.status(401).json({ message: "Unauthorized: Invalid token" });
+    jwt.verify(token,publicKey,{ algorithms: ['RS256'] },
+      (err,decoded) =>{ 
+        if(err){
+          return res.status(400).json({ message:`Unable to verify token: ${err}`})
+        }else{
+          req.user = decoded;
+          next();
+        }
+        })
+  }else{
+    return res.status(401).json( {message:'No token provided'})
   }
 };
 

@@ -7,6 +7,7 @@ import { getJobHistory, getOpenJobs, createNewJob, assignJobToUser, completeJob 
 import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmin, countTotalJobs} from '../managementdbfunc.js';
 //middleware functions for encyrption, authentication and data integrity
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
+
 import { checkData } from '../datacheck.js';
 import { JWTClaimValidationFailed } from 'jose/errors';
 
@@ -73,16 +74,29 @@ jobRouter.post('/new', authMiddleWare, async (req,res) => {
     const jobData = req.body;
 
     const description = jobData.description;
-    const url = jobData.url;
     const dueDate = jobData.dueDate
+    // from qr.js
+    const job_id = req.params.job_id ;
+    
+    res.send(qr_url); // we need this encoded and sent to front end
 
     try{
-        createNewJob(description,url,dueDate)
+        result = createNewJob(description,dueDate)
+
+        //extract random job id
+        randomJobId = result[0].Job_ID;
+        //generate qr code
+        const qr_url = await generate_qr(job_id);
+
+
     } catch (err) {
         res.json({error : err})
     }
 
-    res.status(200).json({message: "New job succesfully registered"})
+    res.status(200).json({
+      message: "New job succesfully registered",
+      qrCode: qr_url
+    })
     // Notify the user that the job has been registered
 })
 
