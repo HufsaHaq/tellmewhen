@@ -30,14 +30,15 @@ function FinishJobModal({ isOpen, job, onClose, onFinish }) {
             onChange={(e) => setRemarks(e.target.value)}
           />
         </div>
-        <div className="flex justify-end space-x-4">
-          <Button onClick={onClose} variant="soft" color="neutral">
+        <div className="max-tablet620:grid max-tablet620:grid-cols-1 tablet620:flex tablet620:justify-end tablet620:space-x-4 max-tablet620:gap-2">
+          <Button onClick={onClose} variant="soft" color="neutral" className="row-start-2 min-w-[100px]">
             Cancel
           </Button>
           <Button
             onClick={() => onFinish(remarks)}
             variant="solid"
             color="primary"
+            className="min-w-[100px]"
           >
             Finish
           </Button>

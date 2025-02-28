@@ -54,12 +54,12 @@ function ChangeProfilePhoto({isOpen, profilePhoto, errorMessage, onClose, onSave
 	          </div>
 	        )}
 	        {errorMessage && ( <div className="text-red-500 text-sm mt-2">{errorMessage}</div> )}
-	        <div className="flex justify-between">
-	          <Button onClick={handleSave} variant="solid" color="primary" className="px-4 py-2">
-	            Save
-	          </Button>
-	          <Button onClick={handleClose} variant="soft" color="neutral" className="px-4 py-2">
+	        <div className="max-tablet620:grid max-tablet620:grid-cols-1 tablet620:flex tablet620:justify-end tablet620:space-x-4 max-tablet620:gap-2">
+	          <Button onClick={handleClose} variant="soft" color="neutral" className="row-start-2 min-w-[100px] px-4 py-2">
 	            Close
+	          </Button>
+	          <Button onClick={handleSave} variant="solid" color="primary" className="min-w-[100px] px-4 py-2">
+	            Save
 	          </Button>
 	        </div>
 	      </div>
