@@ -28,15 +28,29 @@ const generateGuestToken = (jobId) => {
 
 // a channel for a job
 const createJobChannel = async (jobId, userId) => {
-    const channel = streamChat.channel("messaging", `job-${jobId}`, {
-        name: `Job Chat - ${jobId}`,
-        members: [
-            { user_id: `worker-${userId}`, role: "channel_moderator" }, 
-            { user_id: `guest-${jobId}`, role: "guest" }, // Guest (customer)
-        ],
-    });
+  try {
+      const channel = streamChat.channel("messaging", `job-${jobId}`, {
+          name: `Job Chat - ${jobId}`,
+          members: [
+              { user_id: `worker-${userId}`, role: "channel_moderator" }, // Worker
+              { user_id: `guest-${jobId}`, role: "guest" }, // Customer
+          ],
+      });
 
-    return await channel.create();
+      await channel.create();
+
+      //  automatic welcome message to the customer
+      await channel.sendMessage({
+          text: `Hello! This is the chat for Job #${jobId}. If you have any issues, please messahe here.`,
+          user_id: `worker-${userId}`, 
+      });
+
+      console.log(`Channel for job ${jobId} created and welcome message sent`);
+      return channel;
+  } catch (error) {
+      console.error("Error creating channel or sending message:", error.message);
+      throw error;
+  }
 };
 
 export{

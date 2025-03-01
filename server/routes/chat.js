@@ -6,26 +6,6 @@ import { executeQuery } from './db.js';
 // loads env
 dotenv.config("./");
 
-/*chatRouter.get("/login/:id", async (req, res) => {
-    //Returns a token from stream to allow for login
-    try{
-        const id = req.params.id;
-
-        // Checks to see if the parameters fail to be sent in the body
-        if (id == null || id == "") {
-            res.status(400).json({ message: "Invalid ID" });
-            return 0;
-        }
-        const token = generateBusinessToken(id);
-
-        console.log(`Business user ${id} logged in successfully`);
-        res.status(200).json({ token });
-    } catch (error) {
-        console.error("Business login error:", error.message);
-        res.status(500).json({ message: "server error" });
-    }
-}); 
-*/
 chatRouter.get("/worker/login/:userId", async (req, res) => {
     try {
         const userId = req.params.userId;
