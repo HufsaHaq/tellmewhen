@@ -199,7 +199,6 @@ export const populateDatabase = async () => {
   await createjobhistory();
   await createsubscription_table();
   await createnotification();
-  await createaccesstoken();  
   //await populateDatabase(); 
 })();
 
