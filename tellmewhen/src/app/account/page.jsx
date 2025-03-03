@@ -7,6 +7,7 @@ import ChangeName from "@/components/ChangeName"
 import ChangeProfilePhoto from "@/components/ChangeProfilePhoto"
 import ChangePassword from "@/components/ChangePassword"
 import { ChangeBusinessName, ChangeProfilePhoto as ChangeProfilePhotoFromScripts } from "@/scripts/account"
+import { GetNumberOfOpenJobs, GetNumberOfTotalJobs } from "@/scripts/account"
 import { Menu } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import { motion, useScroll } from "framer-motion";
@@ -49,8 +50,97 @@ function Account()
     const [SearchParameter, SetSearchParameter] = useState("");
 
     // Hold the error message
-    const [errorMessage, setErrorMessage] = useState('');
+    const [errorMessageName, setErrorMessageName] = useState('');
+    const [errorMessagePhoto, setErrorMessagePhoto] = useState('');
+    const [errorMessagePassword, setErrorMessagePassword] = useState('');
+
+    const [activeJobs, setActiveJobs] = useState('');
+    const [errorMessageActive, setErrorMessageActive] = useState('');
+
+    const [totalJobs, setTotalJobs] = useState('');
+    const [errorMessageTotal, setErrorMessageTotal] = useState('');
+
+    // getting active jobs
+    const fetchActiveJobs = async () =>{
+        const businessId = localStorage["businessId"];
+        const accessToken = localStorage["accessToken"];
+
+        try {
+            const res = await GetNumberOfOpenJobs(businessId, accessToken);
+            if(res.status === 200){
+                setActiveJobs('0');
+                setErrorMessageActive('');
+            }
+            else if(res.status === 500 || res.status === null || res === null || res === 404) {
+                setErrorMessageActive("An error occurred while connecting to the server.");
+            }
+            else {
+                setErrorMessageActive("An unknown error occurred.")
+            }
+        }
+        catch(error){
+            setErrorMessageActive("Ann error occurred while connecting to the server.")
+        }
+
+    };
+
+    useEffect(() => {
+        fetchActiveJobs();
+    }, []);
     
+    // getting total jobs
+    const fetchTotalJobs = async () =>{
+        const businessId = localStorage["businessId"];
+        const accessToken = localStorage["accessToken"];
+
+        try {
+            const res = await GetNumberOfTotalJobs(businessId, accessToken);
+            if(res.status === 200){
+                setTotalJobs('0');
+                setErrorMessageTotal('');
+            }
+            else if(res.status === 500 || res.status === null || res === null || res === 404) {
+                setErrorMessageTotal("An error occurred while connecting to the server.");
+            }
+            else {
+                setErrorMessageTotal("An unknown error occurred.")
+            }
+        }
+        catch(error){
+            setErrorMessageTotal("Ann errror occurred while connecting to the server.")
+        }
+
+    };
+
+    useEffect(() => {
+        fetchTotalJobs();
+    }, []);
+
+    const fetchProfileData = async () => {
+        const businessId = localStorage["businessId"];
+        const accessToken = localStorage["accessToken"];
+
+        try {
+            const res = await GetProfileData(businessId, accessToken);
+            if(res.status === 200){
+
+            }
+            else {
+
+            }
+        }
+        catch(error){
+
+        }
+
+
+    };
+
+    useEffect(() => {
+        fetchProfileData();
+    }, []);
+
+
     useEffect(() => {
 
         // TO-DO: Fetch employee data from the database here
@@ -82,29 +172,29 @@ function Account()
 
             if (res.status === 200) {
                 setBusinessName(newBusinessName);
-                setErrorMessage("");
+                setErrorMessageName("");
                 setIsChangeNameOpen(false);
             }
             else if (res.status === 401) {
-                setErrorMessage("Unauthorized request. Please log in to make changes");
+                setErrorMessageName("Unauthorized request. Please log in to make changes");
                 window.location.href = '/auth'; 
             }
             else if (res.status === 500 || res.status === null || res === null || res === 404) {
-                setErrorMessage("An error occurred while connecting to the server.");
+                setErrorMessageName("An error occurred while connecting to the server.");
             }
             else {
-                setErrorMessage("An unknown error occurred.");
+                setErrorMessageName("An unknown error occurred.");
             }
         }
         catch (error) {
-            setErrorMessage("Ann error occurred while connecting to the server.");
+            setErrorMessageName("Ann error occurred while connecting to the server.");
         }
     };
     
     const handleSaveProfilePhoto = async(newImage) => {
 
         if(!newImage){
-            setErrorMessage("Please select an image before saving");
+            setErrorMessagePhoto("Please select an image before saving");
             return;
         }
 
@@ -116,22 +206,22 @@ function Account()
 
             if (res.status === 200) {
                 setProfilePhoto(newImage);
-                setErrorMessage("");
+                setErrorMessagePhoto("");
                 setIsChangeProfilePhotoOpen("false");
             }
             else if (res.status === 401) {
-                setErrorMessage("Unauthorized request. Please log in to make changes");
+                setErrorMessagePhoto("Unauthorized request. Please log in to make changes");
                 window.location.href = '/auth'; 
             }
             else if (res.status === 500 || res.status === null || res === null || res === 404) {
-                setErrorMessage("An error occurred while connecting to the server.");
+                setErrorMessagePhoto("An error occurred while connecting to the server.");
             }
             else {
-                setErrorMessage("An unknown error occurred.");
+                setErrorMessagePhoto("An unknown error occurred.");
             }
         }
         catch (error) {
-            setErrorMessage("Ann error occurred while connecting to the server.");
+            setErrorMessagePhoto("Ann error occurred while connecting to the server.");
         }
     };
 
@@ -236,8 +326,9 @@ function Account()
                                     <div className="inline flex justify-left space-x-5 h-full">
                                         <NotificationsActive color="primary" className="my-auto text-[#0A5397] text-[45px]" fontSize="50px"/>
                                         <div className="justify-center my-auto">
-                                            <h1 className="grid font-bold text-xl">0</h1>
+                                            <h1 className="grid font-bold text-xl">{activeJobs}</h1>
                                             <h1 className="grid font-semibold text-[#A0A0A0] text-lg">Active Jobs</h1>
+                                            {errorMessageActive && ( <div className="text-red-500 text-sm mt-2">{errorMessageActive}</div> )}
                                         </div>
                                     </div>
                                 </div>
@@ -245,8 +336,9 @@ function Account()
                                     <div className="inline flex justify-left space-x-5 h-full">
                                         <Numbers color="primary" className="my-auto text-[#0A5397] text-[50px]" fontSize="50px"/>
                                         <div className="justify-center my-auto">
-                                            <h1 className="grid font-bold text-xl">0</h1>
+                                            <h1 className="grid font-bold text-xl">{totalJobs}</h1>
                                             <h1 className="grid font-semibold text-[#A0A0A0] text-lg">Total Jobs</h1>
+                                            {errorMessageTotal && ( <div className="text-red-500 text-sm mt-2">{errorMessageTotal}</div> )}
                                         </div>
                                     </div>
                                 </div>
@@ -298,9 +390,9 @@ function Account()
                             <ChangeName
                                 isOpen={isChangeNameOpen}
                                 businessName={businessName}
-                                errorMessage={errorMessage}
+                                errorMessage={errorMessageName}
                                 onClose={() => {
-                                    setErrorMessage('');
+                                    setErrorMessageName('');
                                     setIsChangeNameOpen(false);
                                 }}
                                 onSave={handleSaveBusinessName}
@@ -309,9 +401,9 @@ function Account()
                             <ChangeProfilePhoto 
                                 isOpen={isChangeProfilePhotoOpen}
                                 profilePhoto={profilePhoto}
-                                errorMessage={errorMessage}
+                                errorMessage={errorMessagePhoto}
                                 onClose={() => {
-                                    setErrorMessage('');
+                                    setErrorMessagePhoto('');
                                     setIsChangeProfilePhotoOpen(false);
                                 }}
                                 onSave={handleSaveProfilePhoto}

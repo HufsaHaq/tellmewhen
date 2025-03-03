@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// DONE
 export async function GetCode(jobID) {
     /*
     Gets a QR code for the user to add a job

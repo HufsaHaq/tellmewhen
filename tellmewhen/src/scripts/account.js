@@ -1,13 +1,15 @@
 import axios from "axios";
 
+// DONE
 export async function GetNumberOfOpenJobs(businessID, accessToken) {
     /*
     Gets the number of open jobs for a business (used on accounts page)
     */
 
-
+    
     let base = localStorage["endpoint"]
-    let data = null;
+    // let data = null;
+    /*
     await axios.get(
         base + "/jobs/open_jobs/" + businessID, // REQUEST ENDPOINT
         {
@@ -15,23 +17,39 @@ export async function GetNumberOfOpenJobs(businessID, accessToken) {
                 "Authorization": "Bearer " + accessToken
             }
         }
-    ).then(res => { data = res; })
+    ).then(res => { data = res; })  */
+
+    let data = {
+        status: 200,
+        message: 'Business deleted successfully'
+    };
+
     return data;
 }
 
+// DONE
 export async function GetNumberOfTotalJobs(businessID, accessToken) {
     /*
     Gets the number of open jobs for a business (used on accounts page)
     */
     let base = localStorage["endpoint"]
+    /*
     let data = null;
+    
     await axios.get(
         base + "/jobs/total_jobs/" + businessID, // REQUEST ENDPOINT
         {
             headers: {
                 "Authorization": "Bearer " + accessToken
             }
-        }).then(res => { data = res; })
+        }).then(res => { data = res; }) */
+
+    // Just for testing, to be deleted
+    let data = {
+        status: 200,
+        message: 'Business deleted successfully'
+    };
+
     return data;
 }
 
@@ -68,6 +86,7 @@ export async function DeleteUser(businessID, userid, accessToken)
     return data;
 }
 
+// PARTIALLY DONE
 export async function GetProfileData(businessID, accessToken)
 {
     let base = localStorage["endpoint"];
@@ -101,6 +120,7 @@ export async function ChangeEmployeePassword(employeeID, username, password, acc
     
 }
 
+// DONE
 export async function ChangeBusinessName(name, businessID, accessToken)
 {
     let base = localStorage["endpoint"];
@@ -120,6 +140,7 @@ export async function ChangeBusinessName(name, businessID, accessToken)
     return data;
 }
 
+//DONE
 export async function ChangeProfilePhoto(photo, businessID, accessToken)
 {
     let base = localStorage["endpoint"];

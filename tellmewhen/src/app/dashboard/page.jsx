@@ -15,6 +15,7 @@ import JobCreation from "@/components/JobCreation";
 import CurrentJobDetail from "@/components/CurrentJobDetail";
 import FinishJobModal from "@/components/FinishJob";
 import HistoryJobDetailModal from "@/components/HistoryJobDetail";
+import { AssignJobToEmployee, GetAllJobHistory } from "@/scripts/dashboard";
 
 function Page() {
     let colours = {
@@ -84,6 +85,9 @@ function Page() {
     // Stores a reference to the action for when the dropdown for the rows changes
     const RowsAction = React.useRef(null);
 
+    // Stores the error to throw when assigning employees
+    const [errorMessageAssign, setErrorMessageAssign] = useState('');
+
     //Changes the title of the web page
     if (typeof window !== "undefined") document.title = "Dashboard | Tell Me When";
 
@@ -129,6 +133,27 @@ function Page() {
         }
     }, [RowsCount, PageNumber, CurrentIndex, HistoryTableData, CurrentTableData]);
 
+    const fetchTableData = async() =>{
+        const businessId = localStorage["businessId"];
+        const accessToken = localStorage["accessToken"];
+
+        try {
+            const res = await GetAllJobHistory(businessId, accessToken);
+            if(res.status === 200){
+                setErrorMessage('');
+            }
+            else if(res.status === 500 || res.status === null || res === null || res === 404) {
+                setErrorMessage("An error occurred while connecting to the server.");
+            }
+            else {
+                setErrorMessage("An unknown error occurred.")
+            }
+        }
+        catch(error){
+            setErrorMessage("Ann error occurred while connecting to the server.")
+        }
+    };
+
     useEffect(() => {
         //Code below will run when the page is initially loaded
 
@@ -156,15 +181,40 @@ function Page() {
     //Function to close the modal
     const handleCloseModal = () => {
         setIsCreationModalOpen(false);
+        setErrorMessageAssign('');
         setFormData({ description: "", deadline: "", worker: "" });
     };
 
     //Function to handle the confirm button in the modal
-    const handleConfirmModal = () => {
+    const handleConfirmModal = async() => {
         const newJob = ["ID" + (CurrentTableData.length + 1), formData.description, formData.deadline, formData.status, formData.worker];
-        SetCurrentTableData([...CurrentTableData, newJob]);
-        setIsCreationModalOpen(false);
-        setFormData({ description: "", deadline: "", status: "", worker: "" });
+        const businessId = localStorage["businessId"];
+        const accessToken = localStorage["accessToken"];
+        const employeeID = formData.worker;
+
+        try {
+            const res = await AssignJobToEmployee(businessId, employeeID , accessToken);
+
+            if(res.status === 200) {
+                SetCurrentTableData([...CurrentTableData, newJob]);
+                setErrorMessageAssign('');
+                setIsCreationModalOpen(false);
+                setFormData({ description: "", deadline: "", status: "", worker: "" });
+            }
+            else if (res.status === 401) {
+                setErrorMessageAssign("Unauthorized request. Please log in to make changes");
+                window.location.href = '/auth'; 
+            }
+            else if (res.status === 500 || res.status === null || res === null || res === 404) {
+                setErrorMessageAssign("An error occurred while connecting to the server.");
+            }
+            else {
+                setErrorMessageAssign("An unknown error occurred.");
+            }
+        }
+        catch (error) {
+            setErrorMessageAssign("Ann error occurred while connecting to the server.");
+        }
     };
 
     //Function to handle the input change in the modal
@@ -397,7 +447,7 @@ function Page() {
             <div className="bottom-margin mb-[70px]" />
 
             {/* Job Creation Modal */}
-            <JobCreation isOpen={isCreationModalOpen} onClose={handleCloseModal} onConfirm={handleConfirmModal} formData={formData} onInputChange={handleInputChange} />
+            <JobCreation isOpen={isCreationModalOpen} onClose={handleCloseModal} onConfirm={handleConfirmModal} formData={formData} onInputChange={handleInputChange} errorMessageAssign={errorMessageAssign} />
             {/* Job Detail Modal */}
             <CurrentJobDetail isOpen={isDetailModalOpen} jobData={selectedJob} onClose={() => setIsDetailModalOpen(false)} onConfirm={handleUpdateJob} onOpenFinish={handleOpenFinish}/>
             <HistoryJobDetailModal isOpen={isHistoryModalOpen} jobData={selectedJob} onClose={() => setIsHistoryModalOpen(false)} />

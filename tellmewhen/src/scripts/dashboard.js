@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// PARTIALLY DONE
 export async function GetAllJobHistory(businessID, accessToken) {
     /*
     Gets all the current jobs for a business
@@ -38,6 +39,7 @@ export async function GetCurrentJobsForEmployee(businessID, employeeID, accessTo
     return data;
 }
 
+//DONE
 export async function AssignJobToEmployee(businessID, employeeID, accessToken)
 {
     let data = null;

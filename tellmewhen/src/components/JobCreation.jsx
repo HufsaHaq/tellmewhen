@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Autocomplete, TextField } from "@mui/joy";
 
-const JobModal = ({ isOpen, onClose, onConfirm, formData, onInputChange }) => {
+const JobModal = ({ isOpen, onClose, onConfirm, formData, onInputChange, errorMessageAssign }) => {
     if (!isOpen) return null;
 const worker_Options = ["worker1", "worker2", "worker3", "worker4", "worker5", "worker6", "worker7", "worker8", "worker9", "worker10"];
 
@@ -32,6 +32,7 @@ const worker_Options = ["worker1", "worker2", "worker3", "worker4", "worker5", "
                         </label>
                         <Autocomplete id="assigning-worker" options={worker_Options} sx={{ width: 300 }} value={formData.worker} onChange={(event, newValue) => onInputChange(event, 'worker', newValue)}/>
                         {!formData.worker && <p className="text-red-500 text-sm">Assigning a worker is required.</p>}
+                        {errorMessageAssign && ( <div className="text-red-500 text-sm mt-2">{errorMessageAssign}</div> )}
                     </div>
 
                     <div className="flex justify-end space-x-4">
