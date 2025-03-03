@@ -328,9 +328,6 @@ function Account()
                                             <h1 className="grid font-bold text-xl">{activeJobs}</h1>
                                             <h1 className="grid font-semibold text-[#A0A0A0] text-lg">Active Jobs</h1>
                                             {errorMessageActive && ( <div className="text-red-500 text-sm mt-2">{errorMessageActive}</div> )}
-                                            <h1 className="grid font-bold text-xl">0</h1>
-                                            <h1 className="grid font-semibold text-[#808080] text-lg">Active Jobs</h1>
-
                                         </div>
                                     </div>
                                 </div>
@@ -342,10 +339,7 @@ function Account()
                                             <h1 className="grid font-bold text-xl">{totalJobs}</h1>
                                             <h1 className="grid font-semibold text-[#A0A0A0] text-lg">Total Jobs</h1>
                                             {errorMessageTotal && ( <div className="text-red-500 text-sm mt-2">{errorMessageTotal}</div> )}
-
-                                            <h1 className="grid font-bold text-xl">0</h1>
-                                            <h1 className="grid font-semibold text-[#808080] text-lg">Total Jobs</h1>
-                                        </div>
+                                            </div>
                                     </div>
                                 </div>
                                 
