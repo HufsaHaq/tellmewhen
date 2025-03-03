@@ -98,12 +98,12 @@ const EmployeeCreationModal = ({ isOpen, onClose, onConfirm, existingEmployees }
                     </Select>
                 </div>
 
-                <div className="flex justify-end space-x-4">
+                <div className="max-tablet620:grid max-tablet620:grid-cols-1 tablet620:flex tablet620:justify-end tablet620:space-x-4 max-tablet620:gap-2">
                     <Button
                         onClick={onClose}
                         variant="soft"
                         color="neutral"
-                        className="px-4 py-2"
+                        className="row-start-2 min-w-[100px] px-4 py-2"
                     >
                         Cancel
                     </Button>
@@ -111,7 +111,7 @@ const EmployeeCreationModal = ({ isOpen, onClose, onConfirm, existingEmployees }
                         onClick={handleCreate}
                         variant="solid"
                         color="primary"
-                        className="px-4 py-2"
+                        className="px-4 min-w-[100px] py-2"
                         disabled={!name || !employeeId || !role}
                     >
                         Create Employee

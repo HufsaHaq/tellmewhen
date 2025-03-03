@@ -8,7 +8,7 @@ const worker_Options = ["worker1", "worker2", "worker3", "worker4", "worker5", "
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white max-h-[95vh] overflow-y-scroll max-tablet620:w-full min-w-[33%] max-w-[90%] rounded-lg shadow-lg p-6">
-                <h2 className="text-center text-2xl font-semibold mb-6">Create a job</h2>
+                <h2 className="text-center text-2xl font-semibold mb-6">Create Job</h2>
                 <form>
                     <div className="mb-4">
                         <label htmlFor="description" className="block text-gray-700 font-medium mb-2">
@@ -35,11 +35,11 @@ const worker_Options = ["worker1", "worker2", "worker3", "worker4", "worker5", "
                         {errorMessageAssign && ( <div className="text-red-500 text-sm mt-2">{errorMessageAssign}</div> )}
                     </div>
 
-                    <div className="flex justify-end space-x-4">
-                        <Button onClick={onClose} variant="soft" color="neutral" className="px-4 py-2">
+                    <div className="max-tablet620:grid max-tablet620:grid-cols-1 tablet620:flex tablet620:justify-end tablet620:space-x-1 gap-2">
+                        <Button onClick={onClose} variant="soft" color="neutral" className="row-start-2 min-w-[100px] px-4 py-2">
                             Cancel
                         </Button>
-                        <Button onClick={onConfirm} variant="solid" color="primary" className="px-4 py-2" disabled={!formData.description || !formData.deadline || !formData.worker}>
+                        <Button onClick={onConfirm} variant="solid" color="primary" className="min-w-[100px] px-4 py-2" disabled={!formData.description || !formData.deadline || !formData.worker}>
                             Generate QR Code
                         </Button>
                     </div>

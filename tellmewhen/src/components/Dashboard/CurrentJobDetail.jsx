@@ -94,14 +94,14 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish })
             />
           </div>
 
-          <div className="flex justify-between">
+          <div className="max-tablet620:grid max-tablet620:grid-cols-1 tablet620:flex tablet620:justify-end tablet620:space-x-4 max-tablet620:gap-2">
             {!isEditing && (
               <span className="space-y-[10px] items-center tablet620:space-x-3 grid w-full max-tablet620:grid-cols-2 tablet620:grid-cols-4">
                 <Button
                   onClick={onOpenFinish}
                   variant="solid"
                   color="success"
-                  className="top-[5px] px-4 max-tablet620:w-[98%] py-2 h-[30px]"
+                  className="top-[5px] px-4 max-tablet620:w-[98%] min-w-[100px] py-2 h-[30px]"
                 >
                   Finish
                 </Button>
@@ -109,7 +109,7 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish })
                   onClick={()=>{window.location.href = "/qr_code"}}
                   variant="solid"
                   color="primary"
-                  className="relative px-4 justify-self-end max-tablet620:w-[98%] py-2 h-[30px]"
+                  className="relative px-4 justify-self-end max-tablet620:w-[98%] min-w-[100px] py-2 h-[30px]"
                 >
                   View QR Code
                 </Button>
@@ -117,7 +117,7 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish })
                   onClick={onClose}
                   variant="soft"
                   color="neutral"
-                  className="max-tablet620:col-span-2 max-tablet620:row-start-4 px-4 py-2"
+                  className="max-tablet620:col-span-2 max-tablet620:row-start-4 min-w-[100px] px-4 py-2"
                 >
                   Close
                 </Button>
@@ -125,7 +125,7 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish })
                   onClick={handleChange}
                   variant="solid"
                   color="primary"
-                  className="max-tablet620:col-span-2 px-4 py-2"
+                  className="max-tablet620:col-span-2 min-w-[100px] px-4 py-2"
                 >
                   Edit
                 </Button>
@@ -138,7 +138,7 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish })
                   onClick={handleCancel}
                   variant="soft"
                   color="neutral"
-                  className="px-4 py-2"
+                  className="row-start-2 min-w-[100px] px-4 py-2"
                 >
                   Cancel
                 </Button>
@@ -146,7 +146,7 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish })
                   onClick={handleSave}
                   variant="solid"
                   color="primary"
-                  className="px-4 py-2"
+                  className="min-w-[100px] px-4 py-2"
                 >
                   Save
                 </Button>

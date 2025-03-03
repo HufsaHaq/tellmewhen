@@ -16,6 +16,10 @@ import CurrentJobDetail from "@/components/CurrentJobDetail";
 import FinishJobModal from "@/components/FinishJob";
 import HistoryJobDetailModal from "@/components/HistoryJobDetail";
 import { AssignJobToEmployee, GetAllJobHistory } from "@/scripts/dashboard";
+import JobCreation from "@/components/Dashboard/JobCreation";
+import CurrentJobDetail from "@/components/Dashboard/CurrentJobDetail";
+import FinishJobModal from "@/components/Dashboard/FinishJob";
+import HistoryJobDetailModal from "@/components/Dashboard/HistoryJobDetail";
 
 function Page() {
     let colours = {

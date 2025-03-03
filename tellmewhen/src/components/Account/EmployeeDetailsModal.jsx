@@ -90,14 +90,14 @@ function EmployeeDetailsModal({ isOpen, employeeData, onClose, onConfirm }) {
                         </Select>
                     </div>
 
-                    <div className="flex justify-between">
+                    <div className="max-tablet620:grid max-tablet620:grid-cols-1 tablet620:flex tablet620:justify-end tablet620:space-x-4 max-tablet620:gap-2">
                         {!isEditing ? (
                             <>
                                 <Button
                                     onClick={onClose}
                                     variant="soft"
                                     color="neutral"
-                                    className="px-4 py-2"
+                                    className="row-start-2 min-w-[100px] px-4 py-2"
                                 >
                                     Close
                                 </Button>
@@ -105,7 +105,7 @@ function EmployeeDetailsModal({ isOpen, employeeData, onClose, onConfirm }) {
                                     onClick={handleEdit}
                                     variant="solid"
                                     color="primary"
-                                    className="px-4 py-2"
+                                    className="px-4 min-w-[100px] py-2"
                                 >
                                     Edit
                                 </Button>
@@ -116,7 +116,7 @@ function EmployeeDetailsModal({ isOpen, employeeData, onClose, onConfirm }) {
                                     onClick={handleCancel}
                                     variant="soft"
                                     color="neutral"
-                                    className="px-4 py-2"
+                                    className="row-start-2 min-w-[100px] px-4 py-2"
                                 >
                                     Cancel
                                 </Button>
@@ -124,7 +124,7 @@ function EmployeeDetailsModal({ isOpen, employeeData, onClose, onConfirm }) {
                                     onClick={handleSave}
                                     variant="solid"
                                     color="primary"
-                                    className="px-4 py-2"
+                                    className="min-w-[100px] px-4 py-2"
                                 >
                                     Save
                                 </Button>

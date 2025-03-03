@@ -30,8 +30,8 @@ const HistoryJobDetailModal = ({ isOpen, jobData, onClose }) => {
                     <p className="text-gray-700 font-medium">Completion Date:</p>
                     <p className="p-3 border rounded-lg bg-gray-100">{completionDate}</p>
                 </div>
-                <div className="flex justify-end">
-                    <Button onClick={onClose} variant="soft" color="neutral">
+                <div className="max-tablet620:grid max-tablet620:grid-cols-1 tablet620:flex tablet620:justify-end tablet620:space-x-4 max-tablet620:gap-2">
+                    <Button onClick={onClose} variant="soft" color="neutral" className="min-w-[100px]">
                         Close
                     </Button>
                 </div>

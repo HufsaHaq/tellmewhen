@@ -72,14 +72,22 @@ function ChangePassword({ isOpen, password, onClose, onSave }) {
             <div className="text-red-500 text-sm mt-2">{passwordError}</div>
           )}
 
-          <div className="flex justify-between">
+          <div className="max-tablet620:grid max-tablet620:grid-cols-1 tablet620:flex tablet620:justify-end tablet620:space-x-4 max-tablet620:gap-2">
+            <Button
+              onClick={onClose}
+              variant="soft"
+              color="neutral"
+              className="row-start-2 max-tablet620:w-full min-w-[100px] px-4 py-2"
+            >
+              Close
+            </Button>
             {!isEditing && (
               <div className="space-x-3">
                 <Button
                   onClick={handleChange}
                   variant="solid"
                   color="primary"
-                  className="px-4 py-2"
+                  className="max-tablet620:w-full min-w-[100px] px-4 py-2"
                 >
                   Change
                 </Button>
@@ -92,21 +100,12 @@ function ChangePassword({ isOpen, password, onClose, onSave }) {
                   onClick={handleSave}
                   variant="solid"
                   color="primary"
-                  className="px-4 py-2"
+                  className="max-tablet620:w-full min-w-[100px] px-4 py-2"
                 >
                   Save
                 </Button>
               </div>
             )}
-
-            <Button
-              onClick={onClose}
-              variant="soft"
-              color="neutral"
-              className="px-4 py-2"
-            >
-              Close
-            </Button>
           </div>
         </form>
       </div>
