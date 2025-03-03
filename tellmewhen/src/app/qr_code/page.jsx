@@ -2,7 +2,7 @@
 import { Button } from "@mui/joy"
 import React, { useState, useEffect } from "react"
 import Header from "@/components/Header";
-import DashboardButton from "@/components/Dashboard";
+import DashboardButton from "@/components/Dashboard/Dashboard";
 import { GetCode } from "@/scripts/qr";
 
 function Page() {

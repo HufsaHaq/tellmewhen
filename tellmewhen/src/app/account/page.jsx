@@ -3,15 +3,15 @@
 
 import {Button, Select, Input, Option} from "@mui/joy";
 import { Search } from "@mui/icons-material";
-import ChangeName from "@/components/ChangeName"
-import ChangeProfilePhoto from "@/components/ChangeProfilePhoto"
-import ChangePassword from "@/components/ChangePassword"
+import ChangeName from "@/components/Account/ChangeName"
+import ChangeProfilePhoto from "@/components/Account/ChangeProfilePhoto"
+import ChangePassword from "@/components/Account/ChangePassword"
 import { ChangeBusinessName, ChangeProfilePhoto as ChangeProfilePhotoFromScripts } from "@/scripts/account"
 import { Menu } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import { motion, useScroll } from "framer-motion";
-import EmployeeCreationModal from "@/components/EmployeeCreationModal";
-import EmployeeDetailsModal from "@/components/EmployeeDetailsModal";
+import EmployeeCreationModal from "@/components/Account/EmployeeCreationModal";
+import EmployeeDetailsModal from "@/components/Account/EmployeeDetailsModal";
 import {Leaderboard, Numbers, NotificationsActive} from "@mui/icons-material"
 
 function Account()
