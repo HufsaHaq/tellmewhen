@@ -15,6 +15,7 @@ import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmi
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
 import { blackListToken, checkToken } from '../blacklist.js';
 import { token } from 'morgan';
+import { setUncaughtExceptionCaptureCallback } from 'process';
 
 dotenv.config('../')
 console.log(process.env.NODE_ENV)
@@ -179,5 +180,11 @@ indexRouter.post('/refresh', async(req,res) => {
     res.status(406).json({ message: "Unauthorised, no refresh token provided. Please sign out and login again"})
   }
 })
+//save info about new Push-API subscription
+indexRouter.post('/save-new-subscription', async(req,res) => {
+  // Extract info about subscription object
 
+  //do db stuff
+  res.status(200).json({ message:'Subscription stored in db'})
+})
 export { indexRouter }; 
