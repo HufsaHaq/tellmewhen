@@ -297,6 +297,20 @@ function Page() {
         setIsDetailModalOpen(false);
     };
 
+    const handleDeleteCurrent = () => {
+        const newTableCurrent = CurrentTableData.filter(
+            (job) => job[0] !== selectedJob.id);
+        SetCurrentTableData(newTableCurrent);
+        setIsDetailModalOpen(false);
+    };
+
+    const handleDeleteHistory = () => {
+        const newTableHistory = HistoryTableData.filter(
+            (job) => job[0] !== selectedJob.id);
+        SetHistoryTableData(newTableHistory);
+        setIsHistoryModalOpen(false);
+    };
+
     return (
         <div className={"page-content max-tablet620:w-[90%] tablet620:w-[80%] m-auto"}>
             {/* Span element is for the controls above the table (Switcher and Button) to keep them inline*/}
@@ -449,8 +463,8 @@ function Page() {
             {/* Job Creation Modal */}
             <JobCreation isOpen={isCreationModalOpen} onClose={handleCloseModal} onConfirm={handleConfirmModal} formData={formData} onInputChange={handleInputChange} errorMessageAssign={errorMessageAssign} />
             {/* Job Detail Modal */}
-            <CurrentJobDetail isOpen={isDetailModalOpen} jobData={selectedJob} onClose={() => setIsDetailModalOpen(false)} onConfirm={handleUpdateJob} onOpenFinish={handleOpenFinish}/>
-            <HistoryJobDetailModal isOpen={isHistoryModalOpen} jobData={selectedJob} onClose={() => setIsHistoryModalOpen(false)} />
+            <CurrentJobDetail isOpen={isDetailModalOpen} jobData={selectedJob} onClose={() => setIsDetailModalOpen(false)} onConfirm={handleUpdateJob} onOpenFinish={handleOpenFinish} onDelete={handleDeleteCurrent}/>
+            <HistoryJobDetailModal isOpen={isHistoryModalOpen} jobData={selectedJob} onClose={() => setIsHistoryModalOpen(false)} onDelete={handleDeleteHistory} />
             {/* Finish Job Modal */}
             <FinishJobModal isOpen={isFinishModalOpen} job={jobToFinish} onClose={() => setIsFinishModalOpen(false)} onFinish={handleFinishJob}
             />

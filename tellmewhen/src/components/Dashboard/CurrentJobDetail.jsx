@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@mui/joy";
 
-function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish }) {
+function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish, onDelete }) {
   const [isEditing, setIsEditing] = useState(false);
   const [tempData, setTempData] = useState(jobData);
 
@@ -104,6 +104,14 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish })
                   className="top-[5px] px-4 max-tablet620:w-[98%] min-w-[100px] py-2 h-[30px]"
                 >
                   Finish
+                </Button>
+                <Button
+                  onClick={onDelete}
+                  variant="solid"
+                  color="danger"
+                  className="top-[5px] px-4 max-tablet620:w-[98%] min-w-[100px] py-2 h-[30px]"
+                >
+                  Delete
                 </Button>
                 <Button
                   onClick={()=>{window.location.href = "/qr_code"}}

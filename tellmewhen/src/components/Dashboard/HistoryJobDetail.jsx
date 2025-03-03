@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@mui/joy";
 
-const HistoryJobDetailModal = ({ isOpen, jobData, onClose }) => {
+const HistoryJobDetailModal = ({ isOpen, jobData, onClose, onDelete }) => {
     if (!isOpen) return null;
 
     const { id, userId, remarks, completionDate, worker } = jobData;
@@ -33,6 +33,9 @@ const HistoryJobDetailModal = ({ isOpen, jobData, onClose }) => {
                 <div className="max-tablet620:grid max-tablet620:grid-cols-1 tablet620:flex tablet620:justify-end tablet620:space-x-4 max-tablet620:gap-2">
                     <Button onClick={onClose} variant="soft" color="neutral" className="min-w-[100px]">
                         Close
+                    </Button>
+                    <Button onClick={onDelete} variant="soft" color="danger" className="min-w-[100px]">
+                        Delete
                     </Button>
                 </div>
             </div>
