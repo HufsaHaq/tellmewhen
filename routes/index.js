@@ -82,7 +82,6 @@ indexRouter.post('/login', async (req, res) => {
       const refreshToken = jwt.sign({ username: username }, refreshPrivateKey, {expiresIn: '1d', algorithm: 'RS256' })
       try{
         await addToken(loginCredentials.User_ID,accessToken);
-        await blockToken(accessToken)
         await addToken(loginCredentials.User_ID,refreshToken);
       }catch(err){
         console.log(`Error when populating tokens: ${err}`)
@@ -119,7 +118,6 @@ indexRouter.post('/register', async (req, res) => {
           res.status(400).json({ message: 'Error registering business and admin' });
       }
   })
-  
 
   }else{
     res.status(400).json({message: "missing fields"})
@@ -140,12 +138,16 @@ indexRouter.post('/refresh', async(req,res) => {
     const token = req.cookies.refresh
     jwt.verify(token, refreshPublicKey,
       async(err,decoded) => {
+        console.log(decoded)
         if (err) {
           // Wrong Refesh Token
-          return res.status(406).json({ message: 'Unauthorized' });
+          return res.status(406).json({ message: 'Error in decoding' });
       }
       else {
+        //Check wether the token has been blacklisted
+        console.log(`REFRESH TOKEN:${token}`)
         const validToken = await checkToken(token)
+
         if(!validToken){
           await freezeUser(id);
           return res.status(400).json({ message:"Invalid token used"});
@@ -167,7 +169,7 @@ indexRouter.post('/refresh', async(req,res) => {
           }else{
 
             //logs user out
-            freezeUser(id) //check this before prod.
+            freezeUser(id) 
             blackListToken(token)
             
             return res.status(406).json({message: 'The refresh token provided does not match the user'})

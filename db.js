@@ -71,7 +71,7 @@ export const createnotification = async () => {
 };
 
 export const createTokensTable = async () => {
-  const sql = 'CREATE TABLE IF NOT EXISTS TOKENS (ID INT AUTO_INCREMENT PRIMARY KEY, User_ID INT, Token TEXT, Valid TINYINT(1), FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(User_ID));'
+  const sql = 'CREATE TABLE IF NOT EXISTS TOKENS (ID INT AUTO_INCREMENT PRIMARY KEY, User_ID INT, Token TEXT, Valid TINYINT(1),expiries DATETIME, FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(User_ID));'
 ;
   return executeQuery(sql)
 }
