@@ -2,6 +2,7 @@
 import mysql from 'mysql';
 import dotenv from 'dotenv';
 import { exec } from 'node:child_process';
+import { connect } from 'node:http2';
 dotenv.config();
 
 const {
@@ -245,7 +246,7 @@ const getSubscription = async (jobId, businessId) => {
 const addToken = async(userId, token) => {
   const sql = `
   INSERT INTO TOKENS (User_ID,Token,Valid) 
-  VALUES (?,?,1)`
+  VALUES (?,?,1);`
   return execute(sql,[userId,token])
 }
 //add a newly blacklisted token
@@ -253,7 +254,7 @@ const blockToken = async(token) =>{
     const sql = `
     UPDATE TOKENS
     SET Valid = 0
-    WHERE Token = ?
+    WHERE Token = ?;
     `
     return execute(sql,[token])
 }
@@ -263,7 +264,7 @@ const freezeUser = async(userId) =>{
   const sql = `
   UPDATE TOKENS
   SET Valid = 0
-  WHERE User_ID = ?
+  WHERE User_ID = ?;
   `
 
   return execute(sql,[userId])
@@ -272,11 +273,13 @@ const freezeUser = async(userId) =>{
 //Get the status of a token, returns true if token is valid
 const getTokenStatus = async (token) =>{
 
-  const sql = `SELECT Valid FROM TOKENS WHERE Token = ?`
+  const sql = `SELECT Valid FROM TOKENS WHERE Token = ?;`
 
   const result = await execute(sql,[token]);
+  const JSONres = JSON.parse(result)
+  console.log(JSONres[0].Valid)
   if(result){
-    return result[0].Valid
+    return JSONres[0].Valid;
   }else{
     return 0;
   }
