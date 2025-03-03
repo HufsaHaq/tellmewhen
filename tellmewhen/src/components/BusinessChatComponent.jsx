@@ -32,23 +32,21 @@ export function BusinessChatComponent({ data }) {
 
     return (
         <Chat client={client}>
-            {/*
-        We'll use a 2-column layout with flex:
-        - Left column: ChannelList
-        - Right column: Channel window (messages)
-      */}
+            {/* Outer container - make sure parent has height (e.g., h-screen) */}
             <div className="flex h-full">
-                {/* Left sidebar */}
+                {/* Left sidebar (unchanged) */}
                 <div className="w-1/4 border-r">
                     <ChannelList filters={{ members: { $in: [user?.id] } }} />
                 </div>
 
-                {/* Right content */}
-                <div className="w-3/4 flex flex-col">
+                {/* Right content - ensure full height */}
+                <div className="w-3/4 flex flex-col h-full">
                     <Channel>
-                        <Window>
+                        {/* Window with full height and column layout */}
+                        <Window className="h-full flex flex-col">
                             <ChannelHeader />
-                            <MessageList />
+                            {/* Scrollable message area */}
+                            <MessageList className="flex-1 overflow-y-auto" />
                             <MessageInput />
                         </Window>
                         <Thread />

@@ -41,7 +41,10 @@ export default function Page() {
                             Change User
                         </button>
                     </span>
+                    <div>
                     <ClientChatComponent data={data}></ClientChatComponent>
+                    </div>
+
                 </div>
             }
         </>

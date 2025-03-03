@@ -50,7 +50,7 @@ export default function Page() {
             </div>
 
             {/* Chat area */}
-            <div className="flex-1">
+            <div className="h-screen">
                 <BusinessChatComponent data={data} />
             </div>
         </div>
