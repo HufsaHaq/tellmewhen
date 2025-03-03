@@ -11,10 +11,6 @@ import { Button, Tab, Tabs, TabList, tabClasses, Select, Option, IconButton } fr
 import { Add, CloseRounded } from "@mui/icons-material";
 import Pagination from "@/components/Pagination";
 import React from "react";
-//import JobCreation from "@/components/JobCreation";
-//import CurrentJobDetail from "@/components/CurrentJobDetail";
-//import FinishJobModal from "@/components/FinishJob";
-//import HistoryJobDetailModal from "@/components/HistoryJobDetail";
 import { AssignJobToEmployee, GetAllJobHistory } from "@/scripts/dashboard";
 import JobCreation from "@/components/Dashboard/JobCreation";
 import CurrentJobDetail from "@/components/Dashboard/CurrentJobDetail";
