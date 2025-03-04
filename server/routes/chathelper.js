@@ -53,10 +53,34 @@ const createJobChannel = async (jobId, userId) => {
   }
 };
 
+const deleteChannel= async (jobId) => {
+  try {
+      const checkHistoryQuery = `
+          SELECT * FROM JOB_HISTORY WHERE Job_ID = ?;
+      `;
+      const historyResult = await executeQuery(checkHistoryQuery, [jobId]);
+
+      // If the job is not in the history table, do nothing
+      if (historyResult.length === 0) {
+          console.log(`Job ${jobId} is not in the history table. Channel not deleted.`);
+          return;
+      }
+
+      // If the job is in the history table, delete the chat channel
+      const channel = streamChat.channel("messaging", `job-${jobId}`);
+      await channel.delete();
+      return;
+  } catch (error) {
+      console.error("Error deleting channel:", error.message);
+      throw error;
+  }
+};
+
 export{
   chatRouter,
   generateBusinessToken,
   generateGuestToken,
   createJobChannel,
   streamChat,
+  deleteChannel,
  };
