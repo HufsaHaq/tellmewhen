@@ -74,10 +74,10 @@ indexRouter.post('/login', async (req, res) => {
       // get the workerId
       const employeeInfo = await searchEmployees(username,businessId)
 
-      const workerId = employeeInfo.User_ID
+      const workerId = employeeInfo.User_ID;
 
       // create new jwt
-      const accessToken = jwt.sign({ username: username, role: privilige, workerId  }, accessPrivateKey, { expiresIn: '1h', algorithm: 'RS256' })
+      const accessToken = jwt.sign({ username: username, role: privilige, workerId:workerId  }, accessPrivateKey, { expiresIn: '1h', algorithm: 'RS256' })
       // create new refresh token
       const refreshToken = jwt.sign({ username: username }, refreshPrivateKey, {expiresIn: '1d', algorithm: 'RS256' })
       try{
@@ -89,7 +89,11 @@ indexRouter.post('/login', async (req, res) => {
       }
       res.status(200).cookie('access',accessToken,accessCookieOptions).
       cookie('refresh',refreshToken,refreshCookieOptions).
-      json({message:'access token and refresh cookie sent in cookies'});
+      json({message:'access token and refresh cookie sent in cookies',
+        userId: workerId,
+        businessId : businessId
+
+      });
     }else{
       res.status(401).json({error: "Passwords do not match"});
     }
