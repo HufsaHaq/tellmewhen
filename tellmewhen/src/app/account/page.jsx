@@ -6,8 +6,9 @@ import { Search } from "@mui/icons-material";
 import ChangeName from "@/components/Account/ChangeName"
 import ChangeProfilePhoto from "@/components/Account/ChangeProfilePhoto"
 import ChangePassword from "@/components/Account/ChangePassword"
+import DeleteBusiness from "@/components/Account/DeleteBusiness"
 import { ChangeBusinessName, ChangeProfilePhoto as ChangeProfilePhotoFromScripts } from "@/scripts/account"
-import { GetNumberOfOpenJobs, GetNumberOfTotalJobs } from "@/scripts/account"
+import { GetNumberOfOpenJobs, GetNumberOfTotalJobs, DeleteBusiness as Delete } from "@/scripts/account"
 import { Menu } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import { motion, useScroll } from "framer-motion";
@@ -53,6 +54,7 @@ function Account()
     const [errorMessageName, setErrorMessageName] = useState('');
     const [errorMessagePhoto, setErrorMessagePhoto] = useState('');
     const [errorMessagePassword, setErrorMessagePassword] = useState('');
+    const [errorMessageDelete, setErrorMessageDelete] = useState('');
 
     const [activeJobs, setActiveJobs] = useState('');
     const [errorMessageActive, setErrorMessageActive] = useState('');
@@ -132,8 +134,6 @@ function Account()
         catch(error){
 
         }
-
-
     };
 
     useEffect(() => {
@@ -163,6 +163,8 @@ function Account()
     const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
     const [Password, setPassword] = useState("[Enter Password]");
 
+    const [isDeleteBusinessOpen, setIsDeleteBusinessOpen] = useState(false);
+
     const handleSaveBusinessName =  async(newBusinessName) => {
         const businessId = localStorage["businessId"];
         const accessToken = localStorage["accessToken"];
@@ -188,6 +190,34 @@ function Account()
         }
         catch (error) {
             setErrorMessageName("Ann error occurred while connecting to the server.");
+        }
+    };
+
+    const handleDeleteBusiness =  async() => {
+        const businessId = localStorage["businessId"];
+        const accessToken = localStorage["accessToken"];
+
+        try {
+            const res = await Delete(businessId, accessToken);
+
+            if (res.status === 200) {
+                setErrorMessageDelete("");
+                setIsDeleteBusinessOpen(false);
+                window.location.href = '/auth';
+            }
+            else if (res.status === 401) {
+                setErrorMessageDelete("Unauthorized request. Please log in to make changes");
+                window.location.href = '/auth'; 
+            }
+            else if (res.status === 500 || res.status === null || res === null || res === 404) {
+                setErrorMessageDelete("An error occurred while connecting to the server.");
+            }
+            else {
+                setErrorMessageDelete("An unknown error occurred.");
+            }
+        }
+        catch (error) {
+            setErrorMessageDelete("Ann error occurred while connecting to the server.");
         }
     };
     
@@ -383,7 +413,7 @@ function Account()
                                         <h1 className="font-semibold text-[#C41C1C]">Delete Account</h1>
                                         <h1 className="text-[#C41C1C]">Warning! This action cannot be undone.</h1>
                                     </div>
-                                    <Button variant="solid" className="w-[75px]" color="danger">Delete</Button>
+                                    <Button variant="solid" className="w-[75px]" color="danger" onClick ={() => setIsDeleteBusinessOpen(true)}>Delete</Button>
                                 </span>
                             </div>
 
@@ -414,6 +444,16 @@ function Account()
                                 Password={Password}
                                 onClose={() => setIsChangePasswordOpen(false)}
                                 onSave={handleSavePassword}
+                              />
+
+                            <DeleteBusiness 
+                                isOpen={isDeleteBusinessOpen}
+                                errorMessageDelete={errorMessageDelete}
+                                onClose={() => {
+                                    setErrorMessageDelete('');
+                                    setIsDeleteBusinessOpen(false);
+                                }}
+                                onDelete={handleDeleteBusiness}
                               />
                         </>
                     }

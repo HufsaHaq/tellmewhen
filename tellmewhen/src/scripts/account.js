@@ -21,7 +21,7 @@ export async function GetNumberOfOpenJobs(businessID, accessToken) {
 
     let data = {
         status: 200,
-        message: 'Business deleted successfully'
+        message: 'successfull'
     };
 
     return data;
@@ -47,7 +47,7 @@ export async function GetNumberOfTotalJobs(businessID, accessToken) {
     // Just for testing, to be deleted
     let data = {
         status: 200,
-        message: 'Business deleted successfully'
+        message: 'successfull'
     };
 
     return data;
@@ -56,8 +56,9 @@ export async function GetNumberOfTotalJobs(businessID, accessToken) {
 export async function DeleteBusiness(businessID, accessToken)
 {
     //THIS NEEDS UPDATING ON BACKEND
-    let data = null;
+    //let data = null;
     let base = localStorage["endpoint"];
+    /*
     await axios.post(
         base + "/delete/" + businessID,
         {
@@ -65,7 +66,11 @@ export async function DeleteBusiness(businessID, accessToken)
                 'Authorization': 'Bearer '+ accessToken
             }
         }
-    ).then((res) => { data = res })
+    ).then((res) => { data = res })*/
+    let data = {
+        status: 200,
+        message: 'successfull'
+    };
     return data;
 }
 
