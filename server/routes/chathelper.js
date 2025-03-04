@@ -41,7 +41,7 @@ const createJobChannel = async (jobId, userId) => {
 
       //  automatic welcome message to the customer
       await channel.sendMessage({
-          text: `Hello! This is the chat for Job #${jobId}. If you have any issues, please messahe here.`,
+          text: `Hello! This is the chat for Job #${jobId}. If you have any issues, please message here.`,
           user_id: `worker-${userId}`, 
       });
 
