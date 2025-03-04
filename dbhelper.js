@@ -94,7 +94,7 @@ const getJobHistory = async (businessId, userId = null) => {
 // Function to create a new job
 const generateUniqueJobId = async () => {
   let isUnique = false;
-  let randomJobId;
+  let random_job_id;
 
   while (!isUnique) {
     random_job_id = randomBytes(16).toString('hex');
