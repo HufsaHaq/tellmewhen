@@ -7,7 +7,7 @@ import { getJobHistory, getOpenJobs, createNewJob, assignJobToUser, completeJob 
 import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmin, countTotalJobs} from '../managementdbfunc.js';
 //middleware functions for encyrption, authentication and data integrity
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
-
+import { generate_qr, decryptJobId } from "../qr_generation.js";
 import { checkData } from '../datacheck.js';
 import { JWTClaimValidationFailed } from 'jose/errors';
 
@@ -18,7 +18,7 @@ const jobRouter = express.Router();
 
 jobRouter.get('/history/:bid',authMiddleWare, async (req, res) => {
     const businessId = req.params.bid;
-    getJobHistory(businessId)
+    await getJobHistory(businessId)
       .then((history) => res.json(history))
       .catch((err) => res.json({ error: err }));
 });
@@ -28,7 +28,7 @@ jobRouter.get('/open_jobs/:bid', authMiddleWare, async(req,res) => {
     const businessId = req.params.bid;
 
     try{
-        countOpenJobs() //follow up
+        await countOpenJobs() //follow up
     } catch (err) {
         res.json( { error:err })
     }
@@ -40,7 +40,7 @@ jobRouter.get('/total_jobs/:bid', authMiddleWare, async(req,res) => {
     const businessId = req.params.bid;
 
     try{
-      countTotalJobs();
+      await countTotalJobs();
     }catch (err) {
       res.json( {error:err});
     }
@@ -48,7 +48,7 @@ jobRouter.get('/total_jobs/:bid', authMiddleWare, async(req,res) => {
 jobRouter.get('/current/:bid/:uid',authMiddleWare, async (req, res) => {
     const businessId = req.params.bid;
     const userId = req.params.uid;
-    getOpenJobs(businessId,userId)
+    await getOpenJobs(businessId,userId)
       .then((jobs) => res.json(jobs))
       .catch((err) => res.json({ error: err }));
   });
@@ -57,11 +57,11 @@ jobRouter.get('/current/:bid/:uid',authMiddleWare, async (req, res) => {
 jobRouter.post('/assign_job',authMiddleWare, moderatorMiddleWare, async (req,res) => {
     const data = req.body // get the request data
 
-    const jobId = data.jid;
+    const encryptedJobId = data.jid;
+    const jobId = decryptJobId(encryptedJobId);
     const userId = data.uid;
-
     try{
-        assignJobToUser(userId,jobId)
+        await assignJobToUser(userId,jobId)
     }catch (err) {
         res.json({error: err})
     }
@@ -72,44 +72,34 @@ jobRouter.post('/assign_job',authMiddleWare, moderatorMiddleWare, async (req,res
 jobRouter.post('/new', authMiddleWare, async (req,res) => {
     // create new job in the db
     const jobData = req.body;
-
     const description = jobData.description;
     const dueDate = jobData.dueDate
-    // from qr.js
-    const job_id = req.params.job_id ;
-    
-    res.send(qr_url); // we need this encoded and sent to front end
-
     try{
-        result = createNewJob(description,dueDate)
-
+        const result = await createNewJob(description,dueDate);
         //extract random job id
-        randomJobId = result[0].Job_ID;
+        const randomJobId = result.randomJobId;
         //generate qr code
-        const qr_url = await generate_qr(job_id);
-
-
+        const qr_url = await generate_qr(randomJobId);
+        res.status(200).json({
+            message: "New job succesfully registered", // Notify the user that the job has been registered
+            qrCode: qr_url
+        })
     } catch (err) {
         res.json({error : err})
     }
-
-    res.status(200).json({
-      message: "New job succesfully registered",
-      qrCode: qr_url
-    })
-    // Notify the user that the job has been registered
 })
 
 //needs updating to check right user has marked a job as complete
 jobRouter.post('/complete/:jid',authMiddleWare, async (req,res) =>{
-    const jobId = req.params.jid
+    const encryptedJobId = req.params.job_id;
+    const jobId = decryptJobId(encryptedJobId);
     //extract JSON data from request 
     const data = req.params.body
     const userId = data.uid
     const remarks = data.remarks
 
     try{
-        completeJob(userId,jobId,remarks)
+        await completeJob(userId,jobId,remarks)
     }catch (err) {
         res.json( { error : err } )
     }
@@ -121,13 +111,14 @@ jobRouter.post('/complete/:jid',authMiddleWare, async (req,res) =>{
 jobRouter.post('/notify/:bid/:jid',authMiddleWare, async (req, res) => {
     // Notify the customer and update the notification table
     const businessId = req.params.bid;
-    const jobId = req.params.jid;
+    const encryptedJobId = req.params.job_id;
+    const jobId = decryptJobId(encryptedJobId);
     const messageBody = req.body.message || 'Your job is ready for pickup';
     const messageTitle = req.body.title || 'There is an update to your job';
-    const photo = getBusinessPhoto(businessId);
+    const photo = await getBusinessPhoto(businessId);
   
     try{
-      const pushSubscription = getNotifications(businessId, jobId);
+      const pushSubscription = await getNotifications(businessId, jobId);
     } catch (err) {
       res.json({ error: err });
     }

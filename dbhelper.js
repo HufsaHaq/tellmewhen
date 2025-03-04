@@ -120,7 +120,9 @@ const createNewJob = async (businessId, userId = null, description, dueDate) => 
 
     const result = await executeQuery(sql, [randomJobId, businessId, userId, description, dueDate]);
     console.log('New job created with ID:', randomJobId);
-    return result;
+    return {
+      result: result,
+      randomJobId: randomJobId }
 };
 
 const deletefromjobtable = async (jobId) => {
