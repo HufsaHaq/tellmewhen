@@ -54,7 +54,7 @@ const addNotification = async (userId, jobId, notificationContent) => {
 // jobs per user or all jobs if no user ID 
 const getOpenJobs = async (businessId, userId = null) => {
   let sql = `
-    SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_TABLE.URL, JOB_TABLE.Due_Date
+    SELECT JOB_TABLE.Job_ID, JOB_TABLE.Description, JOB_TABLE.Due_Date
     FROM JOB_TABLE
     WHERE JOB_TABLE.Business_ID = ?
   `;
@@ -110,8 +110,8 @@ const generateUniqueJobId = async () => {
       WHERE Job_ID = ?;
     `;
 
-    const jobTableResult = await executeQuery(checkJobTableSql, [randomJobId]);
-    const historyTableResult = await executeQuery(checkHistoryTableSql, [randomJobId]);
+    const jobTableResult = await executeQuery(checkJobTableSql, [random_job_id]);
+    const historyTableResult = await executeQuery(checkHistoryTableSql, [random_job_id]);
 
     if (jobTableResult[0].count === 0 && historyTableResult[0].count === 0) {
       isUnique = true;
@@ -121,16 +121,16 @@ const generateUniqueJobId = async () => {
   return randomJobId;
 };
 
-const createNewJob = async (businessId, userId = null, description, url, dueDate) => {
+const createNewJob = async (businessId, userId = null, description, dueDate) => {
     const randomJobId = await generateUniqueJobId();
 
     // Insert the new job into JOB_TABLE
     const sql = `
-      INSERT INTO JOB_TABLE (Job_ID, Business_ID, User_ID, Description, URL, Due_Date)
-      VALUES (?, ?, ?, ?, ?, ?);
+      INSERT INTO JOB_TABLE (Job_ID, Business_ID, User_ID, Description, Due_Date)
+      VALUES (?, ?, ?, ?, ?);
     `;
 
-    const result = await executeQuery(sql, [randomJobId, businessId, userId, description, url, dueDate]);
+    const result = await executeQuery(sql, [randomJobId, businessId, userId, description, dueDate]);
     console.log('New job created with ID:', randomJobId);
     return result;
 };
@@ -157,7 +157,7 @@ const deletefromjobhistorytable = async (jobId) => {
 //----------------------------------------------------------------
 const getJobDetails = async (jobId) => {
   const sql = `
-    SELECT Job_ID, Description, URL, Due_Date
+    SELECT Job_ID, Description, Due_Date
     FROM JOB_TABLE
     WHERE Job_ID = ?;
   `;

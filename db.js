@@ -49,7 +49,7 @@ export const createworker = async () => {
 };
 
 export const createjob = async () => {
-  const sql =     `CREATE TABLE IF NOT EXISTS JOB_TABLE (Job_ID VARCHAR(255) PRIMARY KEY, Business_ID INT, User_ID INT, Description VARCHAR(255) NOT NULL,URL VARCHAR(255) NOT NULL,Due_Date DATETIME,FOREIGN KEY (Business_ID) REFERENCES BUSINESS_TABLE(Business_ID), FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(User_ID));`;
+  const sql =     `CREATE TABLE IF NOT EXISTS JOB_TABLE (Job_ID VARCHAR(255) PRIMARY KEY, Business_ID INT, User_ID INT, Description VARCHAR(255) NOT NULL, Due_Date DATETIME,FOREIGN KEY (Business_ID) REFERENCES BUSINESS_TABLE(Business_ID), FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(User_ID));`;
 
   return executeQuery(sql);
 };
