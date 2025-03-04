@@ -118,7 +118,7 @@ const generateUniqueJobId = async () => {
     }
   }
 
-  return randomJobId;
+  return random_job_id;
 };
 
 const createNewJob = async (businessId, userId = null, description, dueDate) => {
