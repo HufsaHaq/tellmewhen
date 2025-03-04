@@ -140,12 +140,39 @@ export const editUserLogin = async (workerId, Username, newPassword) => {
 
 // Delete business account and all associated accounts
 export const deleteBusiness = async (businessId) => {
+  const sqlJobHistory = `DELETE FROM JOB_HISTORY WHERE Business_ID = ?;`;
+  const sqlJobTable = `DELETE FROM JOB_TABLE WHERE Business_ID = ?;`;
+  const sqlSubscriptionTable = `DELETE FROM SUBSCRIPTION_TABLE WHERE Business_ID = ?;`;
+  const sqlNotifications = `DELETE FROM NOTIFICATIONS WHERE Business_ID = ?;`;
+  const sqlTokens = `DELETE FROM TOKENS WHERE User_ID IN (SELECT User_ID FROM WORKER_TABLE WHERE Business_ID = ?);`;
   const sqlWorkers = `DELETE FROM WORKER_TABLE WHERE Business_ID = ?;`;
   const sqlBusiness = `DELETE FROM BUSINESS_TABLE WHERE Business_ID = ?;`;
 
-  // need to delete workers then the business
-  await executeQuery(sqlWorkers, [businessId]);
-  return executeQuery(sqlBusiness, [businessId]);
+  try {
+    // Delete related records in JOB_HISTORY
+    await executeQuery(sqlJobHistory, [businessId]);
+
+    // Delete related records in JOB_TABLE
+    await executeQuery(sqlJobTable, [businessId]);
+
+    // Delete related records in SUBSCRIPTION_TABLE
+    await executeQuery(sqlSubscriptionTable, [businessId]);
+
+    // Delete related records in NOTIFICATIONS
+    await executeQuery(sqlNotifications, [businessId]);
+
+    // Delete related records in TOKENS
+    await executeQuery(sqlTokens, [businessId]);
+
+    // Delete workers associated with the business
+    await executeQuery(sqlWorkers, [businessId]);
+
+    await executeQuery(sqlBusiness, [businessId]);
+
+    console.log(`Business with ID ${businessId} and all associated records deleted successfully.`);
+  } catch (error) {
+    console.error('Error deleting business and associated records:', error.message);
+  }
 };
 
 // Get the number of open jobs
