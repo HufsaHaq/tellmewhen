@@ -115,10 +115,10 @@ jobRouter.post('/notify/:bid/:jid',authMiddleWare, async (req, res) => {
     const jobId = decryptJobId(encryptedJobId);
     const messageBody = req.body.message || 'Your job is ready for pickup';
     const messageTitle = req.body.title || 'There is an update to your job';
-    const photo = await getBusinessPhoto(businessId);
-  
+    const photo = getBusinessPhoto(businessId);
+    let pushSubscription;
     try{
-      const pushSubscription = await getNotifications(businessId, jobId);
+       pushSubscription = getNotifications(businessId, jobId);
     } catch (err) {
       res.json({ error: err });
     }
@@ -136,7 +136,7 @@ jobRouter.post('/notify/:bid/:jid',authMiddleWare, async (req, res) => {
         privateKey: process.env.VAPID_PRIVATE
       }};
     //send notifcation using PUSH API
-    const notifcation = webPush.sendNotification(pushSubscription, payload).
+    webPush.sendNotification(pushSubscription, payload, options).
     then(() => {console.log("Notification Sent !")}).
     catch((err) => res.json({ error: err }));
    
