@@ -1,5 +1,7 @@
 import QRCode from 'qrcode'
 import crypto from 'crypto';
+import dotenv from "dotenv";
+dotenv.config();
 
 const ENCRYPTION_KEY = Buffer.from(process.env.ENCRYPTION_KEY, 'base64'); // Decode Base64 key
 const ENCRYPTION_IV = Buffer.from(process.env.ENCRYPTION_IV, 'base64'); // Decode Base64 IV
@@ -72,20 +74,3 @@ export function decryptJobId(encryptedJobId) {
         throw err;
     }
 }
-
-
-
-
-/*
-async function test_qr() {
-    const jobid = '12345';
-    const encrypted = encryptJobId(jobid);
-    const decrypted = decryptJobId(encrypted);
-    console.log(decrypted);
-  //const qr = await generate_qr(jobid)
-  //console.log(qr);
-}
-
-await test_qr();
-//await test_insert_job();
-*/
