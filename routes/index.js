@@ -74,7 +74,8 @@ indexRouter.post('/login', async (req, res) => {
       // get the workerId
       const employeeInfo = await searchEmployees(username,businessId)
 
-      const workerId = employeeInfo.User_ID;
+      const workerId = employeeInfo[0].User_ID; 
+      console.log(workerId)
 
       // create new jwt
       const accessToken = jwt.sign({ username: username, role: privilige, workerId:workerId  }, accessPrivateKey, { expiresIn: '1h', algorithm: 'RS256' })
