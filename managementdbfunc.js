@@ -71,7 +71,7 @@ export const login = async (buisness, username) => {
   const defaultPhoto = 'base64photo_url';
   const selectbusinessid = 'SELECT Business_ID FROM BUSINESS_TABLE WHERE Business_Name =?;';
   if (selectbusinessid[0] != null){
-    const insertBusinessQuery = `INSERT INTO BUSINESS_TABLE (Business_Name, Business_Photo) VALUES (?, ?);`;
+    const insertBusinessQuery = 'INSERT INTO BUSINESS_TABLE (Business_Name, Business_Photo) VALUES (?, ?);';
     const businessResult = await executeQuery(insertBusinessQuery, [businessName, defaultPhoto]);
   }  
   else{
@@ -79,7 +79,7 @@ export const login = async (buisness, username) => {
   }
 
   const businessId = businessResult.insertId;
-  const insertAdminQuery = `INSERT INTO WORKER_TABLE (Username, Hashed_Password, Business_ID, Privilege_level) VALUES (?, ?, ?, ?);`;
+  const insertAdminQuery = 'INSERT INTO WORKER_TABLE (Username, Hashed_Password, Business_ID, Privilege_level) VALUES (?, ?, ?, ?);';
   return await executeQuery(insertAdminQuery, [username, password, businessId, 1]); // Privilege level 1 = admin
 }; */
 
@@ -87,7 +87,7 @@ export const registerBusinessAndAdmin = async (businessName, username, password)
   const defaultPhoto = 'base64photo_url';
   
   try {
-    const checkBusinessSql = `SELECT Business_ID FROM BUSINESS_TABLE WHERE Business_Name = ?;`;
+    const checkBusinessSql = 'SELECT Business_ID FROM BUSINESS_TABLE WHERE Business_Name = ?;';
     const existingBusiness = await executeQuery(checkBusinessSql, [businessName]);
 
     if (existingBusiness.length > 0) {
@@ -95,12 +95,12 @@ export const registerBusinessAndAdmin = async (businessName, username, password)
       throw new Error('Business already exists');
     }
 
-    const insertBusinessSql = `INSERT INTO BUSINESS_TABLE (Business_Name, Business_Photo) VALUES (?, ?);`;
+    const insertBusinessSql = 'INSERT INTO BUSINESS_TABLE (Business_Name, Business_Photo) VALUES (?, ?);';
     const businessResult = await executeQuery(insertBusinessSql, [businessName, defaultPhoto]);
 
     const businessId = businessResult.insertId;
     
-    const insertAdminSql = `INSERT INTO WORKER_TABLE (Username, Hashed_Password, Business_ID, Privilege_level) VALUES (?, ?, ?, ?);`;
+    const insertAdminSql = 'INSERT INTO WORKER_TABLE (Username, Hashed_Password, Business_ID, Privilege_level) VALUES (?, ?, ?, ?);';
     
     return await executeQuery(insertAdminSql, [
       username, 
@@ -117,36 +117,59 @@ export const registerBusinessAndAdmin = async (businessName, username, password)
 
 // Add worker/manager/admin
 export const addUser = async (username, hashedPassword, businessId, privilegeLevel) => {
-  const sql = `INSERT INTO WORKER_TABLE (Username, Hashed_Password, Business_ID, Privilege_level) VALUES (?, ?, ?, ?);`;
+  const sql = 'INSERT INTO WORKER_TABLE (Username, Hashed_Password, Business_ID, Privilege_level) VALUES (?, ?, ?, ?);';
   return executeQuery(sql, [username, hashedPassword, businessId, privilegeLevel]);
 };
 
 // Delete worker/manager/admin
 export const deleteUser = async (workerId, currID) => {
-  const sql = `DELETE FROM WORKER_TABLE WHERE User_ID = ? AND User_ID <> ?;`;
-  return executeQuery(sql, [workerId, currID]);
+  // find admin in the same business as the user being deleted
+  const bid = 'SELECT Business_ID FROM WORKER_TABLE WHERE User_ID = ?;';
+  const findAdminSQL = 'SELECT User_ID FROM WORKER_TABLE WHERE Business_ID = ? AND Privilege_level = 1 LIMIT 1;'
+
+  // reassign all open jobs from the user being deleted to the admin
+  const reassignJobsSQL = 'UPDATE JOB_TABLE SET User_ID = ? WHERE User_ID = ?;';
+
+  //Delete the user from the WORKER_TABLE
+  const deleteUserSQL = 'DELETE FROM WORKER_TABLE WHERE User_ID = ? AND User_ID <> ?;';
+
+  try{
+    const business_id = await executeQuery(bid,[workerId])
+    const adminResult = await executeQuery(findAdminSQL, [business_id]);
+    if (adminResult.length === 0) {
+      throw new Error('No admin found in the same business to reassign jobs.');
+    }
+    const adminId = adminResult[0].User_ID;
+
+    await executeQuery(reassignJobsSQL, [adminId, workerId]);
+    await executeQuery(deleteUserSQL, [workerId, currID]);
+
+    console.log('User ${workerId} deleted - jobs reassigned to admin ${adminId}.');
+  } catch (error) {
+    console.error('Error deleting user and reassigning jobs:', error.message);
+  }
 };
 
 export const workernames = async (businessId) => {
-  const sql = `SELECT Username FROM WORKER_TABLE WHERE Business_ID =?;`;
+  const sql = 'SELECT Username FROM WORKER_TABLE WHERE Business_ID =?;';
   return executeQuery(sql, [businessId]);
 };
 
 // Edit worker/manager/admin login details
 export const editUserLogin = async (workerId, Username, newPassword) => {
-  const sql = `UPDATE WORKER_TABLE SET Hashed_Password = ? WHERE User_ID = ? AND Username = ?;`;
+  const sql = 'UPDATE WORKER_TABLE SET Hashed_Password = ? WHERE User_ID = ? AND Username = ?;';
   return executeQuery(sql, [newPassword, workerId, Username]);
 };
 
 // Delete business account and all associated accounts
 export const deleteBusiness = async (businessId) => {
-  const sqlJobHistory = `DELETE FROM JOB_HISTORY WHERE Business_ID = ?;`;
-  const sqlJobTable = `DELETE FROM JOB_TABLE WHERE Business_ID = ?;`;
-  const sqlSubscriptionTable = `DELETE FROM SUBSCRIPTION_TABLE WHERE Business_ID = ?;`;
-  const sqlNotifications = `DELETE FROM NOTIFICATIONS WHERE Business_ID = ?;`;
-  const sqlTokens = `DELETE FROM TOKENS WHERE User_ID IN (SELECT User_ID FROM WORKER_TABLE WHERE Business_ID = ?);`;
-  const sqlWorkers = `DELETE FROM WORKER_TABLE WHERE Business_ID = ?;`;
-  const sqlBusiness = `DELETE FROM BUSINESS_TABLE WHERE Business_ID = ?;`;
+  const sqlJobHistory = 'DELETE FROM JOB_HISTORY WHERE Business_ID = ?;';
+  const sqlJobTable = 'DELETE FROM JOB_TABLE WHERE Business_ID = ?;';
+  const sqlSubscriptionTable = 'DELETE FROM SUBSCRIPTION_TABLE WHERE Business_ID = ?;';
+  const sqlNotifications = 'DELETE FROM NOTIFICATIONS WHERE Business_ID = ?;';
+  const sqlTokens = 'DELETE FROM TOKENS WHERE User_ID IN (SELECT User_ID FROM WORKER_TABLE WHERE Business_ID = ?);';
+  const sqlWorkers = 'DELETE FROM WORKER_TABLE WHERE Business_ID = ?;';
+  const sqlBusiness = 'DELETE FROM BUSINESS_TABLE WHERE Business_ID = ?;';
 
   try {
     // Delete related records in JOB_HISTORY
@@ -169,7 +192,7 @@ export const deleteBusiness = async (businessId) => {
 
     await executeQuery(sqlBusiness, [businessId]);
 
-    console.log(`Business with ID ${businessId} and all associated records deleted successfully.`);
+    console.log('Business with ID ${businessId} and all associated records deleted successfully.');
   } catch (error) {
     console.error('Error deleting business and associated records:', error.message);
   }
@@ -178,7 +201,7 @@ export const deleteBusiness = async (businessId) => {
 // Get the number of open jobs
 export const countOpenJobs = async (businessId) => {
     // SQL query to count the number of open jobs
-    const sql = `SELECT COUNT(*) AS openJobs FROM JOB_TABLE WHERE Business_ID = ?;`;
+    const sql = 'SELECT COUNT(*) AS openJobs FROM JOB_TABLE WHERE Business_ID = ?;';
     
     const result = await executeQuery(sql, [businessId]);
     
@@ -193,17 +216,9 @@ export const countOpenJobs = async (businessId) => {
 // Get the total number of jobs created
 export const countTotalJobs = async (businessId) => {
   try {
-    const openJobsSql = `
-      SELECT COUNT(*) AS totalOpenJobs
-      FROM JOB_TABLE
-      WHERE Business_ID = ?;
-    `;
+    const openJobsSql = 'SELECT COUNT(*) AS totalOpenJobs FROM JOB_TABLE WHERE Business_ID = ?;';
     const openJobsResult = await executeQuery(openJobsSql, [businessId]);
-    const closedJobsSql = `
-      SELECT COUNT(*) AS totalClosedJobs
-      FROM JOB_HISTORY
-      WHERE Business_ID = ?;
-    `;
+    const closedJobsSql = 'SELECT COUNT(*) AS totalClosedJobs FROM JOB_HISTORY WHERE Business_ID = ?;';
     const closedJobsResult = await executeQuery(closedJobsSql, [businessId]);
 
     const totalOpenJobs = openJobsResult[0]?.totalOpenJobs || 0;
@@ -218,20 +233,20 @@ export const countTotalJobs = async (businessId) => {
 };
 
 export const searchEmployees = async (searchTerm, businessId) => {
-    const sql = `SELECT * FROM WORKER_TABLE WHERE (Username LIKE ? OR User_ID = ?) AND Business_ID = ?;`;
-    const params = [`%${searchTerm}%`, searchTerm, businessId];
+    const sql = 'SELECT * FROM WORKER_TABLE WHERE (Username LIKE ? OR User_ID = ?) AND Business_ID = ?;';
+    const params = ['%${searchTerm}%', searchTerm, businessId];
     return executeQuery(sql, params);
 };
 
 // Change privilege levels
 export const changePrivilegeLevel = async (workerId, newPrivilegeLevel) => {
-  const sql = `UPDATE WORKER_TABLE SET Privilege_level = ? WHERE User_ID = ?;`;
+  const sql = 'UPDATE WORKER_TABLE SET Privilege_level = ? WHERE User_ID = ?;';
   return executeQuery(sql, [newPrivilegeLevel, workerId]);
 };
 
 // Get business name and photo
 export const getBusinessDetails = async (businessId) => {
-  const sql = `SELECT Business_Name, Business_Photo FROM BUSINESS_TABLE WHERE Business_ID = ?;`;
+  const sql = 'SELECT Business_Name, Business_Photo FROM BUSINESS_TABLE WHERE Business_ID = ?;';
   
   const result = await executeQuery(sql, [businessId]);
   
@@ -248,18 +263,18 @@ export const getBusinessDetails = async (businessId) => {
 
 // Rename a business
 export const renameBusiness = async (businessId, newName) => {
-  const sql = `UPDATE BUSINESS_TABLE SET Business_Name = ? WHERE Business_ID = ?;`;
+  const sql = 'UPDATE BUSINESS_TABLE SET Business_Name = ? WHERE Business_ID = ?;';
   return executeQuery(sql, [newName, businessId]);
 };
 
 // Change business photo
 export const changeBusinessPhoto = async (businessId, newPhotoBase64) => {
-  const sql = `UPDATE BUSINESS_TABLE SET Business_Photo = ? WHERE Business_ID = ?;`;  
+  const sql = 'UPDATE BUSINESS_TABLE SET Business_Photo = ? WHERE Business_ID = ?;';  
   return executeQuery(sql, [newPhotoBase64, businessId]);
 }
 
 export const getBusinessPhoto = async (businessId) => {
-  const sql = `SELECT Business_Photo FROM BUSINESS_TABLE WHERE Business_ID = ?;`;
+  const sql = 'SELECT Business_Photo FROM BUSINESS_TABLE WHERE Business_ID = ?;';
   
   const result = await executeQuery(sql, [businessId]);
   
@@ -271,7 +286,7 @@ export const getBusinessPhoto = async (businessId) => {
 }
 
 export const getBusinessId = async (businessName) => {
-  const sql = `SELECT Business_ID FROM BUSINESS_TABLE WHERE Business_Name = ?;`;
+  const sql = 'SELECT Business_ID FROM BUSINESS_TABLE WHERE Business_Name = ?;';
 
   const result = await executeQuery(sql, [businessName]);
 
