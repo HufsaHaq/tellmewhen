@@ -34,25 +34,18 @@ export default function Page() {
     }
 
     return (
-        <div className="w-full h-screen flex flex-col">
+        <div className="!overflow-y-hidden w-full flex flex-col">
             {/* Top header bar */}
-            <div
-                className={`
-          sticky top-0 z-10
-          bg-[rgba(233,233,233,1)]
-          border-b border-gray-400
-          px-6 py-3
-          flex justify-between items-center
-        `}
-            >
-                <h1 className="font-semibold">Username: {userData.username}</h1>
-                <h1 className="font-semibold">ID: {userData.id}</h1>
-            </div>
 
             {/* Chat area */}
-            <div className="h-screen">
+            <div className="" style={style.container}>
                 <BusinessChatComponent data={data} />
             </div>
         </div>
     );
+}
+const style = {
+    container: {
+        height: "calc(100vh - 85px)",
+    }
 }
