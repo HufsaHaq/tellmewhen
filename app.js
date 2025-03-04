@@ -26,7 +26,7 @@ app.set('view engine', 'pug'); // do we need a view engine
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(cors({ origin: "*" }));
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(bodyParser.json());

@@ -10,7 +10,7 @@ const publicKey = fs.readFileSync('jwtRSA256-public.pem','utf-8');
 
 const authMiddleWare = (req, res, next) => {
   //check that authorisation token is present in cookies
-  if(req.cookie?.access){
+  if(req.cookies?.access){
     const token = req.cookie.access
 
     jwt.verify(token,publicKey,{ algorithms: ['RS256'] },
