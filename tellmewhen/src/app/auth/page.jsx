@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 const AuthPage = () => {
     const [activeTab, setActiveTab] = useState('login');
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [businessName, setBusinessName] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -16,22 +16,15 @@ const AuthPage = () => {
     }
 
 
-    function handleLogin(){
-        Login(email, businessName, password).then((res) => {
-            if(res.status === 200)
+    async function handleLogin(name = username){
+        await Login(name, businessName, password).then((res) => {
+            if(res.status === 200 || res.data["message"] !== null || res.data["message"] !== undefined)
             {
-                if((localStorage["accessToken"] == undefined || localStorage["accessToken"] == "undefined")){
-                    setErrorMessage("Your credentials are incorrect.")
-                    setProcessingData(false);
-                }
-                else{
-                    console.log(res)
-                    window.location.href = '/dashboard';
-                    setErrorMessage("");
-                }
-                
+                window.location.href = '/dashboard';
+                setErrorMessage("");
             }
-            else if(res.status === 401){
+        }).catch((res) => {
+            if(res.status === 401){
                 setProcessingData(false);
                 setErrorMessage("Your credentials are incorrect.")
             }
@@ -43,17 +36,8 @@ const AuthPage = () => {
                 setProcessingData(false);
                 setErrorMessage("An error occurred while connecting to the server.")
             }
-        }).catch((res)=>{
-            if(res.status === 401){
-                setProcessingData(false);
-                setErrorMessage("Your credentials are incorrect.")
-            }
-            else{
-                setProcessingData(false);
-                setErrorMessage("An error occurred while connecting to the server.")
-            }
-            setProcessingData(false);
-        })
+        });
+
     }
     const handleSubmit = async (e) => {
         setProcessingData(true);
@@ -70,11 +54,12 @@ const AuthPage = () => {
                 handleLogin();
             }
             else {
-                Register(email, businessName, password).then((res) => {
+                Register(businessName, password).then((res) => {
                     setProcessingData(false);
                     if(res.status === 200)
                     {
-                        handleLogin();
+                        setUsername("admin");
+                        handleLogin("admin");
                     }
                     else if(res.status === 401 || res.status === 400){
                         setErrorMessage("A business with that name already exists")
@@ -162,17 +147,15 @@ const AuthPage = () => {
                             required
                         />
                     )}
-                    <input
-                        type="email"
-                        placeholder="Enter your email"
-                        style={styles.input}
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-
-                    
-
+                    {activeTab == "login" && 
+                        <input
+                            type="text"
+                            placeholder="Enter your username"
+                            style={styles.input}
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                        />}
                     <input
                         type="password"
                         placeholder="Enter your password"
@@ -186,17 +169,21 @@ const AuthPage = () => {
                     />
 
                     {activeTab === 'register' && (
-                        <input
-                            type="password"
-                            placeholder="Confirm your password"
-                            style={styles.input}
-                            value={confirmPassword}
-                            onChange={(e) => {
-                                setConfirmPassword(e.target.value);
-                                setErrorMessage('');
-                            }}
-                            required
-                        />
+                        <>
+                            <input
+                                type="password"
+                                placeholder="Confirm your password"
+                                style={styles.input}
+                                value={confirmPassword}
+                                onChange={(e) => {
+                                    setConfirmPassword(e.target.value);
+                                    setErrorMessage('');
+                                }}
+                                required
+                            />
+                            <h1 className="text-[12px] text-[#C41C1C]">* The default username will be "admin"</h1>
+                        </>
+                        
                     )}
 
                     <button type="submit" className={`${processingData?"animate-pulse":""} transition ease-in-out`} style={processingData ? styles.submitButtonDisabled:styles.submitButton} disabled={processingData}>

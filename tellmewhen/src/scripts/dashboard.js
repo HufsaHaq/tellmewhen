@@ -1,5 +1,5 @@
 import axios from "axios";
-
+axios.defaults.withCredentials = true;
 // PARTIALLY DONE
 export async function GetAllJobHistory(businessID, accessToken) {
     /*

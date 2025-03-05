@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Menu } from "@mui/icons-material";
 import { motion } from "framer-motion";
+import { ClearCookies } from "@/scripts/login";
 function Header() {
     // used to determine when the elements transition to the mobile/desktop versions
     const [windowWidth, SetWindowWidth] = useState(0);
@@ -14,12 +15,19 @@ function Header() {
 
     useEffect(() => {
         if(typeof window === "undefined") return;
-        SetLoggedIn((localStorage["accessToken"] !== undefined && localStorage["accessToken"] != "undefined") ? true : false);
+        SetLoggedIn(localStorage["loggedIn"] != "false" ? true : false);
         if (windowWidth > 1080 && NavigationOpen) SetNavigationOpen(false);
         SetWindowWidth(window.innerWidth);
 
     }, [windowWidth]);
 
+    async function HandleLogOut()
+    {
+        localStorage["loggedIn"] = false;
+        SetLoggedIn(false);
+        await ClearCookies();
+        window.location.href = "/auth";
+    }
     return (
         <>
             <div className="relative !z-[20] w-full top-[0px] h-[85px] bg-[#0A5397] shadow-lg">
@@ -53,12 +61,7 @@ function Header() {
                                 </button>
                                 <button
                                     className="bg-white px-[30px] py-[7px] text-[#0A5397] text-[17px] font-semibold rounded-md"
-                                    onClick={() => {
-                                        SetLoggedIn(false);
-                                        localStorage.removeItem("accessToken");
-                                        window.location.href="/auth";
-
-                                    }}
+                                    onClick={()=>HandleLogOut()}
                                 >
                                     Log Out
                                 </button>
@@ -124,11 +127,7 @@ function Header() {
                                     </span>
                                     <button
                                         className={`tablet500:right-[0px] tablet500:absolute max-tablet500:w-[100%] max-tablet500:mt-[15px] m-auto bg-white px-[30px] h-[40px] text-[17px] py-[7px] text-[#063660] font-semibold rounded-md mr-[50px]`}
-                                        onClick={() => {
-                                            SetLoggedIn(false);
-                                            localStorage.removeItem("accessToken");
-                                            window.location.href="/auth";
-                                        }}
+                                        onClick={()=>HandleLogOut()}
                                     >
                                         Log Out
                                     </button>

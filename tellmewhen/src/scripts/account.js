@@ -1,5 +1,5 @@
 import axios from "axios";
-
+axios.defaults.withCredentials = true;
 // DONE
 export async function GetNumberOfOpenJobs(businessID, accessToken) {
     /*
