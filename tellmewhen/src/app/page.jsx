@@ -41,7 +41,7 @@ function Page() {
           </div>
           <div className="md:w-1/2 flex justify-center">
             <div className="bg-gray-200 w-64 h-64 rounded-xl flex items-center justify-center">
-              [QR Code Demo]
+                <img src="qrdemo.png" alt="QR Demo" />
             </div>
           </div>
         </div>
