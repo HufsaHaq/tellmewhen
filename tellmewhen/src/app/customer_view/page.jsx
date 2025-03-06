@@ -13,35 +13,29 @@ function Page() {
     checkSubscriptionStatus();
   }, []);
 
-
   const checkSubscriptionStatus = async () => {
     if ("serviceWorker" in navigator) {
       const registration = await navigator.serviceWorker.ready;
       const subscription = await registration.pushManager.getSubscription();
       setNotificationsEnabled(!!subscription);
-    }
+    } 
   };
 
-  function urlB64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding)
-        .replace(/-/g, '+')
-        .replace(/_/g, '/');
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-
-    for (let i = 0; i < rawData.length; i++) {
-        outputArray[i] = rawData.charCodeAt(i);
+  const testNotification = async () => {
+    if (!("Notification" in window) || !("serviceWorker" in navigator)) {
+      alert("Notifications are not supported in this browser.");
+      return;
     }
-    return outputArray;
-  };
 
-  async function saveSubscription(subscription) {
-    let endpoint = localStorage["endpoint"];
-    const response = await fetch(endpoint + '/save-new-subscription',{
-        method:"POST",
-        headers:{ 'Content-type': 'application/json'},
-        body: JSON.stringify(subscription)
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      alert("Notification permission denied.");
+      return;
+    }
+
+    const registration = await navigator.serviceWorker.ready;
+    registration.showNotification("Test Notification", {
+      body: "This is a dummy notification for testing purposes.",
     });
   };
 
@@ -52,18 +46,15 @@ function Page() {
     }
 
     try {
-      // Register service worker
       const registration = await navigator.serviceWorker.register("/sw.js");
       console.log("Service Worker registered:", registration);
 
-      // Request notification permission
       const permission = await Notification.requestPermission();
       if (permission !== "granted") {
         alert("Push notifications permission denied.");
         return;
       }
 
-      // Subscribe to push notifications
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlB64ToUint8Array(
@@ -73,7 +64,6 @@ function Page() {
 
       console.log("Push Subscription:", subscription);
 
-      // Save subscription to backend
       await saveSubscription(subscription);
 
       setNotificationsEnabled(true);
@@ -110,6 +100,13 @@ function Page() {
           <p className="text-base text-gray-700">{text}</p>
         </div>
 
+        {/* Button to test notifications */}
+        <button
+          onClick={testNotification}
+          className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 mb-8"
+        >
+          Show Test Notification
+        </button>
 
         {/* Radio buttons to enable/disable notifications */}
         <div className="flex justify-center gap-8 mb-8">
