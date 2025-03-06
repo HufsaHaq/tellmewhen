@@ -333,7 +333,7 @@ const testFunctions = async () => {
   }
 };
 
-testFunctions();
+//testFunctions();
 
 export {
   addNotification,
