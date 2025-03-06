@@ -9,13 +9,12 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import webPush from 'web-push';
 import dotenv from 'dotenv';
-import { getJobHistory, getOpenJobs, getNotifications, closeDB, freezeUser, addToken, blockToken } from '../dbhelper.js';
+import { getJobHistory, getOpenJobs, getNotifications, closeDB, freezeUser, addToken, blockToken, addSubscription } from '../dbhelper.js';
 // import { sendNotification } from 'web-push'; 
 import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmin, getBusinessId, searchEmployees} from '../managementdbfunc.js';
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
 import { blackListToken, checkToken } from '../blacklist.js';
-import { token } from 'morgan';
-import { setUncaughtExceptionCaptureCallback } from 'process';
+import { decryptJobId } from '../qr_generation.js';
 
 dotenv.config('../')
 console.log(process.env.NODE_ENV)
@@ -57,8 +56,7 @@ indexRouter.post('/login', async (req, res) => {
   console.log(username)
 
   if(!(username||password)||!businessName){
-    res.status(400).json({message: "Missing fields from client"});
-    return 0;
+    return res.status(400).json({message: "Missing fields from client"});
   }
   
   const businessId = await getBusinessId(businessName);
@@ -190,8 +188,31 @@ indexRouter.post('/refresh', async(req,res) => {
 //save info about new Push-API subscription
 indexRouter.post('/save-new-subscription', async(req,res) => {
   // Extract info about subscription object
+  const notifcation = req.body;
+  const encryptedJobId = req.body.jobId;
+  const businessId = req.body.businessId;
 
-  //do db stuff
-  res.status(200).json({ message:'Subscription stored in db'})
+  //recover the actual job ID
+  const decryptJobId = decryptJobId(encryptedJobId);
+
+  //save subscription to DB
+  
+  await addSubscription(decryptJobId,businessId,notifcation.endpoint, notifcation.keys.auth, notifcation.keys.p256dh).
+  then(() => {
+    res.status(200).json({ message:'subscription succesfully saved' })
+  }).catch((err) =>{
+    res.status(500).json({error:err})
+  })
+  
+})
+//clear cookies
+indexRouter.post('/clearCookies', (req,res) =>{
+  //clear access and refresh tokens to log user out
+  try{
+    res.clearCookie('access')
+    res.clearCookie('refresh')
+  }catch (err){
+    res.status(500).json({ error:'err' })
+  }
 })
 export { indexRouter }; 
