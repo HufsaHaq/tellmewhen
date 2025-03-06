@@ -11,7 +11,7 @@ const publicKey = fs.readFileSync('jwtRSA256-public.pem','utf-8');
 const authMiddleWare = (req, res, next) => {
   //check that authorisation token is present in cookies
   if(req.cookies?.access){
-    const token = req.cookie.access
+    const token = req.cookies.access
 
     jwt.verify(token,publicKey,{ algorithms: ['RS256'] },
       (err,decoded) =>{ 
@@ -29,7 +29,7 @@ const authMiddleWare = (req, res, next) => {
 
 const adminMiddleWare = (req, res, next)=>{
   //passed from previous middleware
-  const privilege = req.body.privilege_level;
+  const privilege = req.user.role; // role not privilige !
   if(privilege != null){
   if(privilege === 1){
     next();
@@ -42,7 +42,7 @@ const adminMiddleWare = (req, res, next)=>{
 }
 
 const moderatorMiddleWare = (req, res, next)=>{
-  const privilege = req.body.privilege_level;
+  const privilege = req.user.role;
   if(privilege === 2 || privilege === 1){
     next();
   }else{
