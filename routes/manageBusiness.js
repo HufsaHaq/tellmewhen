@@ -3,13 +3,9 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import bycrpt from 'bcrypt';
 // db helper functions
-import { getJobHistory, getOpenJobs, getNotifications, closeDB } from '../dbhelper.js';
 import { countOpenJobs, editUserLogin, addUser,renameBusiness,changeBusinessPhoto, getBusinessDetails} from '../managementdbfunc.js';
 //middleware functions for encyrption, authentication and data integrity
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
-import { checkData } from '../datacheck.js';
-import { builtinModules } from 'module';
-import { error } from 'console';
 
 //provide path to .env file
 dotenv.config('../')
@@ -91,25 +87,48 @@ businessRouter.get('/search_employees', authMiddleWare, moderatorMiddleWare, asy
     // get info from db...
 })
 
-businessRouter.get('/total_jobs', authMiddleWare, async (req,res) => {
-    // return number of open jobs
+// return number of open jobs
+businessRouter.get('/total_jobs/:bid', authMiddleWare, async (req,res) => {
+    /* 
+    Returns the number of open jobs a business currently has on the platform
+    
+    Args:
+    (bid) businessId, the businesses id number
+    
+    Returns:
+    (200)OK: Json object with the number of open jobs 
+    (400)Bad request: the supplied business id is invalid
+    */
+
+    const buisnessId = req.params.bid;
+    await countOpenJobs(buisnessId).
+    then((result) => {
+        res.status(200).json({ message:result} )
+    }).catch((err) =>{
+        res.status(400).json( {error:err})
+    })
 })
 
-businessRouter.post('/addUser/:bid',authMiddleWare,adminMiddleWare,(req,res) =>{
-    const access_token = req.access_token;
+// adds new user to business
+businessRouter.post('/addUser/:bid',authMiddleWare,adminMiddleWare, async(req,res) =>{
+    // extract data from JSON request body
     const businessId = req.params.bid;
   
-    const name = req.body.name;
-    const email = req.body.email;
+    const username = req.bodyusername;
     const pwd = req.body.password;
     const privLevel = req.body.privLevel;
 
     // hash new password
     const hashedPassword = bycrpt.hash(pwd,10)
   
-    addUser(name, email, hashedPassword, businessId, privLevel)
+    await addUser(username, email, hashedPassword, businessId, privLevel).
+    catch((err) =>{
+        res.status(500).json({ error:`Database error occurred when adding user ${err}`});
+    }).then((result) => {
+        res.status(200).json({message:`New user added: username:${username} privillige level:${privLevel}`});
+    })
   
-    res.status(200).json({message:`New user added: username:${name} privillige level:${privLevel}`})
+    
   
   })
 

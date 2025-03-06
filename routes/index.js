@@ -53,7 +53,7 @@ indexRouter.post('/login', async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
-  console.log(username)
+
 
   if(!(username||password)||!businessName){
     return res.status(400).json({message: "Missing fields from client"});
@@ -61,19 +61,19 @@ indexRouter.post('/login', async (req, res) => {
   
   const businessId = await getBusinessId(businessName);
   // check the database for the user
+  console.log(`Business Name: ${businessName}\nBusinessID: ${businessId}`)
+
   const loginCredentials = await login(businessName,username)
   
   if (loginCredentials){
-    const privilige = loginCredentials.Privilege_level;
-    console.log(loginCredentials)
+    
     let isMatch = await bcrypt.compare(password, loginCredentials.Hashed_Password)
-    console.log(`Password Match: ${isMatch}`)
-    if (isMatch){
-      // get the workerId
-      const employeeInfo = await searchEmployees(username,businessId)
 
-      const workerId = employeeInfo[0].User_ID; 
-      console.log(workerId)
+    if (isMatch){
+      // prepare empolyee information for token
+      const workerId = loginCredentials.User_ID;
+      const privilige = loginCredentials.Privilege_level;
+      
 
       // create new jwt
       const accessToken = jwt.sign({ username: username, role: privilige, workerId:workerId  }, accessPrivateKey, { expiresIn: '1h', algorithm: 'RS256' })
@@ -188,6 +188,7 @@ indexRouter.post('/refresh', async(req,res) => {
 //save info about new Push-API subscription
 indexRouter.post('/save-new-subscription', async(req,res) => {
   // Extract info about subscription object
+  
   const notifcation = req.body;
   const encryptedJobId = req.body.jobId;
   const businessId = req.body.businessId;
@@ -213,6 +214,14 @@ indexRouter.post('/clearCookies', (req,res) =>{
     res.clearCookie('refresh')
   }catch (err){
     res.status(500).json({ error:'err' })
+  }
+})
+
+indexRouter.get('/adminTest',authMiddleWare, adminMiddleWare, (req,res)=>{
+  if(process.NODE_ENV === 'development'){
+  res.json({message:'congrats you are an admin'})
+  }else{
+    return res.status(500).json({error: 'invalid route'})
   }
 })
 export { indexRouter }; 
