@@ -1,21 +1,19 @@
-import express from 'express';
-import { StreamChat } from "stream-chat";
 import dotenv from "dotenv";
-import { chatRouter, generateBusinessToken, generateGuestToken, createJobChannel, streamChat } from 'chathelper.js';
-import { executeQuery } from './db.js';
+import { chatRouter, generateBusinessToken, generateGuestToken, createJobChannel, streamChat } from './chathelper.js';
+import { executeQuery } from '../db.js';
 // loads env
 dotenv.config("./");
 
-chatRouter.get("/worker/login/:userId", async (req, res) => {
+chatRouter.get("/worker/login/:userId/:businessId", async (req, res) => {
     try {
         const userId = req.params.userId;
-
+        const businessId = req.params.businessId;
         if (!userId) {
             return res.status(400).json({ message: "Invalid User ID" });
         }
 
-        const workerQuery = 'SELECT * FROM WORKER_TABLE WHERE User_ID = ?;';
-        const workerResult = await executeQuery(workerQuery, [userId]);
+        const workerQuery = 'SELECT * FROM WORKER_TABLE WHERE User_ID = ? AND Business_ID = ?;';
+        const workerResult = await executeQuery(workerQuery, [userId, businessId]);
 
         if (workerResult.length === 0) {
             return res.status(404).json({ message: "Worker not found" });
@@ -56,7 +54,7 @@ chatRouter.get("/worker/login/:userId", async (req, res) => {
 
 chatRouter.post("/create_user", async (req, res) => {
     try {
-        const { jobId } = req.body;
+        const jobId = req.body.jobId;
     
         // Validate input
         validateRequiredFields(["jobId"], req.body);
@@ -72,13 +70,13 @@ chatRouter.post("/create_user", async (req, res) => {
     }
 });
 
-chatRouter.post("/channels/create_channel", async (req, res) => {
+chatRouter.post("/channels/create_channel/:businessId", async (req, res) => {
     try {
         const jobId = req.body.jobId;
-        const businessUserId  = req.body.businessUserId;
+        const businessId = req.params.businessId;
 
         // Create the job channel
-        const channel = await createJobChannel(jobId, businessUserId);
+        const channel = await createJobChannel(jobId, businessId);
     
         console.log(`Channel for job ${jobId} created successfully`);
         res.status(200).json({ channel });

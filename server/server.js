@@ -60,4 +60,4 @@ app.use(cors({ origin: "*" }));
 // Routes
 app.use("/chat", chatRouter);
 
-app.listen({port: parseInt(process.env.PORT_CHAT)});
+app.listen({port: parseInt(process.env.PORT)});
