@@ -8,17 +8,17 @@ import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmi
 //middleware functions for encyrption, authentication and data integrity
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
 import { generate_qr, decryptJobId } from "../qr_generation.js";
-import { checkData } from '../datacheck.js';
-import { JWTClaimValidationFailed } from 'jose/errors';
+
 
 //provide path to .env file
 dotenv.config('../')
 
 const jobRouter = express.Router();
 
-jobRouter.get('/history/:bid',authMiddleWare, async (req, res) => {
+jobRouter.get('/history/:bid/:uid',authMiddleWare, async (req, res) => {
     const businessId = req.params.bid;
-    await getJobHistory(businessId)
+    const userId = req.params.userId
+    await getJobHistory(businessId,userId)
       .then((history) => res.json(history))
       .catch((err) => res.json({ error: err }));
 });
@@ -73,9 +73,11 @@ jobRouter.post('/new', authMiddleWare, async (req,res) => {
     // create new job in the db
     const jobData = req.body;
     const description = jobData.description;
-    const dueDate = jobData.dueDate
+    const dueDate = jobData.dueDate;
+    const userId = jobData.userId;
+    const businessId = jobData.businessId
     try{
-        const result = await createNewJob(description,dueDate);
+        const result = await createNewJob(businessId,userId,description,dueDate);
         //extract random job id
         const randomJobId = result.randomJobId;
         //generate qr code
@@ -85,7 +87,7 @@ jobRouter.post('/new', authMiddleWare, async (req,res) => {
             qrCode: qr_url
         })
     } catch (err) {
-        res.json({error : err})
+        res.status(500).json({error : err})
     }
 })
 
