@@ -86,4 +86,22 @@ chatRouter.post("/channels/create_channel/:businessId", async (req, res) => {
       }
 });
 
+chatRouter.delete("/channels/delete_channel", async (req, res) => {
+    try {
+        const { jobId } = req.body;
+
+        if (!jobId) {
+            return res.status(400).json({ message: "jobId is required" });
+        }
+
+        await deleteChannel(jobId);
+
+        console.log('Channel deleted');
+        res.status(200).json({ success: true, message: `Channel for job ${jobId} deleted` });
+    } catch (error) {
+        console.error("Error deleting channel:", error.message);
+        res.status(400).json({ message: "Internal server error" });
+    }
+});
+
 export { chatRouter };
