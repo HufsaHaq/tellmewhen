@@ -12,29 +12,23 @@ function urlB64ToUint8Array(base64String) {
     }
     return outputArray;
 }
+
 async function saveSubscription(subscription) {
     let endpoint = localStorage["endpoint"];
-    const response = await fetch(endpoint + '/save-new-subscription',{
-        method:"POST",
-        headers:{ 'Content-type': 'application/json'},
-        body: JSON.stringify(subscription)
-    })
+    const response = await fetch(endpoint + '/save-new-subscription', {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            ...subscription,
+            jobId: window.location.pathname.split('/').pop()
+        })
+    });
 }
+
 
 //subscribe to push service
 self.addEventListener("activate", async ()=>{
-
-    const subscription = await self.registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlB64ToUint8Array('BO9BkKD8IykLzyJ6djlVMziBKTtwIjhhVk_S-W_0gzfP2dC26ytBsDMSdngvT9rCd_0oX8jUGW_e54b_xEXr4LQ')
-    }).catch(err =>{
-        if(err){
-            console.log('Failed to subscribe',err)
-            return;
-        }
-    });
-    console.log(subscription);
-    saveSubscription(subscription);
+    console.log('Service worker registered')
 })
 
 
