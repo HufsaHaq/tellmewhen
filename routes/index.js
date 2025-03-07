@@ -7,20 +7,20 @@ import express from 'express';
 import fs from 'fs';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import webPush from 'web-push';
+
 import dotenv from 'dotenv';
 import { getJobHistory, getOpenJobs, getNotifications, closeDB, freezeUser, addToken, blockToken, addSubscription } from '../dbhelper.js';
-// import { sendNotification } from 'web-push'; 
 import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmin, getBusinessId, searchEmployees} from '../managementdbfunc.js';
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
 import { blackListToken, checkToken } from '../blacklist.js';
 import { decryptJobId } from '../qr_generation.js';
 
 dotenv.config('../')
-console.log(process.env.NODE_ENV)
+
 // set up the keys for authentication
 const accessPrivateKey = fs.readFileSync('jwtRSA256-private.pem','utf-8');
 const publicKey = fs.readFileSync('jwtRSA256-public.pem','utf-8');
+
 // set up keys for refresh
 const refreshPrivateKey = fs.readFileSync('refresh-private.pem');
 const refreshPublicKey = fs.readFileSync('refresh-public.pem');
@@ -41,13 +41,49 @@ const refreshCookieOptions = {
 
 const indexRouter = express.Router();
 
-/* GET home page. */
-indexRouter.get('/', function(req, res) {
-  res.render('index', { title: 'Express' });
-});
-  
+/**
+ * @route POST /login
+ * @description Authenticates a user and returns access & refresh tokens.
+ * @access Public
+ *
+ * @requestBody
+ * @param {string} req.body.name - The business name the user is associated with.
+ * @param {string} req.body.username - The username of the user attempting to log in.
+ * @param {string} req.body.password - The user's password.
+ *
+ * @response
+ * @returns {JSON} 200 - Successfully authenticated.
+ * - Cookies:
+ *   - `access` (HTTP-only, valid for 1 hour) - The access token.
+ *   - `refresh` (HTTP-only, valid for 1 day) - The refresh token.
+ * - JSON response:
+ *   ```json
+ *   {
+ *     "message": "access token and refresh cookie sent in cookies",
+ *     "userId": "<workerId>",
+ *     "businessId": "<businessId>"
+ *   }
+ *   ```
+ * @returns {JSON} 400 - Bad Request (Missing required fields).
+ * @returns {JSON} 401 - Unauthorized:
+ *   - `"Passwords do not match"` (Incorrect credentials).
+ *   - `"Unable to retrieve credentials from DB"` (User not found).
+ * @returns {JSON} 500 - Internal Server Error (Failed to store tokens in DB).
+ *
+ * @authentication
+ * - Uses **RS256 JWT tokens**:
+ *   - **Access Token** (1h expiry) includes:
+ *     - `username` - The user's username.
+ *     - `role` - The user's privilege level.
+ *     - `workerId` - The user’s unique ID.
+ *     - `businessId` - The business ID the user belongs to.
+ *   - **Refresh Token** (1d expiry) is signed separately for re-authentication.
+ *
+ * @notes
+ * - Tokens are stored in **HTTP-only cookies** for security.
+ * - Passwords are securely hashed and verified using **bcrypt**.
+ */
 indexRouter.post('/login', async (req, res) => {
-  // authenticate the user through their credentials and generate a JWT token
 
   const businessName = req.body.name;
   const username = req.body.username;
@@ -73,12 +109,29 @@ indexRouter.post('/login', async (req, res) => {
       // prepare empolyee information for token
       const workerId = loginCredentials.User_ID;
       const privilige = loginCredentials.Privilege_level;
+      const businessId = loginCredentials.Business_ID;
       
 
       // create new jwt
-      const accessToken = jwt.sign({ username: username, role: privilige, workerId:workerId  }, accessPrivateKey, { expiresIn: '1h', algorithm: 'RS256' })
+      const accessToken = jwt.sign({
+        username: username,
+        role: privilige,
+        workerId:workerId,
+        businessId:businessId 
+      },
+         accessPrivateKey,
+         {
+          expiresIn: '1h',
+          algorithm: 'RS256' 
+        });
       // create new refresh token
-      const refreshToken = jwt.sign({ username: username }, refreshPrivateKey, {expiresIn: '1d', algorithm: 'RS256' })
+      const refreshToken = jwt.sign({ 
+        username: username}, 
+        refreshPrivateKey, 
+        {expiresIn: '1d',
+          algorithm: 'RS256' 
+        });
+
       try{
         await addToken(loginCredentials.User_ID,accessToken);
         await addToken(loginCredentials.User_ID,refreshToken);
@@ -103,22 +156,36 @@ indexRouter.post('/login', async (req, res) => {
 });
 
 // register a new business and admin
+/**
+ * @route POST /register
+ * 
+ * @description Registers a new business with the service if one with its name does not already exist in our DB
+ * 
+ * @param {string} req.body.name - the name of the new business
+ * @param {string} req.body.username - the account username of the default admin 
+ * @param {string} req.password - the plaintext password of the default admin
+ * 
+ * Responses:
+ * - 201 (Created) if the new business registers successfully
+ * - 400 (Bad Request) if one or more of the request params are missing
+ * - 409 (Conflict) if a business with that name already exists in our DB
+ * Notes:
+ * - As the first user to register the business is the only user, they are admin by default
+ */
 indexRouter.post('/register', async (req, res) => {
   
   const name = req.body.name;
   const username = req.body.username;
   const password = req.body.password;
 
-  console.log(`Registering ${name}`)
-
   if(name && username && password){
 
     const hashedPassword = await bcrypt.hash(password, 10);
     registerBusinessAndAdmin(name, username, hashedPassword).then((attempt) => {
       if (attempt != null) {
-          res.status(200).json({ message: 'Success Business Registered' });
+          res.status(201).json({ message: 'Success Business Registered' });
       } else {
-          res.status(400).json({ message: 'Error registering business and admin' });
+          res.status(409).json({ error: err });
       }
   })
 
@@ -127,18 +194,36 @@ indexRouter.post('/register', async (req, res) => {
   }
 });
 
-//refresh the current access token using a refresh token
+/**
+ * @route POST /refresh
+ * 
+ * @description Refreshes a user's access token if they have a valid refresh token
+ * @access Public
+ * 
+ * @param {String} req.body.username - the user's account name
+ * @param {String} req.body.userId - the user's ID number
+ * 
+ * 
+ * @param {Object} res - Express request object
+ * @returns {JSON} 200 - User successfully authenticated
+ * @returns {JSON} 400 - Missing fields in request parameters
+ * @returns {JSON} 401 - Unauthorised request
+ * @returns {JSON} 403 - Forbidden
+ * @returns {JSON} 500 - Internal Server Error
+ */
 indexRouter.post('/refresh', async(req,res) => {
-  //check if refresh token is valid, if so then return a new access token
+  
 
   //extract request data
 
   const username = req.body.username;
-  const id = req.body.workerId;
+  const id = req.body.userId;
   // const privilegeLevel = req.body.privilegeLevel;
 
   if(req.cookies?.refresh){
+
     const token = req.cookies.refresh
+
     jwt.verify(token, refreshPublicKey,
       async(err,decoded) => {
         console.log(decoded)
@@ -175,7 +260,7 @@ indexRouter.post('/refresh', async(req,res) => {
             freezeUser(id) 
             blackListToken(token)
             
-            return res.status(406).json({message: 'The refresh token provided does not match the user'})
+            return res.status(403).json({message: 'The refresh token provided does not match the user'})
           }
       }
       }
@@ -185,11 +270,29 @@ indexRouter.post('/refresh', async(req,res) => {
     res.status(406).json({ message: "Unauthorised, no refresh token provided. Please sign out and login again"})
   }
 })
-//save info about new Push-API subscription
+
+
+/**
+ * @route POST /save-new-subscription
+ * @acces Public
+ * 
+ * @description Stores a new PUSH-API subscription in the DB, needed to send a notification
+ * 
+ * @param {Object} req - express request object
+ * @param {String} req.body.endpoint - the web-push endpoint
+ * @param {JSONWebKeySet} req.body.keys - authentication key pair
+ * @param {String} req.body.encryptedJobId - the encrypted Job Id as appears in the user url
+ * @param {Int} req.body.businessId - the business ID of the business responsible for the job
+ * 
+ * @param {Object} res - express response object
+ * @return {JSON} 201 - subscription successfully saved
+ * @return {JSON} 500 - internal server error
+ */
 indexRouter.post('/save-new-subscription', async(req,res) => {
-  // Extract info about subscription object
   
-  const notifcation = req.body;
+  
+  const endpoint = req.body.endpoint;
+  const keys = req.body.keys;
   const encryptedJobId = req.body.jobId;
   const businessId = req.body.businessId;
 
@@ -197,31 +300,59 @@ indexRouter.post('/save-new-subscription', async(req,res) => {
   const decryptJobId = decryptJobId(encryptedJobId);
 
   //save subscription to DB
-  
-  await addSubscription(decryptJobId,businessId,notifcation.endpoint, notifcation.keys.auth, notifcation.keys.p256dh).
-  then(() => {
-    res.status(200).json({ message:'subscription succesfully saved' })
-  }).catch((err) =>{
+  try{
+
+    await addSubscription(decryptJobId,businessId,endpoint, keys.auth, keys.p256dh)
+
+  }catch(err){
+
     res.status(500).json({error:err})
-  })
+
+  }
   
 })
-//clear cookies
+/**
+ * @route POST /clearCookies
+ * @access Public
+ * 
+ * @description Clears the http-Only cookies set by the server
+ * 
+ * @param {Object} res - express response object
+ * @return {JSON} 204 - No content, cookies have been cleared
+ * @return {JSON} 500 - Internal Server Error
+ */
 indexRouter.post('/clearCookies', (req,res) =>{
   //clear access and refresh tokens to log user out
   try{
-    res.clearCookie('access')
-    res.clearCookie('refresh')
+    res.clearCookie('access');
+    res.clearCookie('refresh');
   }catch (err){
-    res.status(500).json({ error:'err' })
+    return res.status(500).json({ error:'err' });
   }
+
+  return res.sendStatus(204);
 })
 
+
+/**
+ * @route /adminTest
+ * @access Dev-only/Admin
+ * 
+ * @description Tests the admin token decoding. Only for use in development
+ * 
+ * @param {Object} res - express response object
+ * @returns {JSON} 200 - returns businessId if user is admin
+ * @returns {JSON} 500 - Invalid route 
+ */
 indexRouter.get('/adminTest',authMiddleWare, adminMiddleWare, (req,res)=>{
-  if(process.NODE_ENV === 'development'){
-  res.json({message:'congrats you are an admin'})
+  if(process.env.NODE_ENV === 'development'){
+
+    res.json({message:`congrats you are an admin for business with id: ${req.user.businessId}`});
+
   }else{
+
     return res.status(500).json({error: 'invalid route'})
+
   }
 })
 export { indexRouter }; 
