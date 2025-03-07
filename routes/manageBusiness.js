@@ -30,11 +30,11 @@ const businessRouter = express.Router();
 * 
 */ 
 businessRouter.get('/info', authMiddleWare, async (req,res) =>{
-    const buisnessId = req.user.buisnessId;
+    const businessId = req.user.businessId;
 
     let data;
     try{
-        data = await getBusinessDetails(buisnessId);
+        data = await getBusinessDetails(businessId);
     } catch (err) {
         res.status(500).json( {error:err});
     }
@@ -106,7 +106,7 @@ businessRouter.post('/change_password', authMiddleWare, adminMiddleWare, async (
 businessRouter.post('/change_name', authMiddleWare,adminMiddleWare, async (req,res) =>{
 
     const newName = req.body.name;
-    const businessId = req.user.buisnessId;
+    const businessId = req.user.businessId;
 
     try{
         await renameBusiness(businessId,newName);
@@ -205,7 +205,7 @@ businessRouter.get('/total_jobs/', authMiddleWare, async (req,res) => {
      * - `authMiddleWare`: Verifies the JWT and attaches the decoded token to req.user
      * 
      * Request Context (Injected by middleware)
-     * @param req.user.buisnessId - The ID number of the business to which the user belongs
+     * @param req.user.businessId - The ID number of the business to which the user belongs
      * 
      * @returns
      * - 200 (OK) if the number of jobs can be counted from the DB records
