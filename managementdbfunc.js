@@ -224,11 +224,11 @@ export const searchEmployees = async (searchTerm, businessId,limit = null) => {
     if(searchTerm){
 
       params.push(['%${searchTerm}%', searchTerm, businessId]);
-      sql = sql + `AND (Username LIKE ? OR User_ID = ?)`
+      sql = sql + 'AND (Username LIKE ? OR User_ID = ?)'
 
     }if(limit){
 
-      sql = sql + `LIMIT ?`
+      sql = sql + 'LIMIT ?'
       params.push(limit)
       
     }
@@ -261,8 +261,16 @@ export const getBusinessDetails = async (businessId) => {
 
 // Rename a business
 export const renameBusiness = async (businessId, newName) => {
-  const sql = 'UPDATE BUSINESS_TABLE SET Business_Name = ? WHERE Business_ID = ?;';
-  return executeQuery(sql, [newName, businessId]);
+      const checkNameQuery = 'SELECT Business_ID FROM BUSINESS_TABLE WHERE Business_Name = ?;';
+      const existingBusiness = await executeQuery(checkNameQuery, [newName]);
+
+      // If a business with the new name already exists (and it's not the current business)
+      if (existingBusiness.length > 0 && existingBusiness[0].Business_ID !== businessId) {
+          //throw new Error("Business name already exists. Please choose a different name.");
+          return null;
+      }
+      const updateQuery = 'UPDATE BUSINESS_TABLE SET Business_Name = ? WHERE Business_ID = ?;';
+      return executeQuery(updateQuery, [newName, businessId]);
 };
 
 // Change business photo
