@@ -1,5 +1,7 @@
 import axios from "axios";
 axios.defaults.withCredentials = true;
+let endpoint = localStorage["endpoint"];
+
 export async function Login(name, businessName, password)
 {
     let data = null;
@@ -42,5 +44,20 @@ export async function ClearCookies()
 {
     let data = null;
     let base = localStorage["endpoint"];
-    await axios.post(base + "/clear-cookies");
+    await axios.post(base + "/clearCookies").then(res => data = res);
+    return data;
+}
+
+export async function RefreshToken() 
+{
+    // Refreshes an expired access token
+    let data = null;
+    let base = localStorage["endpoint"]
+    await axios.post(base + "/refresh",
+        {
+            username: localStorage["username"],
+            id: localStorage["userID"]
+        }
+    ).then(res => data = res)
+    return data;
 }
