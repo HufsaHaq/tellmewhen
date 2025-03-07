@@ -147,7 +147,7 @@ const deletefromjobhistorytable = async (jobId) => {
 //----------------------------------------------------------------
 const getJobDetails = async (jobId) => {
   const sql = `
-    SELECT Job_ID, Description, Due_Date
+    SELECT Job_ID, Description, Due_Date, User_ID
     FROM JOB_TABLE
     WHERE Job_ID = ?;
   `;
