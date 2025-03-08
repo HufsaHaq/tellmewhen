@@ -35,7 +35,7 @@ export const executeQuery = (sql, params = []) =>
 });
 
 export const createbusiness = async () => {
-  const sql = `CREATE TABLE IF NOT EXISTS BUSINESS_TABLE (Business_ID INT AUTO_INCREMENT PRIMARY KEY,Business_Name VARCHAR(255) ,Business_Photo VARCHAR(255));`;
+  const sql = `CREATE TABLE IF NOT EXISTS BUSINESS_TABLE (Business_ID INT AUTO_INCREMENT PRIMARY KEY,Business_Name VARCHAR(255) ,Business_Photo LONGTEXT);`;
 
   return executeQuery(sql);
 
