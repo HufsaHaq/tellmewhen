@@ -11,11 +11,12 @@ import { Button, Tab, Tabs, TabList, tabClasses, Select, Option, IconButton } fr
 import { Add, CloseRounded } from "@mui/icons-material";
 import Pagination from "@/components/Pagination";
 import React from "react";
-import { AssignJobToEmployee, GetAllJobHistory } from "@/scripts/dashboard";
+import { AssignJobToEmployee, CreateJob, GetAllJobHistory, GetCurrentJobs, GetJobHistory } from "@/scripts/dashboard";
 import JobCreation from "@/components/Dashboard/JobCreation";
 import CurrentJobDetail from "@/components/Dashboard/CurrentJobDetail";
 import FinishJobModal from "@/components/Dashboard/FinishJob";
 import HistoryJobDetailModal from "@/components/Dashboard/HistoryJobDetail";
+import PageLoad from "@/components/PageLoad";
 
 function Page() {
     let colours = {
@@ -91,7 +92,11 @@ function Page() {
     //Changes the title of the web page
     if (typeof window !== "undefined") document.title = "Dashboard | Tell Me When";
 
+    const [hidePage, setHidePage] = useState(true);
+    
     useEffect(() => {
+        // Sorts the formatting of the table for displayed rows
+
         let startIndex = (PageNumber - 1) * (RowsCount == null ? 0 : RowsCount);
         let endIndex = PageNumber * (RowsCount == null ? 0 : RowsCount);
         SetDisplayedTableData([]);
@@ -100,7 +105,7 @@ function Page() {
         let tempArray = [];
         if (CurrentIndex == 0) {
             // On the "Current" Page
-            if (CurrentTableData == null) {
+            if (CurrentTableData == null || CurrentTableData.length == 0 || CurrentTableData == []) {
                 return;
             }
             if (RowsCount == null) {
@@ -115,7 +120,7 @@ function Page() {
             SetDisplayedTableData(tempArray);
         } else if (CurrentIndex == 1) {
             // On the "History" Page
-            if (HistoryTableData == null) {
+            if (HistoryTableData == null || HistoryTableData.length == 0) {
                 return;
             }
             if (RowsCount == null) {
@@ -131,48 +136,34 @@ function Page() {
         } else {
             throw new Error("Error parsing table data for table " + CurrentIndex);
         }
+        console.log(DisplayedTableData)
     }, [RowsCount, PageNumber, CurrentIndex, HistoryTableData, CurrentTableData]);
 
-    const fetchTableData = async() =>{
-        const businessId = localStorage["businessId"];
-        const accessToken = localStorage["accessToken"];
-
-        try {
-            const res = await GetAllJobHistory(businessId, accessToken);
-            if(res.status === 200){
-                setErrorMessage('');
-            }
-            else if(res.status === 500 || res.status === null || res === null || res === 404) {
-                setErrorMessage("An error occurred while connecting to the server.");
-            }
-            else {
-                setErrorMessage("An unknown error occurred.")
-            }
-        }
-        catch(error){
-            setErrorMessage("Ann error occurred while connecting to the server.")
-        }
-    };
-
     useEffect(() => {
-        //Code below will run when the page is initially loaded
+        if(typeof window !== undefined && !(localStorage["loggedIn"] != true && localStorage["userID"] != null || localStorage["businessID"] != null)) window.location.href = "/auth";
+        else setHidePage(false);
 
-        //  TO-DO: ADD API CALLS
-
-        // TEMPORARY DATA BELOW FOR TESTING PURPOSES
-        SetHistoryTableData([]);
-        SetCurrentTableData([]);
-        let tempArr = [];
-        let tempArr2 = [];
-        for (let i = 0; i < 50; i++) {
-            tempArr.push(["ID" + (i + 1), "Job Description " + (i + 1), "" + (i + 1) + " hours", ""]);
-        }
-        SetCurrentTableData(tempArr);
-        for (let i = 0; i < 50; i++) {
-            tempArr2.push(["ID" + (i + 51), "User" + (i + 1), "Completed this job, This is the job " + (i + 1), i + 1 + " hours ago"]);
-        }
-
-        SetHistoryTableData(tempArr2);
+        const CallAPI = async() =>{
+            try {
+                const res = await GetCurrentJobs();
+                if(res.status === 200){
+                    SetCurrentTableData(res.data)
+                }
+            }
+            catch(error){
+                console.log(error);
+            }
+            try {
+                const res = await GetJobHistory();
+                if(res.status === 200){
+                    SetHistoryTableData(res.data)
+                }
+            }
+            catch(error){
+                console.log(error);
+            }
+        };
+        CallAPI();
     }, []);
 
     //Function to open the modal
@@ -187,16 +178,16 @@ function Page() {
 
     //Function to handle the confirm button in the modal
     const handleConfirmModal = async() => {
-        const newJob = ["ID" + (CurrentTableData.length + 1), formData.description, formData.deadline, formData.status, formData.worker];
+        //const newJob = ["ID" + (CurrentTableData.length + 1), formData.description, formData.deadline, formData.status, formData.worker];
         const businessId = localStorage["businessId"];
         const accessToken = localStorage["accessToken"];
         const employeeID = formData.worker;
 
         try {
-            const res = await AssignJobToEmployee(businessId, employeeID , accessToken);
+            const res = await CreateJob(formData.description, formData.deadline, localStorage["userID"]);
 
             if(res.status === 200) {
-                SetCurrentTableData([...CurrentTableData, newJob]);
+                //SetCurrentTableData([...CurrentTableData, newJob]);
                 setErrorMessageAssign('');
                 setIsCreationModalOpen(false);
                 setFormData({ description: "", deadline: "", status: "", worker: "" });
@@ -213,6 +204,7 @@ function Page() {
             }
         }
         catch (error) {
+            console.log(error);
             setErrorMessageAssign("Ann error occurred while connecting to the server.");
         }
     };
@@ -311,6 +303,7 @@ function Page() {
         setIsHistoryModalOpen(false);
     };
 
+    if(hidePage) return <PageLoad></PageLoad>
     return (
         <div className={"page-content max-tablet620:w-[90%] tablet620:w-[80%] m-auto"}>
             {/* Span element is for the controls above the table (Switcher and Button) to keep them inline*/}
@@ -427,7 +420,7 @@ function Page() {
                         </tr>
                     </thead>
                     <tbody className="overflow-visible">
-                        {DisplayedTableData.map((item1, index1) => {
+                        {typeof DisplayedTableData != "string" && DisplayedTableData.map((item1, index1) => {
                             return (
                                 <tr
                                     key={index1}

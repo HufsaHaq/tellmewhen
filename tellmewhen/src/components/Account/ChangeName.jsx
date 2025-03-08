@@ -82,6 +82,7 @@ function ChangeName({ isOpen, businessName, errorMessage, onClose, onSave }) {
                                     variant="solid"
                                     color="primary"
                                     className="max-tablet620:w-full min-w-[100px] px-4 py-2"
+                                    type="submit"
                                 >
                                     Save
                                 </Button>

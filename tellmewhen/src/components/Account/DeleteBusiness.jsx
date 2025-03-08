@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@mui/joy";
 
-function DeleteBusiness({ isOpen, errorMessageDelete, onClose, onDelete }) {
+function DeleteBusinessModal({ isOpen, errorMessageDelete, onClose, onDelete }) {
 
     if (!isOpen) return null;
 
@@ -33,4 +33,4 @@ function DeleteBusiness({ isOpen, errorMessageDelete, onClose, onDelete }) {
     );
 }
 
-export default DeleteBusiness;
+export default DeleteBusinessModal;

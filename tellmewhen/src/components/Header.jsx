@@ -24,6 +24,8 @@ function Header() {
     async function HandleLogOut()
     {
         localStorage["loggedIn"] = false;
+        localStorage.removeItem("businessID");
+        localStorage.removeItem("userID");
         SetLoggedIn(false);
         await ClearCookies();
         window.location.href = "/auth";

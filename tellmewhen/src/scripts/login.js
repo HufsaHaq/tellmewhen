@@ -1,6 +1,5 @@
 import axios from "axios";
 axios.defaults.withCredentials = true;
-let endpoint = localStorage["endpoint"];
 
 export async function Login(name, businessName, password)
 {
@@ -33,8 +32,8 @@ export async function Register(username, password)
             username: "admin",
             password: password
         }
-    ).then(res => {
-        data = res
+    ).then(async res => {
+        data = res;
     })
     return data;
 
@@ -55,9 +54,25 @@ export async function RefreshToken()
     let base = localStorage["endpoint"]
     await axios.post(base + "/refresh",
         {
-            username: localStorage["username"],
+            username: "admin",
             id: localStorage["userID"]
         }
     ).then(res => data = res)
     return data;
+}
+
+export async function HandleUnauthorised()
+{
+    let tryRefresh = await RefreshToken();
+    if(tryRefresh.status === 200)
+    {
+        console.log("hhh")
+        return true;
+
+    }
+    else
+    {
+        window.location.href = "/auth";
+        return false;
+    }
 }
