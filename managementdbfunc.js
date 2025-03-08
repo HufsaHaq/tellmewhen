@@ -149,22 +149,28 @@ export const editUserLogin = async (workerId, Username, newPassword) => {
 // Delete business account and all associated accounts
 export const deleteBusiness = async (businessId) => {
   const sqlJobHistory = 'DELETE FROM JOB_HISTORY WHERE Business_ID = ?;';
+
   const sqlJobTable = 'DELETE FROM JOB_TABLE WHERE Business_ID = ?;';
-  const sqlSubscriptionTable = 'DELETE FROM SUBSCRIPTION_TABLE WHERE Business_ID = ?;';
-  const sqlNotifications = 'DELETE FROM NOTIFICATIONS WHERE Business_ID = ?;';
+
+  const sqlSubscriptionTable = 'DELETE FROM SUBSCRIPTION_TABLE WHERE Job_ID IN (SELECT Job_ID FROM JOB_TABLE WHERE Business_ID = ?);';
+
+  const sqlNotifications = 'DELETE FROM NOTIFICATIONS WHERE User_ID IN (SELECT User_ID FROM WORKER_TABLE WHERE Business_ID = ?);';
+ 
   const sqlTokens = 'DELETE FROM TOKENS WHERE User_ID IN (SELECT User_ID FROM WORKER_TABLE WHERE Business_ID = ?);';
+  
   const sqlWorkers = 'DELETE FROM WORKER_TABLE WHERE Business_ID = ?;';
+  
   const sqlBusiness = 'DELETE FROM BUSINESS_TABLE WHERE Business_ID = ?;';
 
   try {
+    // Delete related records in SUBSCRIPTION_TABLE
+    await executeQuery(sqlSubscriptionTable, [businessId]);
+
     // Delete related records in JOB_HISTORY
     await executeQuery(sqlJobHistory, [businessId]);
 
     // Delete related records in JOB_TABLE
     await executeQuery(sqlJobTable, [businessId]);
-
-    // Delete related records in SUBSCRIPTION_TABLE
-    await executeQuery(sqlSubscriptionTable, [businessId]);
 
     // Delete related records in NOTIFICATIONS
     await executeQuery(sqlNotifications, [businessId]);
@@ -219,7 +225,7 @@ export const countTotalJobs = async (businessId) => {
 
 export const searchEmployees = async (searchTerm, businessId,limit = null) => {
     const sql = 'SELECT * FROM WORKER_TABLE WHERE Business_ID = ?;';
-    params = [businessId]
+    let params = [businessId]
 
     if(searchTerm){
 
