@@ -143,7 +143,7 @@ businessRouter.post('/change_photo', authMiddleWare,adminMiddleWare, async (req,
     const newPhoto = req.body.newPhoto;
 
     try{
-        await changeBusinessPhoto(newPhoto);
+        await changeBusinessPhoto(req.user.businessId, newPhoto);
     } catch (err) {
         res.status(500).json( { error: err } );
     }
