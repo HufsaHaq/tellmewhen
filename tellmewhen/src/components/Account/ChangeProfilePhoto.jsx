@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@mui/joy";
 import { Input } from "@mui/joy";
-
+import imageCompression from "browser-image-compression";
 function ChangeProfilePhoto({isOpen, profilePhoto, errorMessage, onClose, onSave}) {
 
 	const [image, setImage] = useState(null);
 	const [previewImage, setPreviewImage] = useState(null);
 
-	const handleImageChange = (event) => {
-		const file = event.target.files[0];
-	    if (file) {
-		    setPreviewImage(URL.createObjectURL(file)); 
+	const imgOptions = {
+		maxSizeMB: 1,
+		maxWidthOrHeight: 256,
+		useWebWorker: true,
+	}
+	
+	const handleImageChange = async (event) => {
+		const input = event.target.files[0];
+	    if (input) {
+			setPreviewImage(URL.createObjectURL(input)); 
+			const file = await imageCompression(input, imgOptions);
 
 		    const reader = new FileReader();
 		    reader.onloadend = () => {

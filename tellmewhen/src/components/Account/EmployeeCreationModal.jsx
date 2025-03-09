@@ -13,15 +13,21 @@ const EmployeeCreationModal = ({ isOpen, onClose, onConfirm, existingEmployees }
     if (!isOpen) return null;
 
     const [name, setName] = useState("");
-    const [employeeId, setEmployeeId] = useState("");
+    const [password1, setPassword1] = useState("");
+    const [password2, setPassword2] = useState("");
     const [role, setRole] = useState("");
 
+    const PrivilegeLookup = {
+        "Admin": 1,
+        "Manager": 2,
+        "Employee": 3,
+    }
     // Validate Name (Only Letters)
-    const isValidName = /^[a-zA-Z\s]+$/.test(name) || name === "";
+    const isValidName = name === "";
 
     const handleCreate = () => {
         // Check if ID is unique
-        const isDuplicateId = existingEmployees.some(emp => emp[1] === employeeId);
+        /*const isDuplicateId = existingEmployees.some(emp => emp[1] === password);
 
         if (isDuplicateId) {
             alert("Employee ID must be unique.");
@@ -31,15 +37,33 @@ const EmployeeCreationModal = ({ isOpen, onClose, onConfirm, existingEmployees }
         if (!isValidName) {
             alert("Name should contain only letters.");
             return;
-        }
+        }*/
 
+        if(password1 === "" || password2 === "" || password1 !== password2)
+        {
+            alert("Invalid Password");
+            return
+        }
+        if(name === "")
+        {
+            alert("Username must not blank");
+            return
+        }
+        console.log(role)
+        if(role != "Admin" && role != "Manager" && role != "Employee")
+        {
+            alert("Invalid Privileges")
+            return
+        }
+        let privilegelvl = PrivilegeLookup[role];
         // Create and pass the new employee array
-        const newEmployee = [name, employeeId, role];
+        const newEmployee = [name, password1, privilegelvl];
         onConfirm(newEmployee);
 
         // Reset fields
         setName("");
-        setEmployeeId("");
+        setPassword1("");
+        setPassword2("");
         setRole("");
     };
 
@@ -51,33 +75,41 @@ const EmployeeCreationModal = ({ isOpen, onClose, onConfirm, existingEmployees }
                 {/* Name Input */}
                 <div className="mb-4">
                     <label htmlFor="name" className="block text-gray-700 font-medium mb-2">
-                        Name:
+                        Username:
                     </label>
                     <input
                         type="text"
                         id="name"
-                        placeholder="Enter employee name"
+                        placeholder="Enter username"
                         className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />
-                    {!isValidName && <p className="text-red-500 text-sm">Only letters are allowed.</p>}
+                    {name==="" && <p className="text-red-500 text-sm">Username cannot be blank.</p>}
                 </div>
 
                 {/* Employee ID Input */}
-                <div className="mb-4">
-                    <label htmlFor="employeeId" className="block text-gray-700 font-medium mb-2">
-                        Employee ID:
+                <div className="mb-4 space-y-3">
+                    <label htmlFor="password1" className="block text-gray-700 font-medium mb-2">
+                        Password:
                     </label>
                     <input
-                        type="text"
-                        id="employeeId"
-                        placeholder="Enter employee ID"
+                        type="password"
+                        id="password1"
+                        placeholder="Enter Password"
                         className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        value={employeeId}
-                        onChange={(e) => setEmployeeId(e.target.value)}
+                        value={password1}
+                        onChange={(e) => setPassword1(e.target.value)}
                     />
-                    {!employeeId && <p className="text-red-500 text-sm">Employee ID is required.</p>}
+                    <input
+                        type="password"
+                        id="password2"
+                        placeholder="Confirm Password"
+                        className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value={password2}
+                        onChange={(e) => setPassword2(e.target.value)}
+                    />
+                    {(password1 !== password2) && password1 !== "" && <p className="text-red-500 text-sm">Passwords do not match</p>}
                 </div>
 
                 {/* Role Selection (Dropdown) */}
@@ -112,7 +144,7 @@ const EmployeeCreationModal = ({ isOpen, onClose, onConfirm, existingEmployees }
                         variant="solid"
                         color="primary"
                         className="px-4 min-w-[100px] py-2"
-                        disabled={!name || !employeeId || !role}
+                        disabled={!name || !password1 || !password2 || !role || (password1 !== password2)}
                     >
                         Create Employee
                     </Button>

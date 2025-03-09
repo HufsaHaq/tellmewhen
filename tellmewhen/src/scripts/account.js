@@ -84,7 +84,7 @@ export async function DeleteBusiness()
 {
     // Deletes the whole business
     let endpoint = localStorage["endpoint"];
-    await axios.post(endpoint + "/delete/" + localStorage["businessID"]).then((res) => { data = res })
+    await axios.post(endpoint + "/delete/" + localStorage["businessID"], {timeout: 5000}).then((res) => { data = res })
 }
 
 export async function CreateEmployee(username, password, privilege)
@@ -92,11 +92,12 @@ export async function CreateEmployee(username, password, privilege)
     // This will create a new employee
     let data = null;
     let endpoint = localStorage["endpoint"];
+    console.log(username, password, privilege);
     await axios.post(
         endpoint + "/business/addUser",
         {
             username: username,
-            pwd: password,
+            password: password,
             privLevel: privilege,
         }
     ).then((res) => { data = res })

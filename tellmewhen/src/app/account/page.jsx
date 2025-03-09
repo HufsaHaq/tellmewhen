@@ -17,6 +17,7 @@ import { Leaderboard, Numbers, NotificationsActive } from "@mui/icons-material"
 
 import {
     ChangeBusinessPhoto,
+    CreateEmployee,
     DeleteBusiness,
     GetAccountDetails,
     GetCurrentJobCount,
@@ -26,17 +27,25 @@ import {
 } from "@/scripts/account";
 
 import PageLoad from "@/components/PageLoad";
+import { ClearCookies } from "@/scripts/login";
 const PrivilegeLookup = {
     1: "Admin",
     2: "Manager",
     3: "Employee",
 }
 function Account() {
+
+
+    // THIS WILL PREVENT UNAUTHORISED ACCESS WHEN DISABLED WITH THE BACKEND
+    // SET TO TRUE TO USE WITHOUT BACKEND
+    const DEBUGMODE = true; 
+
+
     // Used for scaling the UI
     const WindowBoundaries = [1080, 620];
     const [windowWidth, SetWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1920);
     const [windowHeight, SetWindowHeight] = useState(typeof window !== "undefined" ? window.innerHeight : 1080);
-    const [hidePage, setHidePage] = useState(false); //SET TO TRUE WHEN NOT DEBUGGING
+    const [hidePage, setHidePage] = useState(!DEBUGMODE); //SET TO TRUE WHEN NOT DEBUGGING
     if (typeof window !== "undefined") window.addEventListener("resize", () => {
         SetWindowWidth(window.innerWidth);
         SetWindowHeight(window.innerHeight);
@@ -54,7 +63,7 @@ function Account() {
     }, [windowWidth, windowHeight, SideMenuOpen])
 
     useEffect(() => {
-        if (typeof window !== undefined && !(localStorage["loggedIn"] != true && localStorage["userID"] != null || localStorage["businessID"] != null)) window.location.href = "/auth";
+        if (typeof window !== undefined && !DEBUGMODE && !(localStorage["loggedIn"] != true && localStorage["userID"] != null || localStorage["businessID"] != null)) window.location.href = "/auth";
 
 
         async function CallAPI() {
@@ -155,25 +164,23 @@ function Account() {
     const handleDeleteBusiness = async () => {
         try {
             const res = await DeleteBusiness();
-
-            if (res.status === 200) {
-                setErrorMessageDelete("");
-                setIsDeleteBusinessOpen(false);
-                window.location.href = '/auth';
+            console.log(res);
+            if(res.status === 500)
+            {
+                setErrorMessageDelete("Failed to delete business. Please try again later.");
+                return;
             }
-            else if (res.status === 401) {
-                setErrorMessageDelete("Unauthorized request. Please log in to make changes");
-                window.location.href = '/auth';
-            }
-            else if (res.status === 500 || res.status === null || res === null || res === 404) {
-                setErrorMessageDelete("An error occurred while connecting to the server.");
-            }
-            else {
-                setErrorMessageDelete("An unknown error occurred.");
+            else{
+                ClearCookies()
+                localStorage.removeItem("loggedIn")
+                localStorage.removeItem("userID")
+                localStorage.removeItem("businessID")
+                window.location.href="/auth"
             }
         }
         catch (error) {
-            setErrorMessageDelete("An error occurred while connecting to the server.");
+            console.log(error)
+            setErrorMessageDelete("Failed to delete business. Please try again later.");
         }
     };
 
@@ -184,28 +191,31 @@ function Account() {
         }
 
 
-        try {
             const res = await ChangeBusinessPhoto(newImage);
-
+            console.log(res)
             if (res.status === 200) {
                 setProfilePhoto(newImage);
                 setErrorMessagePhoto("");
-                setIsChangeProfilePhotoOpen("false");
+                setIsChangeProfilePhotoOpen(false);
             }
+
             else if (res.status === 401) {
                 setErrorMessagePhoto("Unauthorized request. Please log in to make changes");
                 window.location.href = '/auth';
             }
+            else if(res.status === 413)
+            {
+                setErrorMessagePhoto("Image size too large");
+
+            }
             else if (res.status === 500 || res.status === null || res === null || res === 404) {
                 setErrorMessagePhoto("An error occurred while connecting to the server.");
             }
-            else {
-                setErrorMessagePhoto("An unknown error occurred.");
+            else
+            {
+                setErrorMessagePhoto("An error occurred while connecting to the server.");
             }
-        }
-        catch (error) {
-            setErrorMessagePhoto("An error occurred while connecting to the server.");
-        }
+    
     };
 
     const handleSavePassword = (newPassword) => {
@@ -218,9 +228,13 @@ function Account() {
     const [isEmployeeCreationModalOpen, setIsEmployeeCreationModalOpen] = useState(false);
 
     // When user confirms creation in the modal:
-    const handleEmployeeConfirm = (newEmployee) => {
-        SetEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
-        setIsEmployeeCreationModalOpen(false);
+    const handleEmployeeConfirm = async (newEmployee) => {
+        let res = await CreateEmployee(newEmployee[0], newEmployee[1], newEmployee[2]);
+        if(res.status === 201)
+        {
+            SetEmployees((prevEmployees) => [...prevEmployees, [newEmployee[0], newEmployee[1], PrivilegeLookup[newEmployee[2]]]]);
+            setIsEmployeeCreationModalOpen(false);
+        }
     };
 
     // ================= Employee details =================

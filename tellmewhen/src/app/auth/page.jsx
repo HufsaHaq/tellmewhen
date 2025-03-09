@@ -1,5 +1,5 @@
 'use client'
-import { Login, Register } from '@/scripts/login';
+import { ClearCookies, Login, Register } from '@/scripts/login';
 import React, { useState } from 'react';
 
 const AuthPage = () => {
@@ -17,13 +17,16 @@ const AuthPage = () => {
 
 
     async function handleLogin(name = username){
+        ClearCookies();
         await Login(name, businessName, password).then((res) => {
+            console.log(res);
             if(res.status === 200 || res.data["message"] !== null || res.data["message"] !== undefined)
             {
                 window.location.href = '/dashboard';
                 setErrorMessage("");
             }
         }).catch((res) => {
+            console.log(res)
             if(res.status === 401){
                 setProcessingData(false);
                 setErrorMessage("Your credentials are incorrect.")
@@ -56,7 +59,7 @@ const AuthPage = () => {
             else {
                 Register(businessName, password).then((res) => {
                     setProcessingData(false);
-                    if(res.status === 200)
+                    if(res.status === 200 || res.status === 201)
                     {
                         setUsername("admin");
                         handleLogin("admin");
