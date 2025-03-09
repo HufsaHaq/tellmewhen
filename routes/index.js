@@ -83,6 +83,7 @@ const indexRouter = express.Router();
  * - Tokens are stored in **HTTP-only cookies** for security.
  * - Passwords are securely hashed and verified using **bcrypt**.
  */
+
 indexRouter.post('/login', async (req, res) => {
 
   const businessName = req.body.name;

@@ -256,22 +256,28 @@ businessRouter.post('/addUser/',authMiddleWare,adminMiddleWare, async(req,res) =
     * 
     * @returns
     * - 201 (Created) if the new worker account has been created successfully
+    * - 400 (Bad request) if there are missing fields
     * - 401 (Unauthorised) if a non admin account tries to add a new worker
     * - 500 (Internal Server Error) if the new worker account fails to be added to the db
     
     */
-    const businessId = req.user.Business_ID;
-  
+    const businessId = req.user.businessId;
+
     const username = req.body.username;
     const pwd = req.body.password;
     const privLevel = req.body.privLevel;
 
+    if(!(username&&pwd&&privLevel)){
+        
+        return res.sendStatus(400)
+    }
+
     // hash new password
-    const hashedPassword = bycrpt.hash(pwd,10);
+    const hashedPassword = await bycrpt.hash(pwd,10);
 
     try{
 
-        await addUser(username, email, hashedPassword, businessId, privLevel);
+        await addUser(username, hashedPassword, businessId, privLevel);
 
     }catch(err){
 
