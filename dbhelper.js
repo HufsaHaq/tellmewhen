@@ -36,7 +36,7 @@ const execute = (sql, params = []) =>
     
 const addNotification = async (userId, jobId, notificationContent) => {
     let sql = `INSERT INTO NOTIFICATIONS (User_ID, Job_ID, Notification_Content) VALUES (?, ?, ?);`;
-    return executeQuery(sql, [userId, jobId, notificationContent]);
+    return execute(sql, [userId, jobId, notificationContent]);
     };
   
 // jobs per user or all jobs if no user ID 
@@ -98,10 +98,10 @@ const generateUniqueJobId = async () => {
       WHERE Job_ID = ?;
     `;
 
-    const jobTableResult = await executeQuery(checkJobTableSql, [random_job_id]);
-    const historyTableResult = await executeQuery(checkHistoryTableSql, [random_job_id]);
+    const jobTableResult = await execute(checkJobTableSql, [random_job_id]);
+    const historyTableResult = await execute(checkHistoryTableSql, [random_job_id]);
 
-    if (jobTableResult[0].count === 0 && historyTableResult[0].count === 0) {
+    if (JSON.parse(jobTableResult)[0]["count"] == 0 && JSON.parse(historyTableResult)[0]["count"] == 0) {
       isUnique = true;
     }
   }
@@ -118,7 +118,7 @@ const createNewJob = async (businessId, userId = null, description, dueDate) => 
       VALUES (?, ?, ?, ?, ?);
     `;
 
-    const result = await executeQuery(sql, [randomJobId, businessId, userId, description, dueDate]);
+    const result = await execute(sql, [randomJobId, businessId, userId, description, dueDate]);
     console.log('New job created with ID:', randomJobId);
     return {
       result: result,
@@ -130,7 +130,7 @@ const deletefromjobtable = async (jobId) => {
     DELETE FROM JOB_TABLE
     WHERE Job_ID =?;
   `;
-  return executeQuery(sql, [jobId]);
+  return execute(sql, [jobId]);
   console.log('Job deleted with ID:', jobId);
 };
 
@@ -139,7 +139,7 @@ const deletefromjobhistorytable = async (jobId) => {
     DELETE FROM JOB_HISTORY
     WHERE Job_ID =?;
   `;
-  return executeQuery(sql, [jobId]);
+  return execute(sql, [jobId]);
   console.log('Job history deleted with ID:', jobId);
 };
 
