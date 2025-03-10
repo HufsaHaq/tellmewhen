@@ -14,6 +14,7 @@ import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmi
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
 import { blackListToken, checkToken } from '../blacklist.js';
 import { decryptJobId } from '../qr_generation.js';
+import { businessRouter } from './manageBusiness.js';
 
 dotenv.config('../')
 
@@ -86,74 +87,84 @@ const indexRouter = express.Router();
 
 indexRouter.post('/login', async (req, res) => {
 
-  const businessName = req.body.name;
-  const username = req.body.username;
-  const password = req.body.password;
+    const businessName = req.body.name;
+    const username = req.body.username;
+    const password = req.body.password;
 
 
 
-  if(!(username||password)||!businessName){
-    return res.status(400).json({message: "Missing fields from client"});
-  }
-  
-  const businessId = await getBusinessId(businessName);
-  // check the database for the user
-  console.log(`Business Name: ${businessName}\nBusinessID: ${businessId}`)
-
-  const loginCredentials = await login(businessName,username)
-  
-  if (loginCredentials){
-    
-    let isMatch = await bcrypt.compare(password, loginCredentials.Hashed_Password)
-
-    if (isMatch){
-      // prepare empolyee information for token
-      const workerId = loginCredentials.User_ID;
-      const privilige = loginCredentials.Privilege_level;
-      const businessId = loginCredentials.Business_ID;
-      
-
-      // create new jwt
-      const accessToken = jwt.sign({
-        username: username,
-        role: privilige,
-        workerId:workerId,
-        businessId:businessId 
-      },
-         accessPrivateKey,
-         {
-          expiresIn: '1h',
-          algorithm: 'RS256' 
-        });
-      // create new refresh token
-      const refreshToken = jwt.sign({ 
-        username: username}, 
-        refreshPrivateKey, 
-        {expiresIn: '1d',
-          algorithm: 'RS256' 
-        });
-
-      try{
-        await addToken(loginCredentials.User_ID,accessToken);
-        await addToken(loginCredentials.User_ID,refreshToken);
-      }catch(err){
-        console.log(`Error when populating tokens: ${err}`)
-        res.status(500).json({ message:'Unable to append tokens to db'})
-      }
-      res.status(200).cookie('access',accessToken,accessCookieOptions).
-      cookie('refresh',refreshToken,refreshCookieOptions).
-      json({message:'access token and refresh cookie sent in cookies',
-        userId: workerId,
-        businessId : businessId
-
-      });
-    }else{
-      res.status(401).json({error: "Passwords do not match"});
+    if(!(username||password)||!businessName){
+        return res.status(400).json({message: "Missing fields from client"});
     }
-  }else{
-    res.status(401).json({error: "Unable to retrieve credentials from DB"});
-  }
+  
+    const businessId = await getBusinessId(businessName);
+    // check the database for the user
+    console.log(`Business Name: ${businessName}\nBusinessID: ${businessId}`)
 
+    const loginCredentials = await login(businessName,username)
+  
+    if (loginCredentials){
+    
+        let isMatch = await bcrypt.compare(password, loginCredentials.Hashed_Password)
+
+        if (isMatch){
+            // prepare empolyee information for token
+            const workerId = loginCredentials.User_ID;
+            const privilige = loginCredentials.Privilege_level;
+            const businessId = loginCredentials.Business_ID;
+
+            // create new jwt
+            const accessToken = jwt.sign({
+                username: username,
+                role: privilige,
+                workerId:workerId,
+                businessId:businessId 
+                },
+                    accessPrivateKey,
+                {
+                    expiresIn: '1h',
+                    algorithm: 'RS256' 
+            });
+            // create new refresh token
+            const refreshToken = jwt.sign({ 
+                username: username,
+                businessId: businessId
+                }, 
+                refreshPrivateKey, 
+                {
+                    expiresIn: '1d',
+                    algorithm: 'RS256' 
+            });
+
+            try{
+
+                await addToken(loginCredentials.User_ID,accessToken);
+                await addToken(loginCredentials.User_ID,refreshToken);
+
+            }catch(err){
+
+                console.log(`Error when populating tokens: ${err}`)
+                res.status(500).json({ message:'Unable to append tokens to db'})
+            }
+
+            return res.status(200).
+            cookie('access',accessToken,accessCookieOptions).
+            cookie('refresh',refreshToken,refreshCookieOptions).
+            json({message:'access token and refresh cookie sent in cookies',
+            userId: workerId,
+            businessId : businessId
+            });
+        }else{
+
+        return res.status(401).json({error: "Passwords do not match"});
+
+    }
+
+    }else{
+        
+        return res.status(500).json({error: "Unable to retrieve credentials from DB"});
+
+    }
 });
 
 // register a new business and admin
@@ -182,9 +193,9 @@ indexRouter.post('/register', async (req, res) => {
   if(name && username && password){
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    registerBusinessAndAdmin(name, username, hashedPassword).then((attempt) => {
+    await registerBusinessAndAdmin(name, username, hashedPassword).then((attempt) => {
       if (attempt != null) {
-          res.status(201).json({ message: 'Success Business Registered' });
+          res.status(201).json({ message: 'Success, Business Registered' });
       } else {
           res.status(409).json({ error: err });
       }
@@ -205,8 +216,8 @@ indexRouter.post('/register', async (req, res) => {
  * @param {String} req.body.userId - the user's ID number
  * 
  * 
- * @param {Object} res - Express request object
- * @returns {JSON} 200 - User successfully authenticated
+ * @param {Object} req - Express request object
+ * @returns {JSON} 201 - Created new tokens
  * @returns {JSON} 400 - Missing fields in request parameters
  * @returns {JSON} 401 - Unauthorised request
  * @returns {JSON} 403 - Forbidden
@@ -215,60 +226,96 @@ indexRouter.post('/register', async (req, res) => {
 indexRouter.post('/refresh', async(req,res) => {
   
 
-  //extract request data
+    //extract request data
 
-  const username = req.body.username;
-  const id = req.body.userId;
-  // const privilegeLevel = req.body.privilegeLevel;
+    const username = req.body.username;
+    const id = req.body.userId;
+    // const privilegeLevel = req.body.privilegeLevel;
 
-  if(req.cookies?.refresh){
+    if(req.cookies?.refresh){
 
-    const token = req.cookies.refresh
+        const token = req.cookies.refresh
 
-    jwt.verify(token, refreshPublicKey,
-      async(err,decoded) => {
-        console.log(decoded)
-        if (err) {
-          // Wrong Refesh Token
-          return res.status(406).json({ message: 'Error in decoding' });
-      }
-      else {
-        //Check wether the token has been blacklisted
-        console.log(`REFRESH TOKEN:${token}`)
-        const validToken = await checkToken(token)
-
-        if(!validToken){
-          await freezeUser(id);
-          return res.status(400).json({ message:"Invalid token used"});
+        jwt.verify(token, refreshPublicKey,
+        async(err,decoded) => {
+            console.log(decoded)
+            if (err) {
+            // Wrong Refesh Token
+            return res.status(406).json({ message: 'Error in decoding' });
         }
-          // Correct token we send a new access token
-          if(decoded.username === username){
+        else {
+            //Check wether the token has been blacklisted
+            const validToken = await checkToken(token)
 
-            const accessToken = jwt.sign({ username:username, workerId: id, privilegeLevel:1 }, accessPrivateKey, {expiresIn: '1hr',algorithm:'RS256'});
-            const newRefreshToken = jwt.sign({ username:username }, refreshPrivateKey, {expiresIn:'1d',algorithm:'RS256'});
-            // add new token to db
-            await addToken(id, newRefreshToken);
-            // blacklist used token
-            await blackListToken(token);
-            //return new tokens to client
-            return res.status(200).cookie('access',accessToken,accessCookieOptions).
-            cookie('refresh',newRefreshToken,refreshCookieOptions).
-            json({message:"New token generated"})
+            if(!validToken){
 
-          }else{
+                await freezeUser(id);
+                return res.status(400).json({ message:"Invalid token used"});
 
-            //logs user out
-            freezeUser(id) 
-            blackListToken(token)
-            
-            return res.status(403).json({message: 'The refresh token provided does not match the user'})
-          }
-      }
-      }
-    )
+            }
+            // Correct token we send a new access token
+            if(decoded.username === username){  
+                //look up user in DB 
+                const businessId = decoded.businessId;
+                try{
 
-  }else{
-    res.status(406).json({ message: "Unauthorised, no refresh token provided. Please sign out and login again"})
+                    const user_data = await searchEmployees(username,businessId);
+                    console.log(user_data[0].Privilege_level);
+
+                    const accessToken = jwt.sign({ 
+                        username:username, 
+                        workerId: id,
+                        role:user_data[0].Privilege_level,
+                        businessId: businessId
+                    },
+                        accessPrivateKey,
+                    {
+                        expiresIn: '1hr',
+                        algorithm:'RS256'
+                    });
+
+                    const newRefreshToken = jwt.sign({ 
+                        username:username,
+                        businessId:businessId 
+                    }, 
+                        refreshPrivateKey, 
+                    {
+                        expiresIn:'1d',
+                        algorithm:'RS256'
+                    });
+
+                    // add new token to db
+                    await addToken(id, newRefreshToken);
+                    // blacklist old  token
+                    await blackListToken(token);
+                    //return new tokens to client
+                    return res.status(201).
+                    cookie('access',accessToken,accessCookieOptions).
+                    cookie('refresh',newRefreshToken,refreshCookieOptions).
+                    json({message:"New tokens generated"});
+
+                }catch(err){
+
+                    return res.status(500).json({ error:'Error whilst looking up DB' });
+
+                }
+
+            }else{
+
+                //logs user out
+                freezeUser(id) 
+                blackListToken(token)
+                
+                return res.status(403).json({message: 'The refresh token provided does not match the user'})
+            }
+        }
+        }
+        )
+
+    }else{
+
+        return res.status(406).json({ message: "Unauthorised, no refresh token provided. Please sign out and login again"});
+
   }
 })
 

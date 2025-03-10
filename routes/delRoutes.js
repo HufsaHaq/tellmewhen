@@ -46,16 +46,14 @@ deletionRouter.post("/:bid",authMiddleWare,adminMiddleWare, async(req,res) =>{
 
 })
 // Delete a worker from a business
-deletionRouter.post('/user/:uid',authMiddleWare, adminMiddleWare, async(req,res) =>{
-    /**
-     * POST /user/:uid
+/**
+     * @route POST /user/:uid
+     * @access Admin
      * 
-     * Deletes a user from the business database and revokes their access & refresh token
-     * to maintain application security.
-     * 
-     * Middleware:
-     * - `authMiddleWare`: Verifies the JWT and attaches the decoded token to req.user
-     * - `adminMiddleWare`: Verfies the user has admin priviliges
+     * @description Deletes a user from the business database and revokes their access & refresh token
+     *
+     * @middleware authMiddleWare: Verifies the JWT and attaches the decoded token to req.user
+     * @middleware adminMiddleWare: Verfies the user has admin priviliges
      * 
      * Request Parameters:
      * @param {string} req.params.uid - The user ID of the worker being deleted.
@@ -69,6 +67,8 @@ deletionRouter.post('/user/:uid',authMiddleWare, adminMiddleWare, async(req,res)
      * - 409 (Conflict) if a user tries to delete themselves.
      * - 401 (Unauthorized) if a non-admin account tries to delete a user.
      */
+deletionRouter.post('/user/:uid',authMiddleWare, adminMiddleWare, async(req,res) =>{
+    
     const userId = req.params.uid;
 
     const currentId = req.user.User_ID;

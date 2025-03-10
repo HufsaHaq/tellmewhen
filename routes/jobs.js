@@ -340,8 +340,7 @@ jobRouter.post('/new', authMiddleWare, async (req,res) => {
  * @returns {JSON} 500 - Internal Server Error. If an error occurs while updating the DB record
  */
 jobRouter.post('/complete/:jid',authMiddleWare, async (req,res) =>{
-    const encryptedJobId = req.params.job_id;
-    const jobId = decryptJobId(encryptedJobId);
+    const jobId = req.params.job_id;
     //extract JSON data from request 
     const data = req.body.body
     const userId = data.uid

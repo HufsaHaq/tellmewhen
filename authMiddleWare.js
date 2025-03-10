@@ -8,45 +8,51 @@ import fs from 'fs';
 
 const publicKey = fs.readFileSync('jwtRSA256-public.pem','utf-8');
 
-const authMiddleWare = (req, res, next) => {
-  //check that authorisation token is present in cookies
-  if(req.cookies?.access){
-    const token = req.cookies.access
+const authMiddleWare = async(req, res, next) => {
+    //check that authorisation token is present in cookies
+    if(req.cookies?.access){
+        const token = req.cookies.access
 
-    jwt.verify(token,publicKey,{ algorithms: ['RS256'] },
-      (err,decoded) =>{ 
-        if(err){
-          return res.status(400).json({ message:`Unable to verify token: ${err}`})
-        }else{
-          req.user = decoded;
-          next();
-        }
-        })
-  }else{
-    return res.status(401).json( {message:'No token provided'})
-  }
-};
+        await jwt.verify(token,publicKey,{ algorithms: ['RS256'] },
+            (err,decoded) =>{ 
+            if(err){
+                return res.status(400).json({ message:`Unable to verify token: ${err}`})
+            }else{
+                req.user = decoded;
+                next();
+            }
+            })
+    }else{
 
-const adminMiddleWare = (req, res, next)=>{
-  //passed from previous middleware
-  const privilege = req.user.role; // role not privilige !
-  if(privilege != null){
-  if(privilege === 1){
-    next();
-  }else{
-    res.status(401).json({ message: "Unauthorized: Invalid privilege level" });
-  }
-  }else{
-    return res.status(401).json({ message: "Unauthorized: No privilige level assigned"})
-  }
+        return res.status(401).json( {message:'No token provided'});
+
+    }
 }
 
+const adminMiddleWare = (req, res, next)=>{
+    //passed from previous middleware
+    const privilege = req.user.role; // role not privilige !
+    if(privilege != null){
+        if(privilege === 1){
+            next();
+        }else{
+
+            return res.status(401).json({ message: "Unauthorized: Invalid privilege level" });
+
+        }
+    }else{
+        
+        return res.status(401).json({ message: "Unauthorized: No privilige level assigned"});
+
+        }
+    }
+
 const moderatorMiddleWare = (req, res, next)=>{
-  const privilege = req.user.role;
-  if(privilege === 2 || privilege === 1){
-    next();
-  }else{
-    res.status(401).json({ message: "Unauthorized: Invalid privilege level" });
-  }
+    const privilege = req.user.role;
+    if(privilege === 2 || privilege === 1){
+        next();
+    }else{
+        return res.status(401).json({ message: "Unauthorized: Invalid privilege level" });
+    }
 }
 export { authMiddleWare, moderatorMiddleWare, adminMiddleWare};

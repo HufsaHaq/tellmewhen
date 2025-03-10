@@ -222,24 +222,40 @@ export const countTotalJobs = async (businessId) => {
     throw error; 
   }
 };
-
+/**
+ * @description Returns administrative information about employees registered under the business
+ * @param {String} searchTerm 
+ * @param {Int} businessId 
+ * @param {Int} limit 
+ * @returns {JSON} - JSON object containing the results
+ * 
+ * ```json 
+ * {
+ *     "User_ID":<user ID>,
+ *     "Username":<username>,
+ *     "Business_ID":<business ID>,
+ *     "Privilige_level":<role>
+ * }
+ * ```
+ */
 export const searchEmployees = async (searchTerm, businessId,limit = null) => {
-    const sql = 'SELECT * FROM WORKER_TABLE WHERE Business_ID = ?;';
+    var sql = 'SELECT * FROM WORKER_TABLE WHERE Business_ID = ?';
     let params = [businessId]
 
     if(searchTerm){
 
-      params.push(['%${searchTerm}%', searchTerm, businessId]);
-      sql = sql + 'AND (Username LIKE ? OR User_ID = ?)'
+        params.push(`%${searchTerm}%`, searchTerm, businessId);
+        sql = sql + ' AND (Username LIKE ? OR User_ID = ?)'
 
-    }if(limit){
+    }
+    if(limit){
 
-      sql = sql + 'LIMIT ?'
-      params.push(limit)
+        sql = sql + ' LIMIT ?'
+        params.push(limit)
       
     }
-
-    return executeQuery(sql, params);
+    sql = sql + ';'
+    return await executeQuery(sql, params);
 };
 
 // Change privilege levels
