@@ -53,7 +53,7 @@ const getOpenJobs = async (businessId, userId = null) => {
     sql += ' AND JOB_TABLE.User_ID = ?';
     params.push(userId);
   }
-
+  console.log(`SQL: ${sql} with params, ${params}`)
   return execute(sql, params);
 };
 
@@ -117,7 +117,6 @@ const createNewJob = async (businessId, userId = null, description, dueDate) => 
       INSERT INTO JOB_TABLE (Job_ID, Business_ID, User_ID, Description, Due_Date)
       VALUES (?, ?, ?, ?, ?);
     `;
-
     const result = await execute(sql, [randomJobId, businessId, userId, description, dueDate]);
     console.log('New job created with ID:', randomJobId);
     return {

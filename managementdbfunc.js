@@ -85,13 +85,13 @@ export const registerBusinessAndAdmin = async (businessName, username, password)
 
     const businessId = businessResult.insertId;
     
-    const insertAdminSql = 'INSERT INTO WORKER_TABLE (Username, Hashed_Password, Business_ID, Privilege_level) VALUES (?, ?, ?, ?);';
+    const insertAdminSql = 'INSERT INTO WORKER_TABLE (Username, Hashed_Password, Business_ID, Role) VALUES (?, ?, ?, ?);';
     
     return await executeQuery(insertAdminSql, [
       username, 
       password, 
       businessId, 
-      1 // Privilege level 1 = admin2s
+      1 // Role level 1 = admin2s
     ]);
 
   } catch (error) {
@@ -101,16 +101,16 @@ export const registerBusinessAndAdmin = async (businessName, username, password)
 };
 
 // Add worker/manager/admin
-export const addUser = async (username, hashedPassword, businessId, privilegeLevel) => {
-  const sql = 'INSERT INTO WORKER_TABLE (Username, Hashed_Password, Business_ID, Privilege_level) VALUES (?, ?, ?, ?);';
-  return executeQuery(sql, [username, hashedPassword, businessId, privilegeLevel]);
+export const addUser = async (username, hashedPassword, businessId, role) => {
+  const sql = 'INSERT INTO WORKER_TABLE (Username, Hashed_Password, Business_ID, Role) VALUES (?, ?, ?, ?);';
+  return executeQuery(sql, [username, hashedPassword, businessId,role]);
 };
 
 // Delete worker/manager/admin
 export const deleteUser = async (workerId, currID) => {
   // find admin in the same business as the user being deleted
   const bid = 'SELECT Business_ID FROM WORKER_TABLE WHERE User_ID = ?;';
-  const findAdminSQL = 'SELECT User_ID FROM WORKER_TABLE WHERE Business_ID = ? AND Privilege_level = 1 LIMIT 1;'
+  const findAdminSQL = 'SELECT User_ID FROM WORKER_TABLE WHERE Business_ID = ? AND Role = 1 LIMIT 1;'
 
   // reassign all open jobs from the user being deleted to the admin
   const reassignJobsSQL = 'UPDATE JOB_TABLE SET User_ID = ? WHERE User_ID = ?;';
@@ -234,7 +234,7 @@ export const countTotalJobs = async (businessId) => {
  *     "User_ID":<user ID>,
  *     "Username":<username>,
  *     "Business_ID":<business ID>,
- *     "Privilige_level":<role>
+ *     "Role":<role>
  * }
  * ```
  */
@@ -258,10 +258,10 @@ export const searchEmployees = async (searchTerm, businessId,limit = null) => {
     return await executeQuery(sql, params);
 };
 
-// Change privilege levels
-export const changePrivilegeLevel = async (workerId, newPrivilegeLevel) => {
-  const sql = 'UPDATE WORKER_TABLE SET Privilege_level = ? WHERE User_ID = ?;';
-  return executeQuery(sql, [newPrivilegeLevel, workerId]);
+// Change Role
+export const changeRole = async (workerId, newRole) => {
+  const sql = 'UPDATE WORKER_TABLE SET Role = ? WHERE User_ID = ?;';
+  return executeQuery(sql, [newRole, workerId]);
 };
 
 // Get business name and photo
@@ -358,9 +358,9 @@ const testFunctions = async () => {
     const employees = await searchEmployees('JohnDoe');
     console.log('Employees found:', employees);
 
-    // Change privilege level
-    await changePrivilegeLevel(2, 1);
-    console.log('Privilege level updated.');
+    // Change role
+    await changeRole(2, 1);
+    console.log('Role updated.');
   } catch (err) {
     console.error('Error:', err.message);
   } finally {

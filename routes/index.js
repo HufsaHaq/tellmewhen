@@ -110,13 +110,13 @@ indexRouter.post('/login', async (req, res) => {
         if (isMatch){
             // prepare empolyee information for token
             const workerId = loginCredentials.User_ID;
-            const privilige = loginCredentials.Privilege_level;
+            const role = loginCredentials.Role;
             const businessId = loginCredentials.Business_ID;
 
             // create new jwt
             const accessToken = jwt.sign({
                 username: username,
-                role: privilige,
+                role: role,
                 workerId:workerId,
                 businessId:businessId 
                 },
@@ -265,7 +265,7 @@ indexRouter.post('/refresh', async(req,res) => {
                     const accessToken = jwt.sign({ 
                         username:username, 
                         workerId: id,
-                        role:user_data[0].Privilege_level,
+                        role:user_data[0].Role,
                         businessId: businessId
                     },
                         accessPrivateKey,

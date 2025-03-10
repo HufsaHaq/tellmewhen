@@ -42,7 +42,7 @@ export const createbusiness = async () => {
 };
 
 export const createworker = async () => {
-  const sql =     `CREATE TABLE IF NOT EXISTS WORKER_TABLE (User_ID INT AUTO_INCREMENT PRIMARY KEY,Username VARCHAR(255) NOT NULL,Business_ID INT,Privilege_level INT,Hashed_Password VARCHAR(255) NOT NULL,FOREIGN KEY (Business_ID) REFERENCES BUSINESS_TABLE(Business_ID));`;
+  const sql =     `CREATE TABLE IF NOT EXISTS WORKER_TABLE (User_ID INT AUTO_INCREMENT PRIMARY KEY,Username VARCHAR(255) NOT NULL,Business_ID INT,Role INT,Hashed_Password VARCHAR(255) NOT NULL,FOREIGN KEY (Business_ID) REFERENCES BUSINESS_TABLE(Business_ID));`;
 
   return executeQuery(sql);
 
@@ -122,33 +122,34 @@ export const populateDatabase = async () => {
     
       // Insert into WORKER_TABLE
       const workerResult = await executeQuery(
-          "INSERT INTO WORKER_TABLE (Username, Business_ID, Privilege_level, Hashed_Password) VALUES (?, ?, ?, ?)",
+          "INSERT INTO WORKER_TABLE (Username, Business_ID,Role, Hashed_Password) VALUES (?, ?, ?, ?)",
           ['johndoe', businessId, 1, 'hashed_password']
       );
       const workerId = workerResult.insertId;
-      /*
+      
       // Insert into JOB_TABLE
-      
+      /*
       await executeQuery(
-          "INSERT INTO JOB_TABLE (Job_ID, Business_ID, Description, URL, Due_Date) VALUES (?,?,?, ?, ?)",
-          ['9', 2,'Fix server issues', 'https://techcorp.com/job/1', '2025-03-01 12:00:00']
+          "INSERT INTO JOB_TABLE (Job_ID, Business_ID, Description, Due_Date) VALUES (?,?,?, ?)",
+          ['9', 2,'Fix server issues', '2025-03-01 12:00:00']
       );
-      
+       
       await executeQuery(
-        "INSERT INTO JOB_TABLE (Job_ID,  Business_ID,Description, URL, Due_Date) VALUES (?,?,?, ?, ?)",
-        ['202',3,'Fix server issues', 'https://techcorp.com/job/1', '2025-03-01 12:00:00']
+        "INSERT INTO JOB_TABLE (Job_ID,  Business_ID,Description, Due_Date) VALUES (?,?,?,?)",
+        ['202',3,'Fix server issues','2025-03-01 12:00:00']
       );
-     
+    
       await executeQuery(
-        "INSERT INTO JOB_TABLE (Job_ID, Business_ID,Description, URL, Due_Date) VALUES (?,?,?, ?, ?)",
-        ['228', 2,'Fix server issues', 'https://techcorp.com/job/1', '2025-03-01 12:00:00']
+        "INSERT INTO JOB_TABLE (Job_ID, Business_ID,Description, Due_Date) VALUES (?,?, ?, ?)",
+        ['228', 2,'Fix server issues', '2025-03-01 12:00:00']
       );
       
       await executeQuery(
         "INSERT INTO JOB_HISTORY (User_ID, Job_ID, Business_ID, Completion_Date, Remarks) VALUES (?, ?, ?, ?, ?)",
-        [workerId, '202','2', '2025-02-01 18:00:00', 'https://techcorp.com/job/1']
+        [workerId, '202','2', '2025-02-01 18:00:00','Job Done']
       );
-      
+     
+      */
       // Insert into JOB_HISTORY
       await executeQuery(
           "INSERT INTO JOB_HISTORY (User_ID, Job_ID, Business_ID, Completion_Date, Remarks) VALUES (?, ?, ?, ?, ?)",
@@ -160,7 +161,7 @@ export const populateDatabase = async () => {
         [workerId, '228', '2','2025-02-01 18:00:00', 'Job completed successfully']
       );
       
-      */
+      
       // Insert into SUBSCRIPTION_TABLE
       await executeQuery(
           "INSERT INTO SUBSCRIPTION_TABLE (Endpoint, Auth_Key1, Auth_Key2, Job_ID) VALUES (?, ?, ?, ?)",
@@ -185,20 +186,20 @@ export const populateDatabase = async () => {
 //run create func
 
 (async () => {
-  // await deleteNotificationstable();
-  // await deleteSubscriptionstable();
-  // await deletejobhistorytable();
-  // await deletejobstable();
-  // await deleteTokensTable();
-  // await deleteWorkerstable();
-  // await deleteBusinesstable();
-  await createbusiness();
-  await createworker(); 
-  await createTokensTable();
-  await createjob();
-  await createjobhistory();
-  await createsubscription_table();
-  await createnotification();
-  //await populateDatabase(); 
+//   await deleteNotificationstable();
+//   await deleteSubscriptionstable();
+//   await deletejobhistorytable();
+//   await deletejobstable();
+//   await deleteTokensTable();
+//   await deleteWorkerstable();
+//   await deleteBusinesstable();
+//   await createbusiness();
+//   await createworker(); 
+//   await createTokensTable();
+//   await createjob();
+//   await createjobhistory();
+//   await createsubscription_table();
+//   await createnotification();
+//   await populateDatabase(); 
 })();
 

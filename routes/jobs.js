@@ -193,13 +193,14 @@ jobRouter.get('/current/:uid',authMiddleWare, async (req, res) => {
 
     const businessId = req.user.businessId;
     const userId = req.params.uid;
+    console.log(userId)
     
     let result;
     try{
 
-      result = await getOpenJobs(businessId,userId); // returns a JSON object
+        result = await getOpenJobs(businessId,userId); // returns a JSON object
 
-      return res.status(200).json(result);
+        return res.status(200).json(JSON.parse(result));
 
     }catch(err){
       
@@ -297,9 +298,10 @@ jobRouter.post('/new', authMiddleWare, async (req,res) => {
     const jobData = req.body;
     const description = jobData.description;
     const dueDate = jobData.dueDate;
-    const userId = jobData.userId;
+    const userId = req.user.workerId;
     const businessId = req.user.businessId;
 
+    console.log(userId)
    
     try{
 
@@ -309,7 +311,7 @@ jobRouter.post('/new', authMiddleWare, async (req,res) => {
         //generate qr code
         const qr_url = await generate_qr(randomJobId);
 
-        return res.status(200).json({message: "New job succesfully registered", qrCode: qr_url});
+        return res.status(201).json({message: "New job succesfully created", qrCode: qr_url});
 
     } catch (err) {
 
@@ -330,7 +332,7 @@ jobRouter.post('/new', authMiddleWare, async (req,res) => {
  * @param {Object} req - express request object
  * @param {Int} req.params.job_id - the encrypted unique jobId
  * @param {Object} req.body - the request payload
- * @param {String} req.body.uid - the user who has submitted the request
+ * @param {String} req.user.userId - the user who has submitted the request, injected by middleware
  * @param {String} req.body.remarks - remarks relating to the job completion
  * 
  * @param {Object} res - express respsonse object
@@ -340,17 +342,17 @@ jobRouter.post('/new', authMiddleWare, async (req,res) => {
  * @returns {JSON} 500 - Internal Server Error. If an error occurs while updating the DB record
  */
 jobRouter.post('/complete/:jid',authMiddleWare, async (req,res) =>{
-    const jobId = req.params.job_id;
+    const jobId = req.params.jid;
     //extract JSON data from request 
-    const data = req.body.body
-    const userId = data.uid
-    const remarks = data.remarks
+    const data = req.body;
+    const userId = req.user.userId;
+    const remarks = data.remarks;
 
     // find worker who the job was assigned to
 
     if(req.user.role === 3){
 
-      const jobDetails = getJobDetails(decryptJobId);
+      const jobDetails = await getJobDetails(decryptJobId);
 
       if(jobDetails[0].User_ID != req.user.userId){
 

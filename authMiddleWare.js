@@ -31,9 +31,9 @@ const authMiddleWare = async(req, res, next) => {
 
 const adminMiddleWare = (req, res, next)=>{
     //passed from previous middleware
-    const privilege = req.user.role; // role not privilige !
-    if(privilege != null){
-        if(privilege === 1){
+    const role = req.user.role; // role not privilige !
+    if(role != null){
+        if(role === 1){
             next();
         }else{
 
@@ -48,8 +48,8 @@ const adminMiddleWare = (req, res, next)=>{
     }
 
 const moderatorMiddleWare = (req, res, next)=>{
-    const privilege = req.user.role;
-    if(privilege === 2 || privilege === 1){
+    const role= req.user.role;
+    if(role === 2 || role === 1){
         next();
     }else{
         return res.status(401).json({ message: "Unauthorized: Invalid privilege level" });

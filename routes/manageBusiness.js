@@ -270,6 +270,7 @@ businessRouter.post('/addUser/',authMiddleWare,adminMiddleWare, async(req,res) =
     if(!(username&&pwd&&privLevel)){
         
         return res.sendStatus(400)
+        
     }
 
     // hash new password
