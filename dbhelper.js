@@ -152,9 +152,9 @@ const getJobDetails = async (jobId) => {
   `;
 
   const result = await execute(sql, [jobId]);
-
-  if (result && result[0]) {
-    return result[0]; 
+  const parsedRes = JSON.parse(result)
+  if ( parsedRes && parsedRes[0]) {
+    return parsedRes[0]; 
   } else {
     return null; 
   }

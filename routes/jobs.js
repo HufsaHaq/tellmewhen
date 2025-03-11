@@ -456,4 +456,60 @@ jobRouter.post('/notify/:jid',authMiddleWare, async (req, res) => {
    
 })
 
+/**
+ * @route GET /jobs/display_code/:jid
+ * @access User 
+ * 
+ * @description Returns the base 64 encoded string representing the qr code for a given job
+ * 
+ * @middleware authMiddleWare - Ensures the user is authenticated via JWT.
+ * 
+ * @param {Object} req - express request object
+ * @param {String} req.body.jobId - the job unique identifier
+ * 
+ * @param {Object} res - express response object
+ * @returns {JSON} 201 - Created, qr code successfully regened
+ * ```json
+ * {
+ *  "qrCode":"<base64 encoded qr code>"
+ * }
+ * @returns {JSON} 401 - Unauthorised, the user cannot be authenicated
+ * @returns {JSON} 404 - Not found, a job does not exist in the DB
+ * @returns {JSON} 500 - Internal server error, the server failed to create the qr code 
+ */
+jobRouter.get('/display_code', authMiddleWare, async(req,res) =>{
+
+    //extract jobId from the body
+    const jobId  = req.body.jobId
+
+    //check DB to see if jobId exists
+
+    try{
+
+        const result = await getJobDetails(jobId)
+        if(!result){
+
+            return res.status(404).json({ error:'No such job ID found in db'})
+
+        }
+    }catch(err){
+
+        return res.status(500).json({ error:`Error in looking up Job Id in DB: ${err}`})
+    }
+
+    try{ 
+
+        const qrResult = await generate_qr(jobId)
+
+        return res.status(201).json({
+            qrCode : qrResult
+        })
+
+    }catch (err){
+
+        return res.status(500).json({ error:`Error in generating qrCode ${err}`})
+    }
+
+})
+
 export {jobRouter};
