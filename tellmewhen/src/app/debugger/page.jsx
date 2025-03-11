@@ -1,7 +1,7 @@
 "use client";
 import { Input, Button, FormLabel } from "@mui/joy";
 import { useState, useEffect } from "react";
-import { Register, Login } from "@/scripts/login";
+import { Register, Login, HandleUnauthorised } from "@/scripts/login";
 
 function Debugger() {
     const [Endpoint, SetEndPoint] = useState("");
@@ -60,7 +60,8 @@ function Debugger() {
 
                 <Button color="neutral" className="w-[100%]" onClick={()=>{Register(Username, Password).then(res=>console.log(res))}}>Register <h1 className="ml-[5px] italic font-bold">(Email, Business Name, Pasword)</h1></Button>
                 <Button color="neutral" className="w-[100%]" onClick={()=>{Login(Email, Username, Password).then(res=>{console.log(console.log(res.data))})}}>Login <h1 className="ml-[5px] italic font-bold">(Email, Business Name, Pasword)</h1></Button>
-                
+                <Button color="neutral" className="w-[100%]" onClick={()=>{console.log(HandleUnauthorised(Email, Username, Password))}}>Refresh</Button>
+
             </div>
         </span>
 

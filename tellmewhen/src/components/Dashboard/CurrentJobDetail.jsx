@@ -103,16 +103,9 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish, o
                   color="success"
                   className="top-[5px] px-4 max-tablet620:w-[98%] min-w-[100px] py-2 h-[30px]"
                 >
-                  Finish
+                  Complete
                 </Button>
-                <Button
-                  onClick={onDelete}
-                  variant="solid"
-                  color="danger"
-                  className="top-[5px] px-4 max-tablet620:w-[98%] min-w-[100px] py-2 h-[30px]"
-                >
-                  Delete
-                </Button>
+
                 <Button
                   onClick={()=>{window.location.href = "/qr_code"}}
                   variant="solid"

@@ -1,10 +1,9 @@
 import React from "react";
 import { Button, Autocomplete, TextField } from "@mui/joy";
 
-const JobModal = ({ isOpen, onClose, onConfirm, formData, onInputChange, errorMessageAssign }) => {
+const JobModal = ({ isOpen, onClose, onConfirm, formData, onInputChange, errorMessageAssign, employeeData }) => {
     if (!isOpen) return null;
-const worker_Options = ["worker1", "worker2", "worker3", "worker4", "worker5", "worker6", "worker7", "worker8", "worker9", "worker10"];
-
+    const worker_Options = employeeData.map((employee) => employee.Username);
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white max-h-[95vh] overflow-y-scroll max-tablet620:w-full min-w-[33%] max-w-[90%] rounded-lg shadow-lg p-6">
@@ -30,7 +29,7 @@ const worker_Options = ["worker1", "worker2", "worker3", "worker4", "worker5", "
                         <label htmlFor="assigning-worker" className="block text-gray-700 font-medium mb-2">
                             Assign Worker:
                         </label>
-                        <Autocomplete id="assigning-worker" options={worker_Options} sx={{ width: 300 }} value={formData.worker} onChange={(event, newValue) => onInputChange(event, 'worker', newValue)}/>
+                        <Autocomplete id="assigning-worker" options={worker_Options} sx={{ width: "full" }} value={formData.worker} onChange={(event, newValue) => onInputChange(event, 'worker', newValue)}/>
                         {!formData.worker && <p className="text-red-500 text-sm">Assigning a worker is required.</p>}
                         {errorMessageAssign && ( <div className="text-red-500 text-sm mt-2">{errorMessageAssign}</div> )}
                     </div>

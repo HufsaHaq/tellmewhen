@@ -15,6 +15,7 @@ export async function Login(name, businessName, password)
     ).then(res => {
         localStorage["businessID"] = res.data["businessId"]
         localStorage["userID"] = res.data["userId"]
+        localStorage["username"] = name;
         data = res;
         localStorage["loggedIn"] = true;
     })
@@ -54,25 +55,25 @@ export async function RefreshToken()
     let base = localStorage["endpoint"]
     await axios.post(base + "/refresh",
         {
-            username: "admin",
-            id: localStorage["userID"]
+            username: localStorage["username"],
+            userId: localStorage["userID"],
+            businessId: localStorage["businessID"]
         }
-    ).then(res => data = res)
+    ).then(res => {data = res; console.log(data)})
     return data;
 }
 
 export async function HandleUnauthorised()
 {
+    // func will be the original function
     let tryRefresh = await RefreshToken();
-    if(tryRefresh.status === 200)
+    if(tryRefresh.status === 201)
     {
-        console.log("hhh")
-        return true;
-
+        window.location.reload();
     }
     else
     {
         window.location.href = "/auth";
-        return false;
+        return;
     }
 }

@@ -11,18 +11,19 @@ import { Button, Tab, Tabs, TabList, tabClasses, Select, Option, IconButton } fr
 import { Add, CloseRounded } from "@mui/icons-material";
 import Pagination from "@/components/Pagination";
 import React from "react";
-import { AssignJobToEmployee, CreateJob, GetAllJobHistory, GetCurrentJobs, GetJobHistory } from "@/scripts/dashboard";
+import { AssignJobToEmployee, CompleteJob, CreateJob, GetAllJobHistory, GetCurrentJobs, GetJobHistory } from "@/scripts/dashboard";
 import JobCreation from "@/components/Dashboard/JobCreation";
 import CurrentJobDetail from "@/components/Dashboard/CurrentJobDetail";
 import FinishJobModal from "@/components/Dashboard/FinishJob";
 import HistoryJobDetailModal from "@/components/Dashboard/HistoryJobDetail";
 import PageLoad from "@/components/PageLoad";
+import { GetAccountDetails, GetEmployees } from "@/scripts/account";
 
 function Page() {
 
     // THIS WILL PREVENT UNAUTHORISED ACCESS WHEN DISABLED WITH THE BACKEND
     // SET TO TRUE TO USE WITHOUT BACKEND
-    const DEBUGMODE = true;
+    const DEBUGMODE = false;
 
 
     let colours = {
@@ -69,13 +70,15 @@ function Page() {
     const [DisplayedTableData, SetDisplayedTableData] = useState([]);
 
     // Stores the necessary table headers and their widths given by percentage of the table    
-    const CurrentTableHeaders = ["Job ID", "Description", "Due", "Status"];
-    const CurrentTableWidths = ["w-[10%]", "w-[70%]", "w-[10%]", "w-[10%]"];
-    const CurrentTableMaxWidths = ["max-w-[10%]", "max-w-[70%]", "max-w-[10%]", "max-w-[10%]"];
-    const HistoryTableHeaders = ["Job ID", "User ID", "Remarks", "Completion Date"];
-    const HistoryTableWidths = ["w-[10%]", "w-[10%]", "w-[67%]", "w-[13%]"];
-    const HistoryTableMaxWidths = ["max-w-[10%]", "max-w-[10%]", "max-w-[67%]", "max-w-[13%]"];
+    const CurrentTableHeaders = ["Job ID", "Description", "Due"];
+    const CurrentTableWidths = ["w-[0%]", "w-[85%]", "w-[15%]"];
+    const CurrentTableMaxWidths = ["max-w-[0%]", "max-w-[85%]", "max-w-[15%]"];
+    const HistoryTableHeaders = ["Job ID", "Description", "Remarks", "Completion Date"];
+    const HistoryTableWidths = ["w-0", "w-[43%]", "w-[42%]", "w-[15%]"];
+    const HistoryTableMaxWidths = ["max-w-0", "max-w-[43%]", "max-w-[42%]", "max-w-[15%]"];
 
+    // Stores the employee data
+    const [employees, SetEmployees] = useState([]);
 
     //Used to determine which is the currently selected data (Current=0 or History=1)
     const [CurrentIndex, SetIndex] = useState(0);
@@ -150,41 +153,44 @@ function Page() {
         if (typeof window !== undefined && !DEBUGMODE && !(localStorage["loggedIn"] != true && localStorage["userID"] != null || localStorage["businessID"] != null)) window.location.href = "/auth";
 
         const CallAPI = async () => {
-
+            // Will just see if the token is expired
+            const employeesData = await GetEmployees()
+            console.log(employeesData);
+            if(employeesData.status === 200) SetEmployees(employeesData.data);
             // Makes all the API requests in parallel
             const responses = await Promise.allSettled([
                 GetCurrentJobs(),
                 GetJobHistory(),
             ])
             let currentJobs, historyJobs;
-
             try {
                 // Checks to see if any of the responses given were unsuccessful
                 currentJobs = responses[0].value;
-                console.log(currentJobs);
                 historyJobs = responses[1].value;
-                console.log(historyJobs);
                 if (currentJobs == null || historyJobs == null) throw new Error("API Error")
             }
             catch (e){
+                console.log(e)
                 setAPIError("Cannot connect to the server.")
                 return;
             }
             setHidePage(false);
             if (currentJobs.status === 200) {
                 let array = []
-                for(let i = 0; i < currentJobs.data.length; i++) {
-                    array.push([currentJobs.data[i].jobId, currentJobs.data[i].description, currentJobs.data[i].Due_Date, ""])
+                let jobs = currentJobs.data
+                for(let i = 0; i < jobs.length; i++) {
+                    array.push([jobs[i].Job_ID, jobs[i].Description, (jobs[i].Due_Date || "").slice(0, 10)])
                 }
-                SetCurrentTableData(currentJobs.data)
+                SetCurrentTableData(array)
             }
 
             if (historyJobs.status === 200) {
                 let array = []
-                for(let i = 0; i < historyJobs.data.length; i++) {
-                    array.push([historyJobs.data[i].jobId, "", historyJobs.data[i].remarks, historyJobs.data[i].completionDate])
+                let jobs = JSON.parse(historyJobs.data)
+                for(let i = 0; i < jobs.length; i++) {
+                    array.push([jobs[i].Job_ID, jobs[i].Description, jobs[i].Remarks, (jobs[i].Completion_Date|| "").slice(0, 10)])
                 }
-                SetHistoryTableData(historyJobs.data)
+                SetHistoryTableData(array)
             }
         };
         CallAPI();
@@ -206,15 +212,24 @@ function Page() {
         const businessId = localStorage["businessId"];
         const accessToken = localStorage["accessToken"];
         const employeeID = formData.worker;
-
         try {
-            const res = await CreateJob(formData.description, formData.deadline, localStorage["userID"]);
+            // Gets the assigned employees ID
+            let employeeID = null;
+            for(let i = 0; i < employees.length; i++){
+                console.log(employees[i].Username == formData.worker)
+                if(employees[i].Username === formData.worker)
+                {
+                    employeeID = employees[i].User_ID;
+                }
+            }
+            
+            // Checks whether the employee is valid
+            if(employeeID == null) { setErrorMessageAssign("Invalid employee"); return}
 
-            if (res.status === 200) {
-                //SetCurrentTableData([...CurrentTableData, newJob]);
-                setErrorMessageAssign('');
-                setIsCreationModalOpen(false);
-                setFormData({ description: "", deadline: "", status: "", worker: "" });
+            //Calls API
+            const res = await CreateJob(formData.description, formData.deadline, employeeID);
+            if (res.status === 201) {
+                window.location.reload();
             }
             else if (res.status === 401) {
                 setErrorMessageAssign("Unauthorized request. Please log in to make changes");
@@ -283,34 +298,23 @@ function Page() {
     const handleOpenFinish = () => {
         // We'll finish whichever job is currently selected
         setJobToFinish(selectedJob);
+        console.log(selectedJob);
         setIsFinishModalOpen(true);
     };
 
     //Function to handle the finish job button
-    const handleFinishJob = (remarks) => {
+    const handleFinishJob = async (remarks) => {
         if (!jobToFinish) return;
 
-        // 1) Remove from Current
-        const newCurrent = CurrentTableData.filter(
-            (job) => job[0] !== jobToFinish.id
-        );
-
-        // 2) Add to History
-        // e.g. [id, userId, remarks, completionDate]
-        const newHistoryRow = [
-            jobToFinish.id,
-            "UserXYZ", // or some real user from your system
-            remarks,
-            new Date().toISOString().slice(0, 10), // e.g. "2025-01-27"
-            jobToFinish.worker,
-        ];
-
-        SetCurrentTableData(newCurrent);
-        SetHistoryTableData((prev) => [...prev, newHistoryRow]);
-
-        // Close both modals
-        setIsFinishModalOpen(false);
-        setIsDetailModalOpen(false);
+        let res = await CompleteJob(jobToFinish.id, remarks);
+        if(res.status === 201)
+        {
+            window.location.reload();
+        }
+        else {
+            // Handle error
+            console.log(res);
+        }
     };
 
     const handleDeleteCurrent = () => {
@@ -428,6 +432,7 @@ function Page() {
                             {/* Ternary operator for an if statement to determine which table headers are to be displayed */}
                             {CurrentIndex == 0
                                 ? CurrentTableHeaders.map((item, index) => {
+                                    if(index == 0) return;
                                     return (
                                         <th key={index} className={`px-[10px] text-wrap ${CurrentTableMaxWidths[index]} ${index != 0 ? `border-l-[2px] border-[rgba(0,0,0,0.2)]` : {}} ${CurrentTableMaxWidths[index]} ${CurrentTableWidths[index]}`}>
                                             {item}
@@ -435,6 +440,7 @@ function Page() {
                                     );
                                 })
                                 : HistoryTableHeaders.map((item, index) => {
+                                    if(index == 0) return;
                                     return (
                                         <th key={index} className={`px-[10px] text-wrap ${index != 0 ? `border-l-[2px] border-[rgba(0,0,0,0.2)]` : {}} ${HistoryTableMaxWidths[index]} ${HistoryTableWidths[index]}`}>
                                             {item}
@@ -452,7 +458,7 @@ function Page() {
                                     onClick={() => handleRowClick(item1)} // Pass the job data to handleRowClick
                                 >
                                     {item1.map((item2, index2) => (
-                                        <td className={`${index2 !== 0 ? "border-l-[2px]" : ""} overflow-hidden max-w-[0px] text-pretty px-[10px] py-[5px] border-[rgba(0,0,0,0.2)]`} key={index2}>
+                                        index2 != 0 && <td className={`${index2 !== 0 ? "border-l-[2px]" : ""} overflow-hidden max-w-[0px] text-pretty px-[10px] py-[5px] border-[rgba(0,0,0,0.2)]`} key={index2}>
                                             {index2 !== 4 && item2}
                                         </td>
                                     ))}
@@ -478,7 +484,7 @@ function Page() {
             <div className="bottom-margin mb-[70px]" />
 
             {/* Job Creation Modal */}
-            <JobCreation isOpen={isCreationModalOpen} onClose={handleCloseModal} onConfirm={handleConfirmModal} formData={formData} onInputChange={handleInputChange} errorMessageAssign={errorMessageAssign} />
+            <JobCreation isOpen={isCreationModalOpen} onClose={handleCloseModal} onConfirm={handleConfirmModal} formData={formData} onInputChange={handleInputChange} errorMessageAssign={errorMessageAssign} employeeData={employees} />
             {/* Job Detail Modal */}
             <CurrentJobDetail isOpen={isDetailModalOpen} jobData={selectedJob} onClose={() => setIsDetailModalOpen(false)} onConfirm={handleUpdateJob} onOpenFinish={handleOpenFinish} onDelete={handleDeleteCurrent} />
             <HistoryJobDetailModal isOpen={isHistoryModalOpen} jobData={selectedJob} onClose={() => setIsHistoryModalOpen(false)} onDelete={handleDeleteHistory} />

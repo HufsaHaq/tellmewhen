@@ -22,6 +22,7 @@ import {
     GetAccountDetails,
     GetCurrentJobCount,
     GetEmployees,
+    GetPrivilegeLevel,
     GetTotalJobCount,
     RenameAccount,
 } from "@/scripts/account";
@@ -38,7 +39,7 @@ function Account() {
 
     // THIS WILL PREVENT UNAUTHORISED ACCESS WHEN DISABLED WITH THE BACKEND
     // SET TO TRUE TO USE WITHOUT BACKEND
-    const DEBUGMODE = true; 
+    const DEBUGMODE = false; 
 
 
     // Used for scaling the UI
@@ -46,6 +47,7 @@ function Account() {
     const [windowWidth, SetWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1920);
     const [windowHeight, SetWindowHeight] = useState(typeof window !== "undefined" ? window.innerHeight : 1080);
     const [hidePage, setHidePage] = useState(!DEBUGMODE); //SET TO TRUE WHEN NOT DEBUGGING
+    const [PrivilegeLevel, SetPrivilegeLevel] = useState(0);
     if (typeof window !== "undefined") window.addEventListener("resize", () => {
         SetWindowWidth(window.innerWidth);
         SetWindowHeight(window.innerHeight);
@@ -67,19 +69,21 @@ function Account() {
 
 
         async function CallAPI() {
+            SetPrivilegeLevel(await GetPrivilegeLevel(localStorage["userID"]));
             // Gets all the API details in parallel
             let details, activeJobs, totalJobs, employees;
             try {
+                details = await GetAccountDetails() || setErrorMessageActive("An error occurred while connecting to the server.");
+
                 const APIData = await Promise.allSettled([
-                    GetAccountDetails(),
                     GetCurrentJobCount(),
                     GetTotalJobCount(),
                     GetEmployees(),
+
                 ])
-                details = APIData[0].value || setErrorMessageActive("An error occurred while connecting to the server.");
-                activeJobs = APIData[1].value || setErrorMessageActive("An error occurred while connecting to the server.");
-                totalJobs = APIData[2].value || setErrorMessageTotal("An error occurred while connecting to the server.")
-                employees = APIData[3].value || [];
+                activeJobs = APIData[0].value || setErrorMessageActive("An error occurred while connecting to the server.");
+                totalJobs = APIData[1].value || setErrorMessageTotal("An error occurred while connecting to the server.")
+                employees = APIData[2].value || [];
                 if(details == null || activeJobs==null || totalJobs == null || employees == null) throw new Error("API Error")
             } catch {
                 SetAPIError("Cannot connect to server");
@@ -114,7 +118,7 @@ function Account() {
                 let employeesData = employees.data
                 let array = [];
                 for (let i = 0; i < employeesData.length; i++) {
-                    array.push([employeesData[i].Username, employeesData[i].User_ID, PrivilegeLookup[employeesData[i].Privilege_level] || "unknown"])
+                    array.push([employeesData[i].Username, employeesData[i].User_ID, PrivilegeLookup[employeesData[i].Role] || "unknown"])
                 }
                 SetEmployees(array);
             }
@@ -290,6 +294,7 @@ function Account() {
                     }}>
                     {/* ITERATES THROUGH THE DIFFERENT MENU ITEMS IN THE "MenuItems" ARRAY */}
                     {MenuItems.map((item, index) => {
+                        if(index === 1 && PrivilegeLevel != 1) return;
                         return (
                             <span key={index} className={`${index} flex items-center h-[40px] my-[5px]`}>
                                 {/* SELECTED MENU INDICATOR*/}
@@ -343,9 +348,11 @@ function Account() {
 
 
                             </span>
+                            {PrivilegeLevel == 1 && <>
                             <div className="w-full h-[1px] my-[20px] bg-[#A9A9A9]">‎</div>
 
                             {/* ACCOUNT CONTROLS */}
+                            
                             <h1 className="font-semibold mb-[15px] w-[100%] sticky text-[20px] mt-[20px]">Manage</h1>
                             <div className="outline rounded-md outline-[#A9A9A9] outline-[1.5px]">
                                 {/* RENAME ACCOUNT*/}
@@ -382,7 +389,7 @@ function Account() {
                                     </div>
                                     <Button variant="solid" className="w-[75px]" color="danger" onClick={() => setIsDeleteBusinessOpen(true)}>Delete</Button>
                                 </span>
-                            </div>
+                            </div></>}
 
                             <ChangeName
                                 isOpen={isChangeNameOpen}
@@ -442,7 +449,7 @@ function Account() {
                     }
 
                     {/* EMPLOYEE MANAGEMENT PAGE*/}
-                    {SelectedMenu == MenuItems[1] &&
+                    {SelectedMenu == MenuItems[1] && PrivilegeLevel == 1 && 
                         <div className="">
                             <h1 className="font-semibold mb-[2px] w-[100%] sticky text-[20px]">Employee Management</h1>
                             <span className={`max-tablet620:block tablet620:flex items-center mb-[10px]`}>

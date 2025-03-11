@@ -34,9 +34,7 @@ const HistoryJobDetailModal = ({ isOpen, jobData, onClose, onDelete }) => {
                     <Button onClick={onClose} variant="soft" color="neutral" className="min-w-[100px]">
                         Close
                     </Button>
-                    <Button onClick={onDelete} variant="soft" color="danger" className="min-w-[100px]">
-                        Delete
-                    </Button>
+
                 </div>
             </div>
         </div>

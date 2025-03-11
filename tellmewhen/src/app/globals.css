@@ -6,6 +6,7 @@ html
 {
   overscroll-behavior: none;
   user-select: none;
+  overflow-x: hidden;
 }
 body
 {

@@ -11,19 +11,13 @@ export async function GetAccountDetails()
     await axios.get(
         endpoint + "/business/info",
         {
-            businessID: localStorage["businessID"]
+            businessId: localStorage["businessID"]
         }
-    ).then((res) => {
-        data = res
+    ).then(async (res) => {
+        data = res;
     }).catch(async (err) => {
-        if(err.status === 401 && await HandleUnauthorised())
-        {
-            data = GetAccountDetails();
-        }
-        else
-        {
-            console.log("An error occurred while fetching account details");
-        }
+        if(err.status === 401) await HandleUnauthorised();
+        else data = err
     });
     return data;
 }
@@ -34,7 +28,12 @@ export async function GetCurrentJobCount()
     let data = null;
     let endpoint = localStorage["endpoint"];
     await axios.get(endpoint + "/jobs/open_jobs/" + localStorage["businessID"] ,
-    ).then((res) => { data = res; })
+    ).then(async (res) => {
+        data = res;
+    }).catch(async (err) => {
+        if(err.status === 401) await HandleUnauthorised();
+        else data = err
+    });
     return data;
 }
 
@@ -43,7 +42,12 @@ export async function GetTotalJobCount(){
     let data = null;
     let endpoint = localStorage["endpoint"];
     await axios.get(endpoint + "/jobs/total_jobs/" + localStorage["businessID"]
-    ).then(res => { data = res; })
+    ).then(async (res) => {
+        data = res;
+    }).catch(async (err) => {
+        if(err.status === 401) await HandleUnauthorised();
+        else data = err
+    });
     return data;
 }
 
@@ -56,7 +60,12 @@ export async function RenameAccount(name)
         {
             name: name,
         }
-    ).then((res) => { data = res; })
+    ).then(async (res) => {
+        data = res;
+    }).catch(async (err) => {
+        if(err.status === 401) await HandleUnauthorised();
+        else data = err
+    });
     return data;
 }
 
@@ -70,7 +79,12 @@ export async function ChangeBusinessPhoto(photob64)
             newPhoto: photob64,
             //businessID: localStorage["businessID"]
         }
-    ).then(res => {data = res;})
+    ).then(async (res) => {
+        data = res;
+    }).catch(async (err) => {
+        if(err.status === 401) await HandleUnauthorised();
+        else data = err
+    });
     return data;
 }
 
@@ -92,7 +106,7 @@ export async function CreateEmployee(username, password, privilege)
     // This will create a new employee
     let data = null;
     let endpoint = localStorage["endpoint"];
-    console.log(username, password, privilege);
+
     await axios.post(
         endpoint + "/business/addUser",
         {
@@ -100,7 +114,9 @@ export async function CreateEmployee(username, password, privilege)
             password: password,
             privLevel: privilege,
         }
-    ).then((res) => { data = res })
+    ).then(async (res) => {
+        data = res;
+    });
     return data;
 }
 
@@ -118,7 +134,9 @@ export async function DeleteEmployee(userID)
         {
             businessID: localStorage["businessID"],
         }
-    ).then((res) => data = res)
+    ).then(async (res) => {
+        data = res;
+    });
     return data;
 }
 
@@ -133,7 +151,9 @@ export async function SearchEmployee(userID, limit)
             limit: limit,
             businessID: localStorage["businessID"]
         }
-    ).then(res => { data = res; })
+    ).then(async (res) => {
+        data = res;
+    });
     return data;
 }
 
@@ -144,4 +164,19 @@ export async function GetEmployees()
     await axios.get(endpoint + "/business/search_employees",)
     .then(res => { data = res; })
     return data;
+}
+
+export async function GetPrivilegeLevel(userId)
+{
+    let employees = await GetEmployees()
+    
+    employees = employees.data;
+    for(let i = 0; i < employees.length; i++)
+    {
+        if(employees[i].User_ID == userId)
+        {
+            return employees[i].Role;
+        } 
+    }
+    return 0;
 }

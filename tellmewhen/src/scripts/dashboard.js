@@ -11,8 +11,12 @@ export async function GetCurrentJobs()
         {
             businessID: localStorage["businessID"],
         }
-    )
-    .then(res => data = res)
+    ).then(async (res) => {
+        data = res;
+    }).catch(async (err) => {
+        if(err.status === 401) await HandleUnauthorised();
+        else data = err
+    });
     return data;
 }
 
@@ -25,8 +29,12 @@ export async function GetJobHistory()
             businessID: localStorage["businessID"],
             userID: localStorage["userID"],
         }
-    )
-    .then(res => data = res);
+    ).then(async (res) => {
+        data = res;
+    }).catch(async (err) => {
+        if(err.status === 401) await HandleUnauthorised();
+        else data = err
+    });
     return data;
 }
 
@@ -34,15 +42,20 @@ export async function CreateJob(description, deadline, userID)
 {
     let data = null;
     let endpoint = localStorage["endpoint"];
-    console.log(deadline)
+    console.log(userID)
     await axios.post(endpoint + "/jobs/new",
         {
             description: description,
-            dueData: deadline,
-            userID: userID,
-            businessID: localStorage["businessID"],
+            dueDate: deadline,
+            userId: userID,
         }
-    ).then(res => data = res)
+    ).then(async (res) => {
+        data = res;
+    }).catch(async (err) => {
+        console.log(err)
+        if(err.status === 401) await HandleUnauthorised();
+        else data = err
+    });
     return data;
 }
 
@@ -60,6 +73,29 @@ export async function CompleteJob(jobID, remarks)
             userId: localStorage["userID"],
             remarks: remarks,
         }
-    ).then(res => {data = res})
+    ).then(async (res) => {
+        data = res;
+    }).catch(async (err) => {
+        if(err.status === 401) await HandleUnauthorised();
+        else data = err
+    });
+    return data;
+}
+
+export async function AssignJob(jobID, userID)
+{
+    let data = null;
+    let endpoint = localStorage["endpoint"];
+    await axios.post(endpoint + "/jobs/assign_job", 
+        {
+            jid: jobID,
+            uid: userID
+        }
+    ).then(async (res) => {
+        data = res;
+    }).catch(async (err) => {
+        if(err.status === 401) await HandleUnauthorised();
+        else data = err
+    });
     return data;
 }
