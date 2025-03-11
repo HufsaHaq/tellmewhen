@@ -179,7 +179,7 @@ const completeJob = async (userId, jobId, remarks = '') => {
     FROM JOB_TABLE
     WHERE Job_ID = ?;
   `;
-  const jobDetails = await execute(selectSql, [jobId]);
+  const jobDetails = JSON.parse(await execute(selectSql, [jobId]));
 
   const insertSql = `
     INSERT INTO JOB_HISTORY (User_ID, Job_ID, Business_ID, Completion_Date, Description, Remarks)
