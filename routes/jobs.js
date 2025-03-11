@@ -298,7 +298,7 @@ jobRouter.post('/new', authMiddleWare, async (req,res) => {
     const jobData = req.body;
     const description = jobData.description;
     const dueDate = jobData.dueDate;
-    const userId = req.user.workerId;
+    const userId = req.user.userId;
     const businessId = req.user.businessId;
 
     console.log(userId)

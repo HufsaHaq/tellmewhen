@@ -4,47 +4,6 @@ import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddl
 
 const deletionRouter = express.Router()
 
-//delete a business' whole account 
-deletionRouter.post("/:bid",authMiddleWare,adminMiddleWare, async(req,res) =>{
-    /** POST /delete/:bid
-    * This endpoint is used to delete a business from the database and service. There must
-    * be sufficient validation done on the front end to make sure a business doesn't delete 
-    * its account by accident
-    * Middleware:
-    * - `authMiddleWare`: Verifies the JWT and attaches the decoded token to req.user
-    * - `adminMiddleWare`: Verfies the user has admin priviliges
-    * 
-    * Request Parameters
-    * @param {string} req.params.bid - The business ID of the business being deleted
-    * 
-    * Request Context (Injected by middleware)
-    * @param {Int} req.user.businessId - The business ID to which the user belongs
-    * 
-    * Responses
-    * - 204 (No content) if the deletion processes successfully
-    * - 401 (Unauthorised) if the user does not have an admin account
-    *   - If credentials do not match (`"Passwords do not match"`).
-    *   - If user credentials cannot be retrieved from the database (`"Unable to retrieve credentials from DB"`).
-    * - 500 (Internal server error) if the db helper function fails
-    */
-    const businessId = parseInt(req.params.bid)
-    
-    if(!(businessId === req.user.Business_ID)){
-
-        return res.status(403).json({ error:'Unable to delete another business'});
-
-    }
-    try{
-
-        await deleteBusiness(businessId);
-        
-    }catch(err){
-
-        return res.status(500).json({ error:err });
-
-    }
-
-})
 // Delete a worker from a business
 /**
      * @route POST /user/:uid
@@ -71,7 +30,7 @@ deletionRouter.post('/user/:uid',authMiddleWare, adminMiddleWare, async(req,res)
     
     const userId = req.params.uid;
 
-    const currentId = req.user.User_ID;
+    const currentId = req.user.userId;
     try{
 
         await deleteUser(userId,currentId);
@@ -84,5 +43,49 @@ deletionRouter.post('/user/:uid',authMiddleWare, adminMiddleWare, async(req,res)
 
    return res.sendStatus(204);
 })
+//delete a business' whole account 
+deletionRouter.post("/:bid",authMiddleWare,adminMiddleWare, async(req,res) =>{
+    /** POST /delete/:bid
+    * This endpoint is used to delete a business from the database and service. There must
+    * be sufficient validation done on the front end to make sure a business doesn't delete 
+    * its account by accident
+    * Middleware:
+    * - `authMiddleWare`: Verifies the JWT and attaches the decoded token to req.user
+    * - `adminMiddleWare`: Verfies the user has admin priviliges
+    * 
+    * Request Parameters
+    * @param {string} req.params.bid - The business ID of the business being deleted
+    * 
+    * Request Context (Injected by middleware)
+    * @param {Int} req.user.businessId - The business ID to which the user belongs
+    * 
+    * Responses
+    * - 204 (No content) if the deletion processes successfully
+    * - 401 (Unauthorised) if the user does not have an admin account
+    *   - If credentials do not match (`"Passwords do not match"`).
+    *   - If user credentials cannot be retrieved from the database (`"Unable to retrieve credentials from DB"`).
+    * - 403 (Forbidden) if the businessId in the token doesn't match the one in the request
+    * - 500 (Internal server error) if the db helper function fails
+    */
+    const businessId = parseInt(req.params.bid)
+    
+    if(!(businessId === req.user.Business_ID)){
+
+        return res.status(403).json({ error:'Unable to delete another business'});
+
+    }
+    try{
+
+        await deleteBusiness(businessId);
+        
+        return res.status(204)
+    }catch(err){
+
+        return res.status(500).json({ error:err });
+
+    }
+
+})
+
 
 export { deletionRouter }

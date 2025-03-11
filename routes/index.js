@@ -61,7 +61,7 @@ const indexRouter = express.Router();
  *   ```json
  *   {
  *     "message": "access token and refresh cookie sent in cookies",
- *     "userId": "<workerId>",
+ *     "userId": "<userId>",
  *     "businessId": "<businessId>"
  *   }
  *   ```
@@ -76,7 +76,7 @@ const indexRouter = express.Router();
  *   - **Access Token** (1h expiry) includes:
  *     - `username` - The user's username.
  *     - `role` - The user's privilege level.
- *     - `workerId` - The user’s unique ID.
+ *     - `userId` - The user’s unique ID.
  *     - `businessId` - The business ID the user belongs to.
  *   - **Refresh Token** (1d expiry) is signed separately for re-authentication.
  *
@@ -109,7 +109,7 @@ indexRouter.post('/login', async (req, res) => {
 
         if (isMatch){
             // prepare empolyee information for token
-            const workerId = loginCredentials.User_ID;
+            const userId = loginCredentials.User_ID;
             const role = loginCredentials.Role;
             const businessId = loginCredentials.Business_ID;
 
@@ -117,7 +117,7 @@ indexRouter.post('/login', async (req, res) => {
             const accessToken = jwt.sign({
                 username: username,
                 role: role,
-                workerId:workerId,
+                userId:userId,
                 businessId:businessId 
                 },
                     accessPrivateKey,
@@ -151,7 +151,7 @@ indexRouter.post('/login', async (req, res) => {
             cookie('access',accessToken,accessCookieOptions).
             cookie('refresh',refreshToken,refreshCookieOptions).
             json({message:'access token and refresh cookie sent in cookies',
-            userId: workerId,
+            userId: userId,
             businessId : businessId
             });
         }else{
@@ -264,7 +264,7 @@ indexRouter.post('/refresh', async(req,res) => {
 
                     const accessToken = jwt.sign({ 
                         username:username, 
-                        workerId: id,
+                        userId: id,
                         role:user_data[0].Role,
                         businessId: businessId
                     },
