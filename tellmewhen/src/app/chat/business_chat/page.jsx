@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { LogIn } from "@/scripts/chat";
+import { useMediaQuery } from "react-responsive";
 import { BusinessChatComponent } from "@/components/BusinessChatComponent";
 
 export default function Page() {
@@ -9,6 +10,8 @@ export default function Page() {
     const [userData, setUserData] = useState(null);
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
     useEffect(() => {
         async function fetchData() {
@@ -35,11 +38,9 @@ export default function Page() {
 
     return (
         <div className="!overflow-y-hidden w-full flex flex-col">
-            {/* Top header bar */}
-
             {/* Chat area */}
             <div className="" style={style.container}>
-                <BusinessChatComponent data={data} />
+                <BusinessChatComponent data={data} isMobile={isMobile} />
             </div>
         </div>
     );
