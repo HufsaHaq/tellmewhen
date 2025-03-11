@@ -212,10 +212,7 @@ function Page() {
 
     //Function to handle the confirm button in the modal
     const handleConfirmModal = async () => {
-        //const newJob = ["ID" + (CurrentTableData.length + 1), formData.description, formData.deadline, formData.status, formData.worker];
-        const businessId = localStorage["businessId"];
-        const accessToken = localStorage["accessToken"];
-        const employeeID = formData.worker;
+
         try {
             // Gets the assigned employees ID
             let employeeID = null;
@@ -278,7 +275,7 @@ function Page() {
             // History Jobs
             setSelectedJob({
                 id: job[0],
-                userId: job[1],
+                description: job[1],
                 remarks: job[2],
                 completionDate: job[3],
                 worker: job[4],
