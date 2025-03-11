@@ -244,7 +244,7 @@ jobRouter.post('/assign_job',authMiddleWare, moderatorMiddleWare, async (req,res
     const data = req.body; // get the request data
 
     const encryptedJobId = data.jid;
-    const jobId = decryptJobId(encryptedJobId);
+    const jobId = encryptedJobId;
     const userId = data.uid;
     try{
 
@@ -282,7 +282,8 @@ jobRouter.post('/assign_job',authMiddleWare, moderatorMiddleWare, async (req,res
  *   ```json
  *   {
  *     "message": "New job successfully registered",
- *     "qrCode": "<qr_url>"
+ *     "qrCode": "<qr_url>",
+ *     "jobId": "<job unique identifier>"
  *   }
  *   ```
  * @returns {JSON} 401 - Unauthorized. If the user lacks authentication.
@@ -298,25 +299,40 @@ jobRouter.post('/new', authMiddleWare, async (req,res) => {
     const jobData = req.body;
     const description = jobData.description;
     const dueDate = jobData.dueDate;
-    const userId = req.user.userId;
+    var userId = req.user.userId;
+    const assignedId = jobData.assignedId;
     const businessId = req.user.businessId;
+    console.log(req.user)
 
-    console.log(userId)
-   
-    try{
+    //check if the user has the right permissions
+    if(assignedId){
 
-        const result = await createNewJob(businessId,userId,description,dueDate);
-        //extract random job id
-        const randomJobId = result.randomJobId;
-        //generate qr code
-        const qr_url = await generate_qr(randomJobId);
+        if(req.user.role === 3){
 
-        return res.status(201).json({message: "New job succesfully created", qrCode: qr_url});
+            return res.status(403).json({ message:"This action requires escalated permissions"})
 
-    } catch (err) {
+        }
+        //replace the userId from the middleware with the assinged userId
+        userId = assignedId;
 
-        return res.status(500).json({error : err})
+        try{
 
+            const result = await createNewJob(businessId,userId,description,dueDate);
+            //extract random job id
+            const randomJobId = result.randomJobId;
+            //generate qr code
+            const qr_url = await generate_qr(randomJobId);
+
+            return res.status(201).json({message: "New job succesfully created", 
+                qrCode: qr_url,
+                jobId: randomJobId
+            });
+
+        } catch (err) {
+
+            return res.status(500).json({error : err})
+
+        }
     }
 
 })
