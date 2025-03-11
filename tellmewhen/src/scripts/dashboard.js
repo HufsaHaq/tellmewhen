@@ -47,7 +47,7 @@ export async function CreateJob(description, deadline, userID)
         {
             description: description,
             dueDate: deadline,
-            userId: userID,
+            assignedId: userID,
         }
     ).then(async (res) => {
         data = res;

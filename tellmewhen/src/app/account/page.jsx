@@ -66,10 +66,11 @@ function Account() {
 
     useEffect(() => {
         if (typeof window !== undefined && !DEBUGMODE && !(localStorage["loggedIn"] != true && localStorage["userID"] != null || localStorage["businessID"] != null)) window.location.href = "/auth";
-
+        setUsername(localStorage["username"]);
 
         async function CallAPI() {
-            SetPrivilegeLevel(await GetPrivilegeLevel(localStorage["userID"]));
+            let priv = await GetPrivilegeLevel(localStorage["userID"]);
+            SetPrivilegeLevel(priv);
             // Gets all the API details in parallel
             let details, activeJobs, totalJobs, employees;
             try {
@@ -84,6 +85,7 @@ function Account() {
                 activeJobs = APIData[0].value || setErrorMessageActive("An error occurred while connecting to the server.");
                 totalJobs = APIData[1].value || setErrorMessageTotal("An error occurred while connecting to the server.")
                 employees = APIData[2].value || [];
+                
                 if(details == null || activeJobs==null || totalJobs == null || employees == null) throw new Error("API Error")
             } catch {
                 SetAPIError("Cannot connect to server");
@@ -118,7 +120,7 @@ function Account() {
                 let employeesData = employees.data
                 let array = [];
                 for (let i = 0; i < employeesData.length; i++) {
-                    array.push([employeesData[i].Username, employeesData[i].User_ID, PrivilegeLookup[employeesData[i].Role] || "unknown"])
+                    if(priv <= employeesData[i].Role) array.push([employeesData[i].Username, employeesData[i].User_ID, PrivilegeLookup[employeesData[i].Role] || "unknown"])
                 }
                 SetEmployees(array);
             }
@@ -156,6 +158,7 @@ function Account() {
 
     const [isChangeNameOpen, setIsChangeNameOpen] = useState(false);
     const [businessName, setBusinessName] = useState("");
+    const [username, setUsername] = useState("");
 
     const [isChangeProfilePhotoOpen, setIsChangeProfilePhotoOpen] = useState(false);
     const [profilePhoto, setProfilePhoto] = useState(null);
@@ -275,7 +278,13 @@ function Account() {
                     <img src={profilePhoto} alt="Profile" className="w-[70px] min-w-[70px] h-[70px] rounded-full object-cover" />
                 ) : (<div className="my-auto w-[70px] min-w-[70px] h-[70px] bg-[#909090] rounded-full animate-pulse"></div>
                 )}
-                <h1 className="text-nowrap overflow-x-hidden align-top inline-block my-auto text-[30px] ml-[20px] font-semibold mt-auto text-black">{businessName}</h1>                </span>
+                
+                <div className="w-full grid grid-cols-1 space-y-0 ml-[20px]">
+                    <h1 className="text-nowrap overflow-x-hidden align-top text-[30px] font-semibold text-black">{username}</h1> 
+                    <h1 className="text-nowrap overflow-x-hidden align-top text-[20px] font-semibold text-[#A9A9A9]">{businessName}</h1> 
+                    
+                </div>
+            </span>
             <span onClick={() => { SetSideMenuOpen(!SideMenuOpen) }} className="tablet620:absolute tablet620:opacity-0 tablet620:top-[-1000px] cursor-pointer w-[100%] inline flex justify-center space-x-[25px] outline outline-[#A9A9A9] outline-[1.5px] rounded-md items-center py-[15px] mb-[10px]">
                 <Menu className="scale-[1.5]" />
                 <h1 className="font-semibold">{SelectedMenu}</h1>
@@ -294,7 +303,7 @@ function Account() {
                     }}>
                     {/* ITERATES THROUGH THE DIFFERENT MENU ITEMS IN THE "MenuItems" ARRAY */}
                     {MenuItems.map((item, index) => {
-                        if(index === 1 && PrivilegeLevel != 1) return;
+                        if(index === 1 && PrivilegeLevel > 2) return;
                         return (
                             <span key={index} className={`${index} flex items-center h-[40px] my-[5px]`}>
                                 {/* SELECTED MENU INDICATOR*/}
@@ -449,7 +458,7 @@ function Account() {
                     }
 
                     {/* EMPLOYEE MANAGEMENT PAGE*/}
-                    {SelectedMenu == MenuItems[1] && PrivilegeLevel == 1 && 
+                    {SelectedMenu == MenuItems[1] && PrivilegeLevel <= 2 &&
                         <div className="">
                             <h1 className="font-semibold mb-[2px] w-[100%] sticky text-[20px]">Employee Management</h1>
                             <span className={`max-tablet620:block tablet620:flex items-center mb-[10px]`}>

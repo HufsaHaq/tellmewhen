@@ -17,7 +17,7 @@ import CurrentJobDetail from "@/components/Dashboard/CurrentJobDetail";
 import FinishJobModal from "@/components/Dashboard/FinishJob";
 import HistoryJobDetailModal from "@/components/Dashboard/HistoryJobDetail";
 import PageLoad from "@/components/PageLoad";
-import { GetAccountDetails, GetEmployees } from "@/scripts/account";
+import { GetAccountDetails, GetEmployees, GetPrivilegeLevel } from "@/scripts/account";
 
 function Page() {
 
@@ -98,6 +98,9 @@ function Page() {
     // Stores the error to throw when assigning employees
     const [errorMessageAssign, setErrorMessageAssign] = useState('');
 
+    // Stores the current privilege level
+    const [PrivilegeLevel, SetPrivilegeLevel] = useState(0);
+
     //Changes the title of the web page
     if (typeof window !== "undefined") document.title = "Dashboard | Tell Me When";
 
@@ -153,7 +156,8 @@ function Page() {
         if (typeof window !== undefined && !DEBUGMODE && !(localStorage["loggedIn"] != true && localStorage["userID"] != null || localStorage["businessID"] != null)) window.location.href = "/auth";
 
         const CallAPI = async () => {
-            // Will just see if the token is expired
+            SetPrivilegeLevel(await GetPrivilegeLevel(localStorage["userID"]))
+            
             const employeesData = await GetEmployees()
             console.log(employeesData);
             if(employeesData.status === 200) SetEmployees(employeesData.data);
@@ -215,8 +219,8 @@ function Page() {
         try {
             // Gets the assigned employees ID
             let employeeID = null;
+            if(formData.worker === "") formData.worker = localStorage["username"];
             for(let i = 0; i < employees.length; i++){
-                console.log(employees[i].Username == formData.worker)
                 if(employees[i].Username === formData.worker)
                 {
                     employeeID = employees[i].User_ID;
@@ -434,7 +438,7 @@ function Page() {
                                 ? CurrentTableHeaders.map((item, index) => {
                                     if(index == 0) return;
                                     return (
-                                        <th key={index} className={`px-[10px] text-wrap ${CurrentTableMaxWidths[index]} ${index != 0 ? `border-l-[2px] border-[rgba(0,0,0,0.2)]` : {}} ${CurrentTableMaxWidths[index]} ${CurrentTableWidths[index]}`}>
+                                        <th key={index} className={`px-[10px] text-wrap ${CurrentTableMaxWidths[index]} ${index != 1 ? `border-l-[2px] border-[rgba(0,0,0,0.2)]` : {}} ${CurrentTableMaxWidths[index]} ${CurrentTableWidths[index]}`}>
                                             {item}
                                         </th>
                                     );
@@ -442,7 +446,7 @@ function Page() {
                                 : HistoryTableHeaders.map((item, index) => {
                                     if(index == 0) return;
                                     return (
-                                        <th key={index} className={`px-[10px] text-wrap ${index != 0 ? `border-l-[2px] border-[rgba(0,0,0,0.2)]` : {}} ${HistoryTableMaxWidths[index]} ${HistoryTableWidths[index]}`}>
+                                        <th key={index} className={`px-[10px] text-wrap ${index != 1 ? `border-l-[2px] border-[rgba(0,0,0,0.2)]` : {}} ${HistoryTableMaxWidths[index]} ${HistoryTableWidths[index]}`}>
                                             {item}
                                         </th>
                                     );
@@ -458,7 +462,7 @@ function Page() {
                                     onClick={() => handleRowClick(item1)} // Pass the job data to handleRowClick
                                 >
                                     {item1.map((item2, index2) => (
-                                        index2 != 0 && <td className={`${index2 !== 0 ? "border-l-[2px]" : ""} overflow-hidden max-w-[0px] text-pretty px-[10px] py-[5px] border-[rgba(0,0,0,0.2)]`} key={index2}>
+                                        index2 != 0 && <td className={`${index2 !== 1 ? "border-l-[2px]" : ""} overflow-hidden max-w-[0px] text-pretty px-[10px] py-[5px] border-[rgba(0,0,0,0.2)]`} key={index2}>
                                             {index2 !== 4 && item2}
                                         </td>
                                     ))}
@@ -484,7 +488,7 @@ function Page() {
             <div className="bottom-margin mb-[70px]" />
 
             {/* Job Creation Modal */}
-            <JobCreation isOpen={isCreationModalOpen} onClose={handleCloseModal} onConfirm={handleConfirmModal} formData={formData} onInputChange={handleInputChange} errorMessageAssign={errorMessageAssign} employeeData={employees} />
+            <JobCreation isOpen={isCreationModalOpen} onClose={handleCloseModal} onConfirm={handleConfirmModal} formData={formData} onInputChange={handleInputChange} errorMessageAssign={errorMessageAssign} employeeData={employees} PrivilegeLevel={PrivilegeLevel}/>
             {/* Job Detail Modal */}
             <CurrentJobDetail isOpen={isDetailModalOpen} jobData={selectedJob} onClose={() => setIsDetailModalOpen(false)} onConfirm={handleUpdateJob} onOpenFinish={handleOpenFinish} onDelete={handleDeleteCurrent} />
             <HistoryJobDetailModal isOpen={isHistoryModalOpen} jobData={selectedJob} onClose={() => setIsHistoryModalOpen(false)} onDelete={handleDeleteHistory} />
