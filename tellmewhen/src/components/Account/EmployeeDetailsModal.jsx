@@ -1,10 +1,14 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Button, Select, Option } from "@mui/joy";
+import ChangePasswordModal from "./ChangePassword";
+import { ChangePassword } from "@/scripts/account";
 
 function EmployeeDetailsModal({ isOpen, employeeData, onClose, onConfirm }) {
     const [isEditing, setIsEditing] = useState(false);
     const [tempData, setTempData] = useState(employeeData);
+    const [passwordOpen, setPasswordOpen] = useState(false);
+
 
     useEffect(() => {
         setTempData(employeeData);
@@ -27,10 +31,20 @@ function EmployeeDetailsModal({ isOpen, employeeData, onClose, onConfirm }) {
         setIsEditing(false);
     };
 
+    
     const handleCancel = () => {
         setTempData(employeeData);
         setIsEditing(false);
     };
+
+    const handleOpenPassword = async () => {
+        setPasswordOpen(true);
+    }
+    
+    const handlePasswordSave = async(password) => {
+        let res = await ChangePassword(tempData.name, password, tempData.id)
+        if(res.status===200) setPasswordOpen(false);
+    }
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -91,7 +105,6 @@ function EmployeeDetailsModal({ isOpen, employeeData, onClose, onConfirm }) {
                     </div>
 
                     <div className="max-tablet620:grid max-tablet620:grid-cols-1 tablet620:flex tablet620:justify-end tablet620:space-x-4 max-tablet620:gap-2">
-                        {!isEditing ? (
                             <>
                                 <Button
                                     onClick={onClose}
@@ -102,37 +115,18 @@ function EmployeeDetailsModal({ isOpen, employeeData, onClose, onConfirm }) {
                                     Close
                                 </Button>
                                 <Button
-                                    onClick={handleEdit}
+                                    onClick={handleOpenPassword}
                                     variant="solid"
                                     color="primary"
                                     className="px-4 min-w-[100px] py-2"
                                 >
-                                    Edit
+                                    Change Password
                                 </Button>
                             </>
-                        ) : (
-                            <>
-                                <Button
-                                    onClick={handleCancel}
-                                    variant="soft"
-                                    color="neutral"
-                                    className="row-start-2 min-w-[100px] px-4 py-2"
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    onClick={handleSave}
-                                    variant="solid"
-                                    color="primary"
-                                    className="min-w-[100px] px-4 py-2"
-                                >
-                                    Save
-                                </Button>
-                            </>
-                        )}
                     </div>
                 </form>
             </div>
+            <ChangePasswordModal isOpen={passwordOpen} onClose={()=>setPasswordOpen(false)} onSave={handlePasswordSave}/>
         </div>
     );
 }

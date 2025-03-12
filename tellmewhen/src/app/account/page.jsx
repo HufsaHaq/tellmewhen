@@ -5,7 +5,7 @@ import { Button, Select, Input, Option } from "@mui/joy";
 import { Search } from "@mui/icons-material";
 import ChangeName from "@/components/Account/ChangeName"
 import ChangeProfilePhoto from "@/components/Account/ChangeProfilePhoto"
-import ChangePassword from "@/components/Account/ChangePassword"
+import ChangePasswordModal from "@/components/Account/ChangePassword"
 import DeleteBusinessModal from "@/components/Account/DeleteBusiness"
 import { Menu } from "@mui/icons-material";
 import { useState, useEffect } from "react";
@@ -17,6 +17,7 @@ import { Leaderboard, Numbers, NotificationsActive } from "@mui/icons-material"
 
 import {
     ChangeBusinessPhoto,
+    ChangePassword,
     CreateEmployee,
     DeleteBusiness,
     GetAccountDetails,
@@ -48,14 +49,74 @@ function Account() {
     const [windowHeight, SetWindowHeight] = useState(typeof window !== "undefined" ? window.innerHeight : 1080);
     const [hidePage, setHidePage] = useState(!DEBUGMODE); //SET TO TRUE WHEN NOT DEBUGGING
     const [PrivilegeLevel, SetPrivilegeLevel] = useState(0);
+    const [FilteredEmployees, SetFilteredEmployees] = useState([]);
+
+    // Holds the current menu
+    const [SelectedMenu, SetSelectedMenu] = useState("Account");
+
+    // Holds all menus. Add to array to make new ones
+    const MenuItems = ["Account", "Manage Employees"];
+
+    //Used on the "Manage Employees" menu for the table
+    const [Employees, SetEmployees] = useState([""]);
+
+    // Value held inside of the Search Bar on the "Employee Management" page
+    const [SearchParameter, SetSearchParameter] = useState("");
+
+    // Hold the error message
+    const [errorMessageName, setErrorMessageName] = useState('');
+    const [errorMessagePhoto, setErrorMessagePhoto] = useState('');
+    const [errorMessagePassword, setErrorMessagePassword] = useState('');
+    const [errorMessageDelete, setErrorMessageDelete] = useState('');
+
+    const [activeJobs, setActiveJobs] = useState('');
+    const [errorMessageActive, setErrorMessageActive] = useState('');
+
+    const [totalJobs, setTotalJobs] = useState('');
+    const [errorMessageTotal, setErrorMessageTotal] = useState('');
+
+    if (typeof window !== "undefined") document.title = "Account | Tell Me When";
+
+    const [isChangeNameOpen, setIsChangeNameOpen] = useState(false);
+    const [businessName, setBusinessName] = useState("");
+    const [username, setUsername] = useState("");
+
+    const [isChangeProfilePhotoOpen, setIsChangeProfilePhotoOpen] = useState(false);
+    const [profilePhoto, setProfilePhoto] = useState(null);
+
+    const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+    const [Password, setPassword] = useState("[Enter Password]");
+
+    const [isDeleteBusinessOpen, setIsDeleteBusinessOpen] = useState(false);
+
+    // UI Hooks
+    const [SideMenuOpen, SetSideMenuOpen] = useState(false);
+    const [APIError, SetAPIError] = useState("");
+
     if (typeof window !== "undefined") window.addEventListener("resize", () => {
         SetWindowWidth(window.innerWidth);
         SetWindowHeight(window.innerHeight);
     }
     );
-    // UI Hooks
-    const [SideMenuOpen, SetSideMenuOpen] = useState(false);
-    const [APIError, SetAPIError] = useState("");
+    
+    useEffect(() => {
+        let arr=[]
+        if(Employees == undefined || SearchParameter == undefined) return
+
+        if(SearchParameter == "")
+        {
+            SetFilteredEmployees(Employees)
+            return;
+        }
+        for(let i = 0; i < Employees.length; i++)
+        {
+            if(Employees[i][0].toLowerCase().includes(SearchParameter.toLowerCase()) || Employees[i][1].toString().includes(SearchParameter))
+            {
+                arr.push(Employees[i])
+            }
+        }
+        SetFilteredEmployees(arr);
+    }, [SearchParameter, Employees])
 
     useEffect(() => {
         if (windowWidth > WindowBoundaries[1]) {
@@ -69,13 +130,14 @@ function Account() {
         setUsername(localStorage["username"]);
 
         async function CallAPI() {
-            let priv = await GetPrivilegeLevel(localStorage["userID"]);
-            SetPrivilegeLevel(priv);
+            let priv = 0; 
             // Gets all the API details in parallel
             let details, activeJobs, totalJobs, employees;
             try {
                 details = await GetAccountDetails() || setErrorMessageActive("An error occurred while connecting to the server.");
-
+                
+                priv= await GetPrivilegeLevel(localStorage["userID"]);
+                SetPrivilegeLevel(priv);
                 const APIData = await Promise.allSettled([
                     GetCurrentJobCount(),
                     GetTotalJobCount(),
@@ -130,43 +192,6 @@ function Account() {
         }
         CallAPI();
     }, [])
-    // Holds the current menu
-    const [SelectedMenu, SetSelectedMenu] = useState("Account");
-
-    // Holds all menus. Add to array to make new ones
-    const MenuItems = ["Account", "Manage Employees"];
-
-    //Used on the "Manage Employees" menu for the table
-    const [Employees, SetEmployees] = useState([""]);
-
-    // Value held inside of the Search Bar on the "Employee Management" page
-    const [SearchParameter, SetSearchParameter] = useState("");
-
-    // Hold the error message
-    const [errorMessageName, setErrorMessageName] = useState('');
-    const [errorMessagePhoto, setErrorMessagePhoto] = useState('');
-    const [errorMessagePassword, setErrorMessagePassword] = useState('');
-    const [errorMessageDelete, setErrorMessageDelete] = useState('');
-
-    const [activeJobs, setActiveJobs] = useState('');
-    const [errorMessageActive, setErrorMessageActive] = useState('');
-
-    const [totalJobs, setTotalJobs] = useState('');
-    const [errorMessageTotal, setErrorMessageTotal] = useState('');
-
-    if (typeof window !== "undefined") document.title = "Account | Tell Me When";
-
-    const [isChangeNameOpen, setIsChangeNameOpen] = useState(false);
-    const [businessName, setBusinessName] = useState("");
-    const [username, setUsername] = useState("");
-
-    const [isChangeProfilePhotoOpen, setIsChangeProfilePhotoOpen] = useState(false);
-    const [profilePhoto, setProfilePhoto] = useState(null);
-
-    const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
-    const [Password, setPassword] = useState("[Enter Password]");
-
-    const [isDeleteBusinessOpen, setIsDeleteBusinessOpen] = useState(false);
 
     const handleDeleteBusiness = async () => {
         try {
@@ -225,9 +250,11 @@ function Account() {
     
     };
 
-    const handleSavePassword = (newPassword) => {
-        setPassword(newPassword);
-        setIsChangePasswordOpen(false);
+    const handleSavePassword = async (newPassword) => {
+        let res = await ChangePassword(localStorage["username"], newPassword, localStorage["userID"])
+        if (res.status === 200) {
+            setIsChangePasswordOpen(false);
+        }
     };
 
     //Modals Part here
@@ -438,7 +465,7 @@ function Account() {
                                 onSave={handleSaveProfilePhoto}
                             />
 
-                            <ChangePassword
+                            <ChangePasswordModal
                                 isOpen={isChangePasswordOpen}
                                 Password={Password}
                                 onClose={() => setIsChangePasswordOpen(false)}
@@ -464,11 +491,11 @@ function Account() {
                             <span className={`max-tablet620:block tablet620:flex items-center mb-[10px]`}>
                                 <h1 className="text-[#808080] flex text-[15px] w-[100%] mb-[15px]">Modify the details of each employee.</h1>
                                 <span className={`max-tablet620:justify-between space-x-[5px] flex inline`}>
-                                    <Button className="mr-[50px] h-[10px]"
+                                    {PrivilegeLevel == 1 && <Button className="mr-[50px] h-[10px]"
                                         onClick={() => setIsEmployeeCreationModalOpen(true)}
                                     >
                                         Create
-                                    </Button>
+                                    </Button>}
                                     <Input endDecorator={<Search></Search>}
                                         className={`max-h-[50px] max-tablet620:w-full max-tablet620:mx-[5px]`}
                                         placeholder="Search"
@@ -490,8 +517,8 @@ function Account() {
 
                                     <tbody>
                                         {/* ITERATES THROUGH EACH EMPLOYEE */}
-                                        {Employees.map((employee, index1) => {
-                                            return (
+                                        {FilteredEmployees.map((employee, index1) => {
+                                                return (
                                                 <tr key={index1} className="cursor-pointer" onClick={() => handleEmployeeRowClick(employee)}>
                                                     {employee.length != 0 && employee.map((element, index2) => {
                                                         return (
@@ -503,8 +530,8 @@ function Account() {
                                                         );
                                                     })}
                                                 </tr>
-                                            );
-                                        })}
+                                            );}
+                                        )}
                                     </tbody>
                                 </table>
                             </div>

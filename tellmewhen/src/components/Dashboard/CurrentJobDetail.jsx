@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@mui/joy";
+import { GetCode } from "@/scripts/qr";
 
 function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish, onDelete }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -44,19 +45,6 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish, o
               readOnly
               className="w-full p-3 border rounded-lg disabled:bg-gray-100 cursor-not-allowed"
               value={tempData.id || ""}
-            />
-          </div>
-
-          {/*Assigned Worker*/}
-          <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-2">
-              Worker Name:
-            </label>
-            <input
-              type="text"
-              readOnly
-              className="w-full p-3 border rounded-lg disabled:bg-gray-100 cursor-not-allowed"
-              value={tempData.worker || ""}
             />
           </div>
 
@@ -107,7 +95,11 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish, o
                 </Button>
 
                 <Button
-                  onClick={()=>{window.location.href = "/qr_code"}}
+                  onClick={async ()=>{
+                    let res = await GetCode(tempData.id);
+                    console.log(res.data)
+                    if(res.status === 201) window.location.href = "/qr_code/" + res.data.qrCode.slice(22);
+                  }}
                   variant="solid"
                   color="primary"
                   className="relative px-4 justify-self-end max-tablet620:w-[98%] min-w-[100px] py-2 h-[30px]"

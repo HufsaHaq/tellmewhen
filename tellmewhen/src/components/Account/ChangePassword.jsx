@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@mui/joy";
 
-function ChangePassword({ isOpen, password, onClose, onSave }) {
+function ChangePasswordModal({ isOpen, password, onClose, onSave }) {
   const [isEditing, setIsEditing] = useState(false);
   const [tempPassword, setTempPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -113,4 +113,4 @@ function ChangePassword({ isOpen, password, onClose, onSave }) {
   );
 }
 
-export default ChangePassword;
+export default ChangePasswordModal;

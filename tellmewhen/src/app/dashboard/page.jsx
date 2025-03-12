@@ -156,8 +156,10 @@ function Page() {
         if (typeof window !== undefined && !DEBUGMODE && !(localStorage["loggedIn"] != true && localStorage["userID"] != null || localStorage["businessID"] != null)) window.location.href = "/auth";
 
         const CallAPI = async () => {
-            SetPrivilegeLevel(await GetPrivilegeLevel(localStorage["userID"]))
+            // Runs a quick call which can refresh tokens
+            await GetAccountDetails()
             
+            SetPrivilegeLevel(await GetPrivilegeLevel(localStorage["userID"]))
             const employeesData = await GetEmployees()
             console.log(employeesData);
             if(employeesData.status === 200) SetEmployees(employeesData.data);
@@ -230,7 +232,8 @@ function Page() {
             //Calls API
             const res = await CreateJob(formData.description, formData.deadline, employeeID);
             if (res.status === 201) {
-                window.location.reload();
+                window.location.href = "/qr/" + res.data.qrCode
+                console.log(res.data)
             }
             else if (res.status === 401) {
                 setErrorMessageAssign("Unauthorized request. Please log in to make changes");

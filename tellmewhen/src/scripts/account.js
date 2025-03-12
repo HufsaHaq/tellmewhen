@@ -88,12 +88,6 @@ export async function ChangeBusinessPhoto(photob64)
     return data;
 }
 
-export async function ChangeAdminPassword()
-{
-    // Changes the account password for the username "admin"
-
-}
-
 export async function DeleteBusiness()
 {
     // Deletes the whole business
@@ -179,4 +173,20 @@ export async function GetPrivilegeLevel(userId)
         } 
     }
     return 0;
+}
+
+export async function ChangePassword(username, password, userId)
+{
+    let data = null;
+    let endpoint = localStorage["endpoint"];
+    await axios.post(endpoint + "/business/change_password",
+        {
+            username: username,
+            newPassword: password,
+            userId: userId,
+        }
+    ).then(async (res) => {
+        data = res;
+    });
+    return data;
 }
