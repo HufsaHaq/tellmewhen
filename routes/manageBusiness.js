@@ -72,7 +72,7 @@ businessRouter.post('/change_password', authMiddleWare, adminMiddleWare, async (
     const userId = req.body.userId;
 
 
-    const hashedPwd = bycrpt(newPassword,10);
+    const hashedPwd = await bycrpt.hash(newPassword,10);
 
     try{
         await editUserLogin(userId,username,hashedPwd);
