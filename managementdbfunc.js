@@ -239,7 +239,7 @@ export const countTotalJobs = async (businessId) => {
  * ```
  */
 export const searchEmployees = async (searchTerm, businessId,limit = null) => {
-    var sql = 'SELECT UserID, Username, Role FROM WORKER_TABLE WHERE Business_ID = ?';
+    var sql = 'SELECT User_ID, Username, Role FROM WORKER_TABLE WHERE Business_ID = ?';
     let params = [businessId]
 
     if(searchTerm){
