@@ -477,12 +477,11 @@ jobRouter.post('/notify/:jid',authMiddleWare, async (req, res) => {
  * @returns {JSON} 404 - Not found, a job does not exist in the DB
  * @returns {JSON} 500 - Internal server error, the server failed to create the qr code 
  */
-jobRouter.get('/display_code', authMiddleWare, async(req,res) =>{
-
-    //extract jobId from the body
-    const jobId  = req.body.jobId
+jobRouter.get('/display_code/:jid', authMiddleWare, async(req,res) =>{
 
     //check DB to see if jobId exists
+
+    const jobId = req.params.jid;
 
     try{
 
