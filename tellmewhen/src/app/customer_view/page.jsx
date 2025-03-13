@@ -2,11 +2,15 @@
 
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
+import { useParams } from "next/navigation";
+import { GetJobDetails } from "@/scripts/customer";
 
 function Page() {
   const [text, setText] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [jobDescription, setJobDescription] = useState("");
+  const [errorDetails, setErrorDetails] = useState("");
+  const { jobID } = useParams();
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
   useEffect(() => {
@@ -110,6 +114,29 @@ function Page() {
     }
   };
 
+  useEffect(() => {
+
+    async function fetchJobDetails() {
+      let details;
+      try {
+        details = await GetJobDetails(jobID);
+        if (details.status === 200) {
+          setBusinessName(details.data);
+          setJobDescription(details.data);
+          setErrorDetails("");
+        }
+        else 
+          setErrorDetails("Cannot connect to server");
+      } 
+      catch (error) {
+        setErrorDetails("Cannot connect to server");
+        return;
+      }
+    }
+    fetchJobDetails();
+  }, [jobID]);
+  
+
   return (
     <div className="min-h-screen flex flex-col pt-20 pb-8 bg-gray-100">
       <div className="flex flex-col items-center justify-start mt-12 px-6">
@@ -167,14 +194,18 @@ function Page() {
 
         {/* Business details */}
         <div className="w-full max-w-2xl mx-auto bg-white border border-gray-300 rounded-lg shadow-md p-6">
-          <div className="mb-4">
-            <p className="font-semibold text-gray-700">Business:</p>
-            <p className="text-gray-600">{businessName}</p>
-          </div>
-          <div>
-            <p className="font-semibold text-gray-700">Job Description:</p>
-            <p className="text-gray-600">{jobDescription}</p>
-          </div>
+          {errorDetails ? (<div className="text-red-500 text-sm mt-2">{errorDetails}</div>) : (
+          <>
+            <div className="mb-4">
+              <p className="font-semibold text-gray-700">Business:</p>
+              <p className="text-gray-600">{businessName}</p>
+            </div>
+            <div>
+              <p className="font-semibold text-gray-700">Job Description:</p>
+              <p className="text-gray-600">{jobDescription}</p>
+            </div>
+          </>
+          )}
         </div>
       </div>
     </div>
