@@ -48,8 +48,8 @@ export async function generate_qr(job_id) {
     const url = generate_url(encryptedJobId);
     return QRCode.toDataURL(url, {
         color: {
-            dark: '#00F',
-            light: '#0000'
+            dark: '#000',
+            light: '#fff'
         }
     });
 }
