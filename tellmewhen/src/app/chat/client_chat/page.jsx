@@ -27,21 +27,9 @@ export default function Page() {
                     <button onClick={() => { HandleSave() }} className="bottom-[10px]  font-semibold text-white w-[100%] h-[45px] mx-auto bg-[#0A5397]">Create</button>
                 </div>
                 :
-                <div className="w-[100%]">
-                    <span className={`px-[25px] z-10 transition ease-in-out sticky top-[15px] bg-[rgba(233,233,233,1)] border-[1px] mb-[10px] border-[#A0A0A0] w-[98%] m-auto rounded-lg shadow-lg flex mt-[20px] justify-between items-center h-[60px]`}>
-                        <h1 className="font-semibold tablet620:text-[20px]">Username: {userData.username}</h1>
-                        <h1 className="font-semibold tablet620:text-[20px]">ID: {userData.id}</h1>
-                        <button
-                            className="bg-[#0A5397] px-[30px] py-[7px] text-white text-[17px] font-semibold rounded-md"
-                            onClick={() => {
-                                setUserData(null)
-                                setToken(null);
-                            }}
-                        >
-                            Change User
-                        </button>
-                    </span>
-                    <div>
+                <div className="!overflow-y-hidden w-full flex flex-col">
+                    
+                    <div style = {style.container}>
                     <ClientChatComponent data={data}></ClientChatComponent>
                     </div>
 
@@ -49,4 +37,10 @@ export default function Page() {
             }
         </>
     )
+}
+
+const style = {
+    container: {
+        height: "calc(100vh - 85px)",
+    }
 }

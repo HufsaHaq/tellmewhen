@@ -38,7 +38,7 @@ export function ClientChatComponent({ data = null }) {
     if (!channel) return <div>Initializing chat...</div>;
 
     return (
-        <div className="h-screen w-full flex flex-col">
+        <div className=" w-full flex flex-col">
             <Chat client={client}>
                 <Channel channel={channel}>
                     <Window className="relative h-full">
@@ -46,12 +46,12 @@ export function ClientChatComponent({ data = null }) {
                         <ChannelHeader className="sticky top-0 bg-white z-10 shadow-sm" />
 
                         {/* Scrollable message area with bottom padding */}
-                        <div className="h-[calc(100vh-160px)]">
+                        <div className="h-[calc(100vh-200px)]">
                             <MessageList />
                         </div>
 
                         {/* Fixed input at screen bottom */}
-                        <div className="absolute bottom-0 left-0 right-0 bg-white border-t">
+                        <div className="bg-white border-t">
                             <MessageInput />
                         </div>
                     </Window>
