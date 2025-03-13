@@ -232,8 +232,8 @@ function Page() {
             //Calls API
             const res = await CreateJob(formData.description, formData.deadline, employeeID);
             if (res.status === 201) {
-                window.location.href = "/qr/" + res.data.qrCode
-                console.log(res.data)
+                localStorage["qr"] = res.data.qrCode;
+                window.location.href = "/qr_code/"
             }
             else if (res.status === 401) {
                 setErrorMessageAssign("Unauthorized request. Please log in to make changes");

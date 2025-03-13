@@ -9,27 +9,9 @@ function Page() {
     const [qrCode, setQrCode] = useState(" ");
     const [error, setError] = useState("");
     
-    const fetchQRCode = async () =>{
-        //fetching and setting the qr code string
-        try {
-            const jobID = "job-id"; // Replace this with the actual jobID
-            const qrCodeBase64 = await GetCode(jobID);
-            if(qrCodeBase64.status === 200) {
-                setQrCode(qrCodeBase64.data);
-                setError("");
-            }             
-            else
-                setError("Cannot connect to server");
-            
-        } catch (error) {
-            setError("Failed to fetch QR code. Please try again");
-        }
-        
-    };
-
     useEffect(() => {
-        fetchQRCode();
-    }, []);
+        setQrCode(localStorage["qr"]);
+    },[]);
 
     return (
         <div className="min-h-screen flex flex-col pt-20 pb-8">

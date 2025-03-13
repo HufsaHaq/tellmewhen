@@ -98,7 +98,10 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish, o
                   onClick={async ()=>{
                     let res = await GetCode(tempData.id);
                     console.log(res.data)
-                    if(res.status === 201) window.location.href = "/qr_code/" + res.data.qrCode.slice(22);
+                    if(res.status === 201){
+                      localStorage["qr"] = res.data.qrCode;
+                      window.location.href = "/qr_code/"
+                    }
                   }}
                   variant="solid"
                   color="primary"

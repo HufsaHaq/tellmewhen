@@ -12,11 +12,8 @@ export async function GetCode(jobID) {
     */
     let base = localStorage["endpoint"];
     let data = null;
-    await axios.post(
-        base + "/jobs/display_code",
-        {
-            jobId: jobID,
-        }
+    await axios.get(
+        base + "/jobs/display_code/"+jobID,
     ).then((res) => {
         data = res
     }).catch(err => console.error(err));
