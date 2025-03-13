@@ -197,18 +197,20 @@ function Account() {
         try {
             const res = await DeleteBusiness();
             console.log(res);
-            if(res.status === 500)
+            if(res.status === 204)
             {
-                setErrorMessageDelete("Failed to delete business. Please try again later.");
-                return;
-            }
-            else{
                 ClearCookies()
                 localStorage.removeItem("loggedIn")
                 localStorage.removeItem("userID")
                 localStorage.removeItem("businessID")
                 window.location.href="/auth"
             }
+            else if(res.status === 500)
+            {
+                setErrorMessageDelete("Failed to delete business. Please try again later.");
+                return;
+            }
+
         }
         catch (error) {
             console.log(error)

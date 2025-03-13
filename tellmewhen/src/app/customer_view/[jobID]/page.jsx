@@ -5,13 +5,29 @@ import Header from "@/components/Header";
 import { useParams } from "next/navigation";
 import { GetJobDetails } from "@/scripts/customer";
 
-function Page() {
+
+/* 
+
+              DYNAMIC ROUTING
+This will allow for data to be added to the end of the URL in the form of
+
+            localhost:PORT:/customer_view/......
+
+This then can be accessed using params.jobID
+
+*/
+
+
+function Page({params}) {
   const [text, setText] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [errorDetails, setErrorDetails] = useState("");
   const { jobID } = useParams();
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+
+  // Gets the JobID from the end of the URL
+  const [JobID, SetJobID] = useState(params.jobID);
 
   useEffect(() => {
     checkSubscriptionStatus();
