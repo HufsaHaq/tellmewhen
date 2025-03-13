@@ -13,7 +13,8 @@ This will allow for data to be added to the end of the URL in the form of
 
             localhost:PORT:/customer_view/......
 
-This then can be accessed using params.jobID
+This then can be accessed using params.slug
+(only name that works as far as i know :( )
 
 */
 
@@ -25,9 +26,6 @@ function Page({params}) {
   const [errorDetails, setErrorDetails] = useState("");
   const { jobID } = useParams();
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-
-  // Gets the JobID from the end of the URL
-  const [JobID, SetJobID] = useState(params.jobID);
 
   useEffect(() => {
     checkSubscriptionStatus();
