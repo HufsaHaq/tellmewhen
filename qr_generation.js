@@ -3,10 +3,8 @@ import crypto from 'crypto';
 import dotenv from "dotenv";
 dotenv.config();
 
-//const ENCRYPTION_KEY = Buffer.from(process.env.ENCRYPTION_KEY, 'base64'); // Decode Base64 key
-//const ENCRYPTION_IV = Buffer.from(process.env.ENCRYPTION_IV, 'base64'); // Decode Base64 IV
-const ENCRYPTION_KEY = atob(process.env.ENCRYPTION_KEY)
-const ENCRYPTION_IV = atob(process.env.ENCRYPTION_IV)
+const ENCRYPTION_KEY = Buffer.from(process.env.ENCRYPTION_KEY, 'base64'); // Decode Base64 key
+const ENCRYPTION_IV = Buffer.from(process.env.ENCRYPTION_IV, 'base64'); // Decode Base64 IV
 
 const ALGO = 'aes-128-cbc';
 
