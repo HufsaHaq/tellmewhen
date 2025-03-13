@@ -197,7 +197,7 @@ indexRouter.post('/register', async (req, res) => {
       if (attempt != null) {
           res.status(201).json({ message: 'Success, Business Registered' });
       } else {
-          res.status(409).json({ error: err });
+          res.status(409).json({ error: 'Fail' });
       }
   })
 
