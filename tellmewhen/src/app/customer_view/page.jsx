@@ -65,6 +65,7 @@ function Page() {
     const registration = await navigator.serviceWorker.ready;
     registration.showNotification("Test Notification", {
       body: "This is a dummy notification for testing purposes.",
+      data: { url: "https://youtube.com" },
     });
   };
 
@@ -74,6 +75,7 @@ function Page() {
       return;
     }
 
+    //job/display_code/:jId
     try {
       const registration = await navigator.serviceWorker.register("/sw.js");
       console.log("Service Worker registered:", registration);
@@ -113,6 +115,7 @@ function Page() {
       }
     }
   };
+
 
   useEffect(() => {
 
