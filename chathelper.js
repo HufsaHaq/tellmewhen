@@ -11,7 +11,7 @@ const chatRouter = express.Router();
 // Creates or gets an instance of StreamChat from the API keys
 const streamChat = StreamChat.getInstance(
     process.env.STREAM_API_KEY,
-    process.env.STREAM_SECRET_API_KEY
+    process.env.STREAM_API_SECRET
 );
 
 // token for businesses

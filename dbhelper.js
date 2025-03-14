@@ -124,6 +124,15 @@ const createNewJob = async (businessId, userId = null, description, dueDate) => 
       randomJobId: randomJobId }
 };
 
+export const getCustomerJobDetails = async (jobId) => {
+  const sql = `
+    SELECT JOB_TABLE.Description, BUSINESS_TABLE.Business_Name 
+    FROM JOB_TABLE JOIN BUSINESS_TABLE ON JOB_TABLE.Business_ID = BUSINESS_TABLE.Business_ID 
+    WHERE JOB_TABLE.Job_ID = ?`;
+
+  return JSON.parse(await execute(sql, jobId))[0];
+}
+
 const deletefromjobtable = async (jobId) => {
   const sql = `
     DELETE FROM JOB_TABLE
