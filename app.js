@@ -39,6 +39,7 @@ app.use("/business", businessRouter);
 
 app.use('/jobs',jobRouter)
 app.use('/customer',customerRouter)
+app.use ('/chat', chatRouter)
 
 
 // catch 404 and forward to error handler
