@@ -21,7 +21,8 @@
     "nodemon": "^3.1.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-responsive": "^10.0.1"
+    "react-responsive": "^10.0.1",
+    "stream-chat-react": "^12.13.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",

@@ -9,7 +9,7 @@ function ChangeProfilePhoto({isOpen, profilePhoto, errorMessage, onClose, onSave
 
 	const imgOptions = {
 		maxSizeMB: 1,
-		maxWidthOrHeight: 256,
+		maxWidthOrHeight: 200,
 		useWebWorker: true,
 	}
 	

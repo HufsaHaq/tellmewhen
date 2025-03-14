@@ -124,6 +124,21 @@ function Account() {
         }
 
     }, [windowWidth, windowHeight, SideMenuOpen])
+    async function UpdateEmployees()
+    {
+        let employees = await GetEmployees() || [];
+        if (employees.status === 200) {
+            let employeesData = employees.data
+            let array = [];
+            for (let i = 0; i < employeesData.length; i++) {
+                if(priv <= employeesData[i].Role) array.push([employeesData[i].Username, employeesData[i].User_ID, PrivilegeLookup[employeesData[i].Role] || "unknown"])
+            }
+            SetEmployees(array);
+        }
+        else {
+            SetAPIError("Cannot connect to server")
+        }
+    }
 
     useEffect(() => {
         if (typeof window !== undefined && !DEBUGMODE && !(localStorage["loggedIn"] != true && localStorage["userID"] != null || localStorage["businessID"] != null)) window.location.href = "/auth";
@@ -268,7 +283,7 @@ function Account() {
         let res = await CreateEmployee(newEmployee[0], newEmployee[1], newEmployee[2]);
         if(res.status === 201)
         {
-            SetEmployees((prevEmployees) => [...prevEmployees, [newEmployee[0], newEmployee[1], PrivilegeLookup[newEmployee[2]]]]);
+            window.location.reload();
             setIsEmployeeCreationModalOpen(false);
         }
     };
@@ -287,13 +302,7 @@ function Account() {
     };
 
     const handleUpdateEmployee = (updatedEmployee) => {
-        const newList = Employees.map((emp) => {
-            if (emp[1] === updatedEmployee.id) {
-                return [updatedEmployee.name, updatedEmployee.id, updatedEmployee.role];
-            }
-            return emp;
-        });
-        SetEmployees(newList);
+        UpdateEmployees()
         setIsEmployeeDetailsModalOpen(false);
     };
 

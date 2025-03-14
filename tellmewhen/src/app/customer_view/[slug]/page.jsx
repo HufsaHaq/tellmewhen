@@ -4,11 +4,11 @@ import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { useParams } from "next/navigation";
 import { GetJobDetails } from "@/scripts/customer";
-
+import React, { use } from "react";
 
 /* 
 
-              DYNAMIC ROUTING
+                            DYNAMIC ROUTING
 This will allow for data to be added to the end of the URL in the form of
 
             localhost:PORT:/customer_view/......
@@ -24,7 +24,8 @@ function Page({params}) {
   const [businessName, setBusinessName] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [errorDetails, setErrorDetails] = useState("");
-  const { jobID } = useParams();
+  const parameters = React.use(params)
+  const [jobID, setJobID] = useState("");
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
   useEffect(() => {
@@ -132,14 +133,16 @@ function Page({params}) {
 
 
   useEffect(() => {
-
     async function fetchJobDetails() {
+      setJobID(parameters.slug)
+      console.log(parameters.slug)
       let details;
       try {
-        details = await GetJobDetails(jobID);
+        details = await GetJobDetails(parameters.slug);
         if (details.status === 200) {
-          setBusinessName(details.data);
-          setJobDescription(details.data);
+          console.log(details)
+          setBusinessName(details.data.Business_Name || "");
+          setJobDescription(details.data.Description || "");
           setErrorDetails("");
         }
         else 

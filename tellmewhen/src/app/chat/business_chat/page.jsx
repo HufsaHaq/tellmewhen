@@ -20,7 +20,7 @@ export default function Page() {
             setID(storedID);
 
             // Attempt login using that ID
-            const res = await LogIn(storedID);
+            const res = await LogIn(storedID, localStorage["businessID"]);
             if (res.status === 200) {
                 setUserData(res.data.user);
                 setData(res.data);
