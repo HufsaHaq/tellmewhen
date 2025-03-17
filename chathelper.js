@@ -16,7 +16,9 @@ const streamChat = StreamChat.getInstance(
 
 // token for businesses
 const generateBusinessToken = (userId) => {
-    return streamChat.createToken(userId);
+    return streamChat.createToken(`worker-${userId}`, {
+      role: "channel_moderator",  
+    });
   };
 
 // temp token for customers
@@ -31,6 +33,7 @@ const createJobChannel = async (jobId, userId) => {
   try {
       const channel = streamChat.channel("messaging", `job-${jobId}`, {
           name: `Job Chat - ${jobId}`,
+          created_by_id : process.env.STREAM_ADMIN_ID,
           members: [
               { user_id: `worker-${userId}`, role: "channel_moderator" }, // Worker
               { user_id: `guest-${jobId}`, role: "guest" }, // Customer
