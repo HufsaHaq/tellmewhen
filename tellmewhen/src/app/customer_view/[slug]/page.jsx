@@ -19,14 +19,18 @@ This then can be accessed using params.slug
 */
 
 
-function Page({params}) {
+// function Page({params}) {
+
+function Page() {
   const [text, setText] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [errorDetails, setErrorDetails] = useState("");
-  const parameters = React.use(params)
-  const [jobID, setJobID] = useState("");
+  // const parameters = React.use(params)
+  // const [jobID, setJobID] = useState("");
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const params = useParams();
+  let jobID = params.slug;
 
   useEffect(() => {
     checkSubscriptionStatus();
@@ -80,7 +84,8 @@ function Page({params}) {
     const registration = await navigator.serviceWorker.ready;
     registration.showNotification("Test Notification", {
       body: "This is a dummy notification for testing purposes.",
-      data: { url: "https://youtube.com" },
+      data: { url: `/customer_view/${params.slug}` },
+
     });
   };
 
@@ -132,29 +137,52 @@ function Page({params}) {
   };
 
 
+  // useEffect(() => {
+  //   async function fetchJobDetails() {
+  //     setJobID(parameters.slug)
+  //     console.log(parameters.slug)
+  //     let details;
+  //     try {
+  //       details = await GetJobDetails(parameters.slug);
+  //       if (details.status === 200) {
+  //         console.log(details)
+  //         setBusinessName(details.data.Business_Name || "");
+  //         setJobDescription(details.data.Description || "");
+  //         setErrorDetails("");
+  //       }
+  //       else 
+  //         setErrorDetails("Cannot connect to server");
+  //     } 
+  //     catch (error) {
+  //       setErrorDetails("Cannot connect to server");
+  //       return;
+  //     }
+  //   }
+
+
+  //   fetchJobDetails();
+  // }, [jobID]);
+  
   useEffect(() => {
     async function fetchJobDetails() {
-      setJobID(parameters.slug)
-      console.log(parameters.slug)
-      let details;
       try {
-        details = await GetJobDetails(parameters.slug);
+        const details = await GetJobDetails(params.slug);
         if (details.status === 200) {
-          console.log(details)
           setBusinessName(details.data.Business_Name || "");
           setJobDescription(details.data.Description || "");
           setErrorDetails("");
-        }
-        else 
+        } else {
           setErrorDetails("Cannot connect to server");
-      } 
-      catch (error) {
+        }
+      } catch (error) {
         setErrorDetails("Cannot connect to server");
-        return;
       }
     }
-    fetchJobDetails();
-  }, [jobID]);
+  
+    if (params.slug) {
+      fetchJobDetails();
+    }
+  }, [params.slug]); // Use params.slug as the dependency
   
 
   return (
