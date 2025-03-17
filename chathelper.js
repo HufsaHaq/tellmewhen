@@ -1,6 +1,7 @@
 import express from 'express';
 import { StreamChat } from "stream-chat";
 import dotenv from "dotenv";
+import { executeQuery } from './db.js';
 
 // loads env
 dotenv.config("./");
@@ -87,8 +88,11 @@ const deleteChannel= async (jobId) => {
       }
 
       // If the job is in the history table, delete the chat channel
-      const channel = streamChat.channel("messaging", `job-${jobId}`);
-      await channel.delete();
+      const channels = await QuerybyName(jobId);
+      console.log(channels)
+      const cid = channels[0].cid;
+
+      await streamChat.deleteChannels([cid])
       return;
   } catch (error) {
       console.error("Error deleting channel:", error.message);

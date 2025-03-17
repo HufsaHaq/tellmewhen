@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { chatRouter, generateBusinessToken, generateGuestToken, createJobChannel, QuerybyName ,QuerybyUser} from '../chathelper.js';
+import { chatRouter, generateBusinessToken, generateGuestToken, createJobChannel, QuerybyName ,QuerybyUser,streamChat,deleteChannel} from '../chathelper.js';
 import { executeQuery } from '../db.js';
 // loads env
 dotenv.config("./");
@@ -48,44 +48,30 @@ chatRouter.get("/worker/login/:userId/:businessId", async (req, res) => {
     }
 });
 
+chatRouter.get("/guest/login/:jobId", async (req, res) => {
+    const jobId = req.params.jobId;
+    if (!jobId) {
+        return res.status(400).json({ message: "Invalid Job ID" });
+    }
+    try{
+    const result = await QuerybyUser(jobId);
+    if (result.users.length === 0) {
+        await streamChat.upsertUser({id: "guest-" + jobId});
+    }
 
-chatRouter.post("/create_user", async (req, res) => {
-    try {
-        const jobId = req.body.jobId;
-    
-        // Validate input
-        validateRequiredFields(["jobId"], req.body);
-    
-        // Generate a token for the guest
-        const token = generateGuestToken(jobId);
-    
-        console.log(`Guest for job ${jobId} created successfully`);
-        res.status(200).json({ token });
-    } catch (error) {
-        console.error("Create guest error:", error.message);
-        res.status(400).json({ message: "server error" });
+    const guestToken = generateGuestToken(jobId);
+    res.status(200).json({token:guestToken});
+    }
+    catch (error) {
+        console.error("Guest login error:", error.message);
+        res.status(404).json({ message: "Server error" });
     }
 });
 
-chatRouter.post("/channels/create_channel/:businessId", async (req, res) => {
-    try {
-        const jobId = req.body.jobId;
-        const businessId = req.params.businessId;
 
-        // Create the job channel
-        const channel = await createJobChannel(jobId, businessId);
-    
-        console.log(`Channel for job ${jobId} created successfully`);
-        res.status(200).json({ channel });
-      } catch (error) {
-        console.error("Create job channel error:", error.message);
-        res.status(400).json({ message: "Internal server error" });
-      }
-});
-
-chatRouter.delete("/channels/delete_channel", async (req, res) => {
+chatRouter.post("/channels/delete_channel", async (req, res) => {
     try {
-        const { jobId } = req.body;
+        const jobId  = req.body.jobId;
 
         if (!jobId) {
             return res.status(400).json({ message: "jobId is required" });
