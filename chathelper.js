@@ -16,30 +16,29 @@ const streamChat = StreamChat.getInstance(
 
 // token for businesses
 const generateBusinessToken = (userId) => {
-    return streamChat.createToken(`worker-${userId}`, {
-      role: "channel_moderator",  
-    });
-  };
+    return streamChat.createToken(`worker-${userId}`, 36000 )};
 
 // temp token for customers
 const generateGuestToken = (jobId) => {
-    return streamChat.createToken(`guest-${jobId}`, {
-      role: "guest", // restrict permissions 
-    });
-  };
+    return streamChat.createToken(`guest-${jobId}`, 36000)};
 
 // a channel for a job
 const createJobChannel = async (jobId, userId) => {
   try {
-      const channel = streamChat.channel("messaging", `job-${jobId}`, {
-          name: `Job Chat - ${jobId}`,
-          created_by_id : process.env.STREAM_ADMIN_ID,
-          members: [
+      const serverClient = new StreamChat( process.env.STREAM_API_KEY,process.env.STREAM_API_SECRET);
+      const users = await QuerybyUser(jobId)
+      if(users.users.length === 0 || users == undefined || users == []){
+          await streamChat.upsertUser({id: "guest-" + jobId})
+      }
+      const channel = serverClient.channel("messaging", {
+          created_by_id: "worker-"+ userId,
+          members: 
+          [
               { user_id: `worker-${userId}`, role: "channel_moderator" }, // Worker
               { user_id: `guest-${jobId}`, role: "guest" }, // Customer
           ],
+          name: `Job Chat - ${jobId}`,
       });
-
       await channel.create();
 
       //  automatic welcome message to the customer
@@ -51,10 +50,28 @@ const createJobChannel = async (jobId, userId) => {
       console.log(`Channel for job ${jobId} created and welcome message sent`);
       return channel;
   } catch (error) {
-      console.error("Error creating channel or sending message:", error.message);
+      //console.error("Error creating channel or sending message:", error.message);
       throw error;
   }
 };
+
+const QuerybyName = async (jobId) => {
+  const chatClient = new StreamChat( process.env.STREAM_API_KEY,process.env.STREAM_API_SECRET);
+  const filter = { name: { $in: [`Job Chat - ${jobId}`] } };
+  const sort = [{last_updated: -1}];
+  const channels = await chatClient.queryChannels(filter, sort,{
+      watch: true, // this is the default
+      state: true,
+    });
+  return channels;
+  };
+
+const QuerybyUser = async (jobId) => {
+    const chatClient = new StreamChat( process.env.STREAM_API_KEY,process.env.STREAM_API_SECRET);
+    const id = "guest-" + jobId;
+    const users = await chatClient.queryUsers({  id });
+    return users;
+    };
 
 const deleteChannel= async (jobId) => {
   try {
@@ -84,6 +101,8 @@ export{
   generateBusinessToken,
   generateGuestToken,
   createJobChannel,
+  QuerybyName,
+  QuerybyUser,
   streamChat,
   deleteChannel,
  };

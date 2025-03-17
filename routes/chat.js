@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { chatRouter, generateBusinessToken, generateGuestToken, createJobChannel, streamChat } from '../chathelper.js';
+import { chatRouter, generateBusinessToken, generateGuestToken, createJobChannel, QuerybyName ,QuerybyUser} from '../chathelper.js';
 import { executeQuery } from '../db.js';
 // loads env
 dotenv.config("./");
@@ -21,6 +21,7 @@ chatRouter.get("/worker/login/:userId/:businessId", async (req, res) => {
 
         const token = generateBusinessToken(userId);
 
+
         //jobs assigned to the worker
         const jobsQuery = 'SELECT Job_ID FROM JOB_TABLE WHERE User_ID = ?;';
         const jobsResult = await executeQuery(jobsQuery, [userId]);
@@ -29,22 +30,18 @@ chatRouter.get("/worker/login/:userId/:businessId", async (req, res) => {
         const channels = [];
         for (const job of jobsResult) {
             const jobId = job.Job_ID;
-            const channelId = `job-${jobId}`;
+            const result = await QuerybyName(jobId);
 
-            // channel already exists?
-            let channel = streamChat.channel("messaging", channelId);
-            const channelState = await channel.watch();
-
-            if (!channelState) {
+            if (result.length === 0) {
                 // Create the channel if it doesn't exist
-                channel = await createJobChannel(jobId, userId);
+                let channel = await createJobChannel(jobId, userId);
+                channels.push(channel);
             }
 
-            channels.push(channel);
         }
 
         console.log(`Worker ${userId} logged in successfully`);
-        res.status(200).json({ token, channels });
+        res.status(200).json({ token:token, channels:channels });
     } catch (error) {
         console.error("Worker login error:", error.message);
         res.status(404).json({ message: "Server error" });
