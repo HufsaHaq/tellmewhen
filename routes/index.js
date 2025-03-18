@@ -345,12 +345,12 @@ indexRouter.post('/save-new-subscription', async(req,res) => {
   const businessId = req.body.businessId;
 
   //recover the actual job ID
-  const decryptJobId = decryptJobId(encryptedJobId);
+  const jobId = await decryptJobId(encryptedJobId);
 
   //save subscription to DB
   try{
 
-    await addSubscription(decryptJobId,businessId,endpoint, keys.auth, keys.p256dh)
+    await addSubscription(jobId,businessId,endpoint, keys.auth, keys.p256dh)
 
   }catch(err){
 
