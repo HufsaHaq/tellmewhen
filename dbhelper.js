@@ -57,6 +57,17 @@ const getOpenJobs = async (businessId, userId = null) => {
   return execute(sql, params);
 };
 
+/**
+ * 
+ * @param {String} jobId
+ * @returns {JSON} information about the job
+ */
+const getJobInfo = async (jobId) => {
+
+    sql = `SELECT * FROM JOB_TABLE WHERE job_ID = ?;`;
+
+    return execute(sql,[jobId]);
+};
 // job history
 const getJobHistory = async (businessId, userId = null) => {
   let sql = `
@@ -352,6 +363,7 @@ export {
   getNotifications,
   getOpenJobs,
   getJobHistory,
+  getJobInfo,
   assignJobToUser,
   completeJob,
   getSubscription,
