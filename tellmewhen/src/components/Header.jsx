@@ -15,7 +15,7 @@ function Header() {
 
     useEffect(() => {
         if(typeof window === "undefined") return;
-        SetLoggedIn(localStorage["loggedIn"] != "false" ? true : false);
+        SetLoggedIn(localStorage["loggedIn"] != "false" ? (localStorage["loggedIn"] != "true" ? false : true) : false);
         if (windowWidth > 1080 && NavigationOpen) SetNavigationOpen(false);
         SetWindowWidth(window.innerWidth);
 

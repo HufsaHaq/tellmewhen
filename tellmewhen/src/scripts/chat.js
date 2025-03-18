@@ -111,7 +111,7 @@ export async function DeleteChannel(jobId) {
         throw new Error("Endpoint not defined.");
     }
 
-    await axios.delete(base + "/chat/channels/delete_channel", {
+    await axios.post(base + "/chat/channels/delete_channel", {
         data: { jobId: jobId },
     }).then(res => {
         console.log(res.status);

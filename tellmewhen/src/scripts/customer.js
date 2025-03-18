@@ -6,7 +6,11 @@ export async function GetJobDetails(jobID)
     let data = null;
     let endpoint = localStorage["endpoint"];
     await axios.get(endpoint + "/customer/my_job/" + jobID)
-    .then(res => data = res)
+    .then(res =>
+        {
+            console.log(res)
+            data = res
+    })
     return data;
     
 }

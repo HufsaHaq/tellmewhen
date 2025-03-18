@@ -12,19 +12,19 @@ const HistoryJobDetailModal = ({ isOpen, jobData, onClose, onDelete }) => {
                 <h2 className="text-center text-2xl font-semibold mb-6">Job Details</h2>
                 <div className="mb-4">
                     <p className="text-gray-700 font-medium">Job ID:</p>
-                    <p className="p-3 border rounded-lg bg-gray-100">{id}</p>
+                    <p className="p-3 border rounded-lg bg-gray-100">{id || "‎ "}</p>
                 </div>
                 <div className="mb-4">
                     <p className="text-gray-700 font-medium">Description:</p>
-                    <p className="p-3 border rounded-lg bg-gray-100">{description}</p>
+                    <p className="p-3 border rounded-lg bg-gray-100">{description || "‎ "}</p>
                 </div>
                 <div className="mb-4">
                     <p className="text-gray-700 font-medium">Remarks:</p>
-                    <p className="p-3 border rounded-lg bg-gray-100">{remarks}</p>
+                    <p className="p-3 border rounded-lg bg-gray-100">{remarks || "‎ "}</p>
                 </div>
                 <div className="mb-6">
                     <p className="text-gray-700 font-medium">Completion Date:</p>
-                    <p className="p-3 border rounded-lg bg-gray-100">{completionDate}</p>
+                    <p className="p-3 border rounded-lg bg-gray-100">{completionDate || "‎"}</p>
                 </div>
                 <div className="max-tablet620:grid max-tablet620:grid-cols-1 tablet620:flex tablet620:justify-end tablet620:space-x-4 max-tablet620:gap-2">
                     <Button onClick={onClose} variant="soft" color="neutral" className="min-w-[100px]">

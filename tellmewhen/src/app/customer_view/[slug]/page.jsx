@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import { useParams } from "next/navigation";
 import { GetJobDetails } from "@/scripts/customer";
 import React, { use } from "react";
+import { SaveSubscription } from "@/scripts/webpush";
 
 /* 
 
@@ -27,7 +28,7 @@ function Page() {
   const [jobDescription, setJobDescription] = useState("");
   const [errorDetails, setErrorDetails] = useState("");
   // const parameters = React.use(params)
-  // const [jobID, setJobID] = useState("");
+  const [decryptedJobID, setDecryptedJobID] = useState("");
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const params = useParams();
   let jobID = params.slug;
@@ -52,15 +53,10 @@ function Page() {
 
   async function saveSubscription(subscription) {
     let endpoint = localStorage["endpoint"];
-    const response = await fetch(endpoint + '/save-new-subscription', {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            ...subscription,
-            jobId: window.location.pathname.split('/').pop()
-        })
-    });
+    let res = await SaveSubscription(subscription, params.slug, localStorage["businessID"])
+    
 }
+
   const checkSubscriptionStatus = async () => {
     if ("serviceWorker" in navigator) {
       const registration = await navigator.serviceWorker.ready;
@@ -114,7 +110,7 @@ function Page() {
       });
 
       console.log("Push Subscription:", subscription);
-
+      console.log(subscription.endpoint);
       await saveSubscription(subscription);
 
       setNotificationsEnabled(true);
@@ -170,6 +166,8 @@ function Page() {
         if (details.status === 200) {
           setBusinessName(details.data.Business_Name || "");
           setJobDescription(details.data.Description || "");
+          setDecryptedJobID(details.data.Job_ID || "");
+          console.log(details.data.Job_ID)
           setErrorDetails("");
         } else {
           setErrorDetails("Cannot connect to server");
