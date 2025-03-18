@@ -2,7 +2,7 @@
 To Do:
 - Decrypt  */
 import express from 'express';
-import { getJobHistory, getOpenJobs, getNotifications, getJobInfo, getCustomerJobDetails } from '../dbhelper.js';
+import { getJobHistory, getOpenJobs, getNotifications, getCustomerJobDetails } from '../dbhelper.js';
 import { decrypt } from 'dotenv';
 import { decryptJobId } from '../qr_generation.js';
 
@@ -17,12 +17,13 @@ customerRouter.get('/my_job/:job_id', async (req, res) => {
     try{
         const decyptedId = decryptJobId(jobId)
 
-        results = await getCustomerJobDetails(jobId)
+        let results = await getCustomerJobDetails(decyptedId)
 
-        results['jobID'] = jobId
+        results["jobId"] = decyptedId;
         
         return res.status(200).json(results)
     }catch (err){
+        console.log(err)
         return res.status(500).json({ error:`Error in looking up job with ID: ${jobId}`})
     }
     

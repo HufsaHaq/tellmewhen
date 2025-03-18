@@ -352,7 +352,6 @@ export {
   getNotifications,
   getOpenJobs,
   getJobHistory,
-  getJobInfo,
   assignJobToUser,
   completeJob,
   getSubscription,
