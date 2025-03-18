@@ -413,12 +413,12 @@ jobRouter.post('/complete/:jid',authMiddleWare, async (req,res) =>{
 jobRouter.post('/notify/:jid',authMiddleWare, async (req, res) => {
     // Notify the customer and update the notification table
     const businessId = req.user.businessId;
-    const encryptedJobId = req.params.job_id;
-    const jobId = decryptJobId(encryptedJobId);
+    const encryptedJobId = req.params.jid;
+    const jobId = await decryptJobId(encryptedJobId);
 
     const messageBody = req.body.message || 'Your job is ready for pickup';
     const messageTitle = req.body.title || 'There is an update to your job';
-    const photo = getBusinessPhoto(businessId);
+    const photo = await getBusinessPhoto(businessId);
 
     let pushSubscription;
     try{
