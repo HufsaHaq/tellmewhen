@@ -54,6 +54,14 @@ function Header() {
                                 >
                                     Dashboard
                                 </button>
+
+                                <button
+                                    onClick={() => {
+                                        window.location.href = "/chat/business_chat";
+                                    }}
+                                    >
+                                    Chat
+                                </button>
                                 <button
                                     onClick={() => {
                                         window.location.href = "/account";
@@ -117,6 +125,13 @@ function Header() {
                                             }}
                                         >
                                             Dashboard
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                window.location.href = "/chat/business_chat";
+                                            }}
+                                            >
+                                            Chat
                                         </button>
                                         <button
                                             className="text-white text-[20px] justify-self-start"
