@@ -27,16 +27,18 @@ const refreshPrivateKey = fs.readFileSync('refresh-private.pem');
 const refreshPublicKey = fs.readFileSync('refresh-public.pem');
 
 const accessCookieOptions = {
-  httpOnly: true,  // Prevent access via JavaScript
+  httpOnly: false,  // Prevent access via JavaScript
   secure: process.env.NODE_ENV === "production", // Only in HTTPS
-  sameSite: "None",  // Prevent CSRF
+  sameSite: "None",
+  partitioned: true,  // Prevent CSRF
   maxAge:  60 * 60 * 1000 // 1 hour
 };
 
 const refreshCookieOptions = {
-  httpOnly: true,  // Prevent access via JavaScript
+  httpOnly: false,  // Prevent access via JavaScript
   secure: process.env.NODE_ENV === "production", // Only in HTTPS
-  sameSite: "None",  // Prevent CSRF
+  sameSite: "None",
+  partitioned: true,  // Prevent CSRF
   maxAge: 24 * 60 * 60 * 1000 // 1 day
 };
 
