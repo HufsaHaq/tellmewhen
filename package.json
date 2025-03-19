@@ -22,6 +22,7 @@
     "web-push": "^3.6.7"
   },
   "scripts": {
+    "start" : "node apps.js",
     "startDev": "nodemon app.js",
     "startDB": "nodemon db.js",
     "startHelper": "nodemon dbhelper.js",
