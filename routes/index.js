@@ -29,14 +29,14 @@ const refreshPublicKey = fs.readFileSync('refresh-public.pem');
 const accessCookieOptions = {
   httpOnly: true,  // Prevent access via JavaScript
   secure: process.env.NODE_ENV === "production", // Only in HTTPS
-  sameSite: "Strict",  // Prevent CSRF
+  sameSite: "None",  // Prevent CSRF
   maxAge:  60 * 60 * 1000 // 1 hour
 };
 
 const refreshCookieOptions = {
   httpOnly: true,  // Prevent access via JavaScript
   secure: process.env.NODE_ENV === "production", // Only in HTTPS
-  sameSite: "Strict",  // Prevent CSRF
+  sameSite: "None",  // Prevent CSRF
   maxAge: 24 * 60 * 60 * 1000 // 1 day
 };
 
