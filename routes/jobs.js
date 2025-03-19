@@ -305,7 +305,7 @@ jobRouter.post('/new', authMiddleWare, async (req,res) => {
     console.log(req.user)
 
     //check if the user has the right permissions
-    if(assignedId){
+    if(assignedId != userId){
 
         if(req.user.role === 3){
 
@@ -314,27 +314,24 @@ jobRouter.post('/new', authMiddleWare, async (req,res) => {
         }
         //replace the userId from the middleware with the assinged userId
         userId = assignedId;
-
-        try{
-
-            const result = await createNewJob(businessId,userId,description,dueDate);
-            //extract random job id
-            const randomJobId = result.randomJobId;
-            //generate qr code
-            const qr_url = await generate_qr(randomJobId);
-
-            return res.status(201).json({message: "New job succesfully created", 
-                qrCode: qr_url,
-                jobId: randomJobId
-            });
-
-        } catch (err) {
-
-            return res.status(500).json({error : err})
-
-        }
     }
+    try{
 
+        const result = await createNewJob(businessId,userId,description,dueDate);
+        //extract random job id
+        const randomJobId = result.randomJobId;
+        //generate qr code
+        const qr_url = await generate_qr(randomJobId);
+
+        return res.status(201).json({message: "New job succesfully created", 
+            qrCode: qr_url,
+            jobId: randomJobId
+        });
+
+    } catch (err) {
+
+        return res.status(500).json({error : err})
+}
 })
 
 /**
