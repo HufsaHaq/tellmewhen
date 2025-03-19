@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@mui/joy";
 import { GetCode } from "@/scripts/qr";
-
+import { QrCode2, Close } from "@mui/icons-material";
+import NotificationModal from "./SendNotificationModal";
 function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish, onDelete }) {
   const [isEditing, setIsEditing] = useState(false);
   const [tempData, setTempData] = useState(jobData);
+  const [NotificationModalOpen, SetNotificationModalOpen] = useState(false);
 
   useEffect(() => {
     setTempData(jobData);
@@ -13,8 +15,7 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish, o
   if (!isOpen) return null;
 
   const handleChange = () => {
-    setTempData(jobData);
-    setIsEditing(true);
+    return
   };
 
   const handleSave = () => {
@@ -29,11 +30,21 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish, o
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white max-h-[95vh] overflow-y-scroll max-tablet620:w-full min-w-[33%] max-w-[90%] rounded-lg shadow-lg p-6">
-        <h2 className="text-center text-2xl font-semibold mb-6">
-          {isEditing ? "Edit Job" : "Job Details"}
-        </h2>
+      <div className="bg-white max-h-[95vh] overflow-y-scroll max-tablet620:w-full tablet620:min-w-[500px] tablet620:max-w-[40%] max-tablet620:max-w-[90%] rounded-lg shadow-lg p-6">
+        <span className="inline justify-between flex">
+          <QrCode2 className="scale-[1.5] cursor-pointer" onClick={async ()=>{
+                    let res = await GetCode(tempData.id);
+                    console.log(res.data)
+                    if(res.status === 201){
+                      localStorage["qr"] = res.data.qrCode;
+                      window.location.href = "/qr_code/"
+                    }
+                  }}/>
+          <h2 className="text-center text-2xl font-semibold mb-6">{isEditing ? "Edit Job" : "Job Details"}</h2>
+          <Close className="cursor-pointer" onClick={onClose}/>
+        </span>
 
+        
         <form>
           {/* ID (uneditable) */}
           <div className="mb-4">
@@ -84,48 +95,24 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish, o
 
           <div className="max-tablet620:grid max-tablet620:grid-cols-1 tablet620:flex tablet620:justify-end tablet620:space-x-4 max-tablet620:gap-2">
             {!isEditing && (
-              <span className="space-y-[10px] items-center tablet620:space-x-3 grid w-full max-tablet620:grid-cols-2 tablet620:grid-cols-4">
+              <div className="max-tablet620:grid max-tablet620:grid-cols-1 tablet620:flex tablet620:justify-end tablet620:space-x-4 max-tablet620:gap-2">
                 <Button
                   onClick={onOpenFinish}
                   variant="solid"
                   color="success"
-                  className="top-[5px] px-4 max-tablet620:w-[98%] min-w-[100px] py-2 h-[30px]"
-                >
+                  className="row-start-2 max-tablet620:w-full min-w-[100px] px-4 py-2"
+                  >
                   Complete
                 </Button>
-
                 <Button
-                  onClick={async ()=>{
-                    let res = await GetCode(tempData.id);
-                    console.log(res.data)
-                    if(res.status === 201){
-                      localStorage["qr"] = res.data.qrCode;
-                      window.location.href = "/qr_code/"
-                    }
-                  }}
+                  onClick={()=>SetNotificationModalOpen(true)}
                   variant="solid"
                   color="primary"
-                  className="relative px-4 justify-self-end max-tablet620:w-[98%] min-w-[100px] py-2 h-[30px]"
+                  className="max-tablet620:w-full min-w-[100px] px-4 py-2"
                 >
-                  View QR Code
+                  Send Notification
                 </Button>
-                <Button
-                  onClick={onClose}
-                  variant="soft"
-                  color="neutral"
-                  className="max-tablet620:col-span-2 max-tablet620:row-start-4 min-w-[100px] px-4 py-2"
-                >
-                  Close
-                </Button>
-                <Button
-                  onClick={handleChange}
-                  variant="solid"
-                  color="primary"
-                  className="max-tablet620:col-span-2 min-w-[100px] px-4 py-2"
-                >
-                  Edit
-                </Button>
-              </span>
+              </div>
             )}
 
             {isEditing && (
@@ -151,7 +138,9 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish, o
           </div>
         </form>
       </div>
+      <NotificationModal isOpen={NotificationModalOpen} jobID={tempData.id} close={()=>SetNotificationModalOpen(false)}></NotificationModal>
     </div>
+
   );
 }
 

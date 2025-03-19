@@ -1,13 +1,14 @@
 import axios from "axios";
 axios.defaults.withCredentials = true;
+import { GetServerEndpoint } from "./script-settings";
+let endpoint = GetServerEndpoint();
 
 //================== NEW ==================
 
 export async function GetCurrentJobs()
 {
     let data = null;
-    let endpoint = localStorage["endpoint"];
-    await axios.get(`${endpoint}/jobs/current/${localStorage["userID"]}`,
+    await axios.get(`${endpoint }/jobs/current/${localStorage["userID"]}`,
         {
             businessID: localStorage["businessID"],
         }
@@ -23,8 +24,8 @@ export async function GetCurrentJobs()
 export async function GetJobHistory()
 {
     let data = null;
-    let endpoint = localStorage["endpoint"];
-    await axios.get(`${endpoint}/jobs/history`,
+
+    await axios.get(`${endpoint }/jobs/history`,
         {
             businessID: localStorage["businessID"],
             userID: localStorage["userID"],
@@ -41,7 +42,7 @@ export async function GetJobHistory()
 export async function CreateJob(description, deadline, userID)
 {
     let data = null;
-    let endpoint = localStorage["endpoint"];
+
     console.log(userID)
     await axios.post(endpoint + "/jobs/new",
         {
@@ -67,7 +68,7 @@ export async function EditCurrentJob()
 export async function CompleteJob(jobID, remarks)
 {
     let data = null;
-    let endpoint = localStorage["endpoint"];
+
     await axios.post(endpoint + "/jobs/complete/" + jobID, 
         {
             userId: localStorage["userID"],
@@ -85,7 +86,7 @@ export async function CompleteJob(jobID, remarks)
 export async function AssignJob(jobID, userID)
 {
     let data = null;
-    let endpoint = localStorage["endpoint"];
+
     await axios.post(endpoint + "/jobs/assign_job", 
         {
             jid: jobID,

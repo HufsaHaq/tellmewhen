@@ -1,6 +1,7 @@
 import axios from "axios";
 axios.defaults.withCredentials = true;
-
+import { GetServerEndpoint } from "./script-settings";
+let endpoint = GetServerEndpoint();
 
 // Helper function for key parameter
 function urlB64ToUint8Aqrray(base64String) {
@@ -21,7 +22,7 @@ function urlB64ToUint8Aqrray(base64String) {
 
 export async function SaveSubscription(subscription, jobId, businessId)
 {
-    let endpoint = localStorage["endpoint"];
+
     let data = null
     let sub = JSON.parse(JSON.stringify(subscription));
 
@@ -32,7 +33,7 @@ export async function SaveSubscription(subscription, jobId, businessId)
         keys: sub.keys,
     }
 
-    await axios.post(endpoint + "/save-new-subscription",
+    await axios.post(endpoint  + "/save-new-subscription",
         json
     ).then(res => data = res)
     return data
@@ -40,9 +41,9 @@ export async function SaveSubscription(subscription, jobId, businessId)
 
 export async function NotifyCustomer(jobId, title, body)
 {
-    let endpoint = localStorage["endpoint"];
+
     let data = null
-    await axios.post(endpoint + "/jobs/notify/" + jobId,
+    await axios.post(endpoint  + "/jobs/notify/" + jobId,
         {
             title: title,
             body: body,

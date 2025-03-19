@@ -21,8 +21,8 @@ function Debugger() {
                 <h1 className="font-bold">ENDPOINT TESTING</h1>
                 <h1>The output of these actions are inside of the console</h1>
 
-                <FormLabel>Server Endpoint (usually http://localhost:4000)</FormLabel>
-                <Input id="endpoint" placeholder="endpoint" onChange={(event) => { SetEndPoint(event.target.value) }} value={Endpoint}></Input>
+                <h1 className="font-semibold text-[#FF0000]">THIS HAS BEEN MOVED TO THE FOLDER: "scripts/script-settings.js"</h1>
+                <Input readOnly disabled id="endpoint" placeholder="endpoint" onChange={(event) => { SetEndPoint(event.target.value) }} value={Endpoint}></Input>
                 <br className="mx-[20px]"/>
                 <Input placeholder="Job ID" onChange={(event) => { setJobID(event.target.value) }} value={jobID}></Input>
 

@@ -1,12 +1,14 @@
 import axios from "axios";
 axios.defaults.withCredentials = true;
+import { GetServerEndpoint } from "./script-settings";
+let endpoint = GetServerEndpoint();
 
 export async function Login(name, businessName, password)
 {
     let data = null;
-    let base = localStorage["endpoint"];
+
     await ClearCookies()
-    await axios.post(base + "/login",
+    await axios.post(endpoint + "/login",
         {
             name: businessName,
             username: name,
@@ -26,8 +28,8 @@ export async function Register(username, password)
 // Creates a new business with the default username "admin"
 {
     let data = null;
-    let base = localStorage["endpoint"];
-    await axios.post(base + "/register",
+
+    await axios.post(endpoint + "/register",
         {
             name: username,
             username: "admin",
@@ -43,8 +45,8 @@ export async function ClearCookies()
 // Creates a new business with the default username "admin"
 {
     let data = null;
-    let base = localStorage["endpoint"];
-    await axios.post(base + "/clearCookies").then(res => data = res);
+
+    await axios.post(endpoint + "/clearCookies").then(res => data = res);
     return data;
 }
 
@@ -52,8 +54,8 @@ export async function RefreshToken()
 {
     // Refreshes an expired access token
     let data = null;
-    let base = localStorage["endpoint"]
-    await axios.post(base + "/refresh",
+
+    await axios.post(endpoint + "/refresh",
         {
             username: localStorage["username"],
             userId: localStorage["userID"],
