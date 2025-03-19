@@ -7,7 +7,6 @@ import { BusinessChatComponent } from "@/components/Chat/BusinessChatComponent";
 
 export default function Page() {
     const [id, setID] = useState("");
-    const [userData, setUserData] = useState(null);
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -16,7 +15,7 @@ export default function Page() {
     useEffect(() => {
         async function fetchData() {
             // Make sure localStorage is accessible:
-            const storedID = typeof window !== "undefined" ? localStorage["adminID"] : "";
+            const storedID = typeof window !== "undefined" ? localStorage["userID"] : "";
             setID(storedID);
 
             // Attempt login using that ID

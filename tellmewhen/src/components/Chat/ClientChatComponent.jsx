@@ -23,16 +23,15 @@ export function ClientChatComponent({ data = null }) {
     });
 
     useEffect(() => {
-        if (!client || !data?.user?.id) return;
-
-        // Create or get existing channel
-        const newChannel = client.channel("messaging", {
-            members: [data.user.id, localStorage["adminID"]], // Replace with actual business user ID
-            name: "Support Chat",
+        if (!client || !data?.user?.id || !jobId) return;
+    
+        const newChannel = client.channel("messaging", jobId, {
+          members: [data.user.id /*, localStorage["adminID"]*/],
+          name: `Job #${jobId} Chat`,
         });
-
+    
         setChannel(newChannel);
-    }, [client, data?.user?.id]);
+      }, [client, data?.user?.id, jobId]);
 
     if (!client) return <LoadingIndicator />;
     if (!channel) return <div>Initializing chat...</div>;
