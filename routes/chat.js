@@ -23,8 +23,8 @@ chatRouter.get("/worker/login/:userId/:businessId", async (req, res) => {
 
 
         //jobs assigned to the worker
-        const jobsQuery = 'SELECT Job_ID FROM JOB_TABLE WHERE User_ID = ?;';
-        const jobsResult = await executeQuery(jobsQuery, [userId]);
+        const jobsQuery = 'SELECT Job_ID FROM JOB_TABLE WHERE User_ID = ?  AND Business_ID = ?;';
+        const jobsResult = await executeQuery(jobsQuery, [userId, businessId]);
 
         // create chat channels for each job
         const channels = [];
