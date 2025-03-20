@@ -284,13 +284,20 @@ const getTokenStatus = async (token) =>{
 }
 
 const addSubscription = async (jobId, businessId, endpoint, authKey1, authKey2) => {
+  const deletesql = 'DELETE FROM SUBSCRIPTION_TABLE WHERE Job_ID = ?'
   const sql = `
     INSERT INTO SUBSCRIPTION_TABLE (Job_ID, Business_ID, Endpoint, Auth_Key1, Auth_Key2)
     VALUES (?,?,?,?,?);
   `;
+  execute(deletesql, jobId)
   return execute(sql, [jobId, businessId, endpoint, authKey1, authKey2]);
 };
 
+const removeSubscription = async (jobId) => {
+  const sql = 'DELETE FROM SUBSCRIPTION_TABLE WHERE Job_ID = ?'
+  return execute(sql, [jobId]);
+
+}
 const closeDB = () => {
   db.end((err) => {
     if (err) {

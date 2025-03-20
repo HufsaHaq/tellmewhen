@@ -3,7 +3,7 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import webPush from 'web-push'
 // db helper functions
-import { getJobHistory, getOpenJobs, createNewJob, assignJobToUser, completeJob, getJobDetails } from '../dbhelper.js';
+import { getJobHistory, getOpenJobs, createNewJob, assignJobToUser, completeJob, getJobDetails, getNotifications, getSubscription } from '../dbhelper.js';
 import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmin, countTotalJobs} from '../managementdbfunc.js';
 //middleware functions for encyrption, authentication and data integrity
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
@@ -419,31 +419,42 @@ jobRouter.post('/notify/:jid',authMiddleWare, async (req, res) => {
 
     let pushSubscription;
     try{
-
-       pushSubscription = await getNotifications(businessId, jobId);
-
+       pushSubscription = await getSubscription(jobId, businessId);
+       pushSubscription = JSON.parse(pushSubscription)
+       if(pushSubscription == [])
+       {
+        res.status(500).json({ message:"No service worker found" });
+        return
+       }
     } catch (err) {
-
       res.status(500).json({ error: err });
-
+      return
     }
   
-    const payload = JSON.stringify({
+    const payload = {
       title: messageTitle,
       body: messageBody,
-      icon: photo
-    })
+      jobId: jobId,
+    }
   
+    const subscription = {
+      endpoint: pushSubscription[0].Endpoint,
+      keys: {
+        auth: pushSubscription[0].Auth_Key1,
+        p256dh: pushSubscription[0].Auth_Key2
+      }
+
+    }
     const options = {
       vapidDetails: {
         subject: 'mailto:https://tellmewhen.co.uk',
-        publicKey: process.env.VAPID_PUBLIC,
-        privateKey: process.env.VAPID_PRIVATE
+        publicKey: "BNErQOX0hbGYSQNR-wAtxuQmBu9ONQCB1jcCEkZo_wIFtHDuvp9478VhcMbOgBIBbFpFDqV6YHo5QNgsCGLaofg",
+        privateKey: "SfML-bkDPu3GjNdQbix_ORUdSocUjG2kBrdtJNYPu1E"
       }};
     //send notifcation using PUSH API
     try{
 
-      webPush.sendNotification(pushSubscription, payload, options)
+      webPush.sendNotification(subscription, JSON.stringify(payload), options)
 
       return res.status(200).json({ message:'Notification sent'})
 
