@@ -36,6 +36,9 @@ chatRouter.get("/worker/login/:userId/:businessId", async (req, res) => {
                 // Create the channel if it doesn't exist
                 let channel = await createJobChannel(jobId, userId);
                 channels.push(channel);
+            }else {
+                // Add existing channel to the list
+                channels.push(result[0]);
             }
 
         }
@@ -60,7 +63,15 @@ chatRouter.get("/guest/login/:jobId", async (req, res) => {
     }
 
     const guestToken = generateGuestToken(jobId);
-    res.status(200).json({token:guestToken});
+
+    const channels = await QuerybyName(jobId);
+    if (channels.length === 0) {
+        return res.status(400).json({ message: "Channel not found for this job" });
+    }
+
+    const channel = channels[0];
+    res.status(200).json({token: guestToken, channel: channel});
+
     }
     catch (error) {
         console.error("Guest login error:", error.message);
