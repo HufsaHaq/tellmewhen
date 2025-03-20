@@ -7,7 +7,8 @@ import { BusinessChatComponent } from "@/components/Chat/BusinessChatComponent";
 
 export default function Page() {
     const [id, setID] = useState("");
-    const [data, setData] = useState(null);
+    const [token, setToken] = useState(null);
+    const [channel, setChannel] = useState(null);
     const [loading, setLoading] = useState(true);
 
     const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
@@ -28,12 +29,10 @@ export default function Page() {
             console.log("businessID:"+businessID)
             // Attempt login using that ID
             const res = await LogIn(storedID, businessID);
-            console.log("res:"+res.data);
+            console.log("res:"+res)
             if (res.status === 200) {
-                setUserData(res.data.user);
-                setData(res.data);
-                console.log("res:"+res.data);
-                console.log("res:2"+res.data.user);
+                setChannel(res.data.channels);
+                setToken(res.data.token);
             }
             setLoading(false);
         }
@@ -41,10 +40,10 @@ export default function Page() {
     }, []);
 
     if (loading) return <h1>Loading...</h1>;
-
-    if (!data) {
-        return <h1>Error: Could not load user or token</h1>;
-    }
+    // console.log(data);
+    // if (!data) {
+    //     return <h1>Error: Could not load user or token</h1>;
+    // }
 
     return (
         <div className="!overflow-y-hidden w-full flex flex-col">

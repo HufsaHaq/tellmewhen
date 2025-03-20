@@ -1,5 +1,5 @@
 import axios from "axios";
-import  GetServerEndpoint  from "script-settings";
+import  {GetServerEndpoint}  from "../scripts/script-settings";
 
 export async function GuestLogin(jobId) {
     let base = GetServerEndpoint();
@@ -15,9 +15,6 @@ export async function GuestLogin(jobId) {
 }
 
 export async function LogIn(userId, businessId) {
-    console.log("userId:"+userId)
-    console.log("businessId:"+businessId)
-
     let base = GetServerEndpoint();
     let data;
 
@@ -27,6 +24,7 @@ export async function LogIn(userId, businessId) {
             if (res.status === 200) {
                 console.log("Worker logged in successfully");
                 data = res.data; // rturn the token and channels
+                console.log(data);
             }
         });
 

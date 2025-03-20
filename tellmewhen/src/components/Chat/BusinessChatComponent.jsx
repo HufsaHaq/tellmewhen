@@ -122,7 +122,7 @@ export function BusinessChatComponent({ data, isMobile }) {
     // Key, token, user from data
     // const STREAM_API_KEY =
     //     typeof window !== "undefined" ? localStorage["apiKey"] : "";
-    const user = data?.user;
+    const channel = data?.channels;
     const token = data?.token;
 
     // Connect to Stream
