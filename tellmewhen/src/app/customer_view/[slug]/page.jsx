@@ -110,6 +110,7 @@ function Page() {
                     setBusinessName(details.data.Business_Name || "");
                     setJobDescription(details.data.Description || "");
                     setDecryptedJobID(details.data.Job_ID || "");
+                    localStorage["jobID"] = details.data.Job_ID;
                     console.log(details.data.Job_ID);
                     setErrorDetails("");
                 } else {

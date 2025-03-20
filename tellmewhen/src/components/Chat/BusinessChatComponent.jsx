@@ -124,12 +124,13 @@ export function BusinessChatComponent({ data, isMobile }) {
     //     typeof window !== "undefined" ? localStorage["apiKey"] : "";
     const channel = data?.channels;
     const token = data?.token;
+    const user = 'worker-' + localStorage["userID"];
 
     // Connect to Stream
     const client = useCreateChatClient({
         apiKey: 'af26cv9nusph',
         tokenOrProvider: token,
-        userData: { id: user?.id },
+        userData: { id: user},
     });
 
     if (!client) return <LoadingIndicator />;
