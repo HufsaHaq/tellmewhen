@@ -50,7 +50,6 @@ chatRouter.get("/worker/login/:userId/:businessId", async (req, res) => {
                 role: member.role,
             })),
         }));
-        consol
         console.log(`Worker ${userId} logged in successfully`);
         res.status(200).json({ token:token, channels:simplifiedChannels });
     } catch (error) {
