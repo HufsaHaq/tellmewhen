@@ -54,7 +54,8 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish, o
             <input
               type="text"
               readOnly
-              className="w-full p-3 border rounded-lg disabled:bg-gray-100 cursor-not-allowed"
+              disabled
+              className="w-full p-3 border rounded-lg disabled:bg-gray-100"
               value={tempData.id || ""}
             />
           </div>

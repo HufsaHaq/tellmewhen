@@ -21,8 +21,8 @@ function NotificationModal({ isOpen, jobID, close }) {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 items-center flex justify-center z-50">
-            <div className="bg-white max-h-[95vh] overflow-y-scroll max-tablet620:w-full min-w-[33%] w-auto max-w-[90%] rounded-lg shadow-lg p-6">
+        <div className="fixed inset-0 bg-black bg-opacity-50  items-center flex justify-center z-50">
+            <div className="bg-white max-h-[95vh] overflow-y-scroll max-tablet620:w-full tablet620:min-w-[550px] max-w-[90%] rounded-lg shadow-lg p-6">
                 <h2 className="text-center text-2xl font-semibold mb-6">Send Notification</h2>
                 <div className="mb-4">
                     <label className="block text-gray-700 font-medium mb-2">

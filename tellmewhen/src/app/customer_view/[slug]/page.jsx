@@ -73,6 +73,7 @@ function Page() {
     const enableNotifications = async () => {
         const permission = await Notification.requestPermission();
         if (permission !== "granted") {
+            setNotificationsEnabled(false);
             alert("Notification permission denied.");
             return false;
         }
@@ -126,88 +127,77 @@ function Page() {
     }, [params.slug]); // Use params.slug as the dependency
 
     return (
-        <div className="min-h-screen flex flex-col pt-20 pb-8 bg-gray-100">
+        <div className=" flex flex-col pt-20 pb-8 bg-gray-100">
             <div className="flex flex-col items-center justify-start mt-12 px-6">
-                {/* Notification Section */}
-                <div className="text-center mb-6">
-                    <h2 className="font-bold text-3xl text-gray-900 mb-4">Notifications</h2>
-                    <p className="text-lg text-gray-600">{text}</p>
-                </div>
-
-                {/* Notification text */}
-                <div className="w-full max-w-2xl mx-auto bg-white border border-gray-300 rounded-lg shadow-md p-8 mb-8">
-                    <p className="text-base text-gray-700">{text}</p>
-                </div>
-
-                {/* Button to test notifications */}
-                <button onClick={testNotification} className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 mb-8">
-                    Show Test Notification
-                </button>
 
                 {/* Radio buttons to enable/disable notifications */}
-                <div className="flex justify-center gap-8 mb-8">
-                    <p className="font-semibold text-xl text-gray-700">Enable Notifications:</p>
-                    <Switch
-                        key={notificationsEnabled}
-                        checked={notificationsEnabled}
-                        onChange={async(event) => {
-                            if(event.target.checked)
-                            {
-                                setNotificationsEnabled(true);
-                                await enableNotifications()
-                                
-                            }else{
-                                await disableNotifications();
-                                setNotificationsEnabled(false);
-                            }
-                        }}
-                        sx={(theme) => ({
-                            '--Switch-thumbShadow': '0 3px 7px 0 rgba(0 0 0 / 0.12)',
-                            '--Switch-thumbSize': '27px',
-                            '--Switch-trackWidth': '51px',
-                            '--Switch-trackHeight': '31px',
-                            '--Switch-trackBackground': theme.vars.palette.background.level3,
-                            [`& .${switchClasses.thumb}`]: {
-                                transition: 'width 0.2s, left 0.2s',
-                            },
-                            '&:hover': {
-                                '--Switch-trackBackground': theme.vars.palette.background.level3,
-                            },
-                            '&:active': {
-                                '--Switch-thumbWidth': '32px',
-                            },
 
-                        })}
-                    />
-                </div>
-
-                {/* Details Section */}
-                <div className="text-center mb-6">
-                    <h2 className="font-bold text-3xl text-gray-900">Details</h2>
-                </div>
 
                 {/* Business details */}
                 <div className="w-full max-w-2xl mx-auto bg-white border border-gray-300 rounded-lg shadow-md p-6">
+                    {/* Details Section */}
+                    <div className="text-center mb-6">
+                        <h2 className="font-bold text-[25px] text-gray-900">Details</h2>
+                    </div>
                     {errorDetails ? (
                         <div className="text-red-500 text-sm mt-2">{errorDetails}</div>
                     ) : (
                         <>
                             <div className="mb-4">
-                                <p className="font-semibold text-gray-700">Business:</p>
+                                <p className="text-[20px] font-semibold text-gray-700">Business</p>
                                 <p className="text-gray-600">{businessName}</p>
                             </div>
                             <div>
-                                <p className="font-semibold text-gray-700">Job Description:</p>
+                                <p className="text-[20px] font-semibold text-gray-700">Job Description</p>
                                 <p className="text-gray-600">{jobDescription}</p>
                             </div>
                         </>
                     )}
-                </div>
 
-                <div className="flex justify-center">
-                    <Button href={`/chat/customer_chat/${jobID}`} className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700">
-                        Chat
-                    </Button>
+                </div>
+                <div className="w-full max-w-2xl mt-[15px] mx-auto bg-white border border-gray-300 rounded-lg shadow-md p-6">
+                    <div className="text-center mb-6">
+                        <h2 className="font-bold text-[25px] text-gray-900">Settings</h2>
+                    </div>
+                    <div className="grid inline">
+                        <div className="flex justify-between ml-[15px] gap-8 mb-8">
+                            <p className="font-semibold text-xl text-gray-700">Enable Notifications:</p>
+                            <Switch
+                                key={notificationsEnabled}
+                                checked={notificationsEnabled}
+                                onChange={async (event) => {
+                                    if (event.target.checked) {
+                                        setNotificationsEnabled(true);
+                                        await enableNotifications()
+
+                                    } else {
+                                        await disableNotifications();
+                                        setNotificationsEnabled(false);
+                                    }
+                                }}
+                                sx={(theme) => ({
+                                    '--Switch-thumbShadow': '0 3px 7px 0 rgba(0 0 0 / 0.12)',
+                                    '--Switch-thumbSize': '27px',
+                                    '--Switch-trackWidth': '51px',
+                                    '--Switch-trackHeight': '31px',
+                                    '--Switch-trackBackground': theme.vars.palette.background.level3,
+                                    [`& .${switchClasses.thumb}`]: {
+                                        transition: 'width 0.2s, left 0.2s',
+                                    },
+                                    '&:hover': {
+                                        '--Switch-trackBackground': theme.vars.palette.background.level3,
+                                    },
+                                    '&:active': {
+                                        '--Switch-thumbWidth': '32px',
+                                    },
+
+                                })}
+                            />
+                        </div>
+                        <Button href={`/chat/customer_chat/${jobID}`} className="px-6 py-3 h-[40px] bg-green-600 w-full justify-self-center text-white font-semibold rounded-lg shadow-md hover:bg-green-700">
+                            Chat
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>
