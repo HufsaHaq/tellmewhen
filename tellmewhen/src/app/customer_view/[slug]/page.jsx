@@ -153,8 +153,8 @@ function Page() {
                         onChange={async(event) => {
                             if(event.target.checked)
                             {
-                                await enableNotifications()
                                 setNotificationsEnabled(true);
+                                await enableNotifications()
                                 
                             }else{
                                 await disableNotifications();
