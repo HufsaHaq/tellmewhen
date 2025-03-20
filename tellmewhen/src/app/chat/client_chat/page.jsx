@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { GuestLogin } from "@/scripts/chat";
 import { ClientChatComponent } from "@/components/Chat/ClientChatComponent";
-import { useParams } from "next/navigation";
 
 export default function Page() {
 
@@ -20,6 +19,8 @@ export default function Page() {
         setLoading(true);
         
         // 1) Create a new user for the chat
+        console.log("GuestLogin")
+        console.log(jobId)
         const res = await GuestLogin(jobId);
         guest_token = res.data.token;
         guest_channel = res.data.channel;
