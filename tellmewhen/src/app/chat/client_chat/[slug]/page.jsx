@@ -7,11 +7,13 @@ import { useParams } from "next/navigation";
 
 export default function Page() {
 
-    const [chatData, setChatData] = useState(null);
+    const [guest_token, setToken] = useState(null);
+    const [guest_channel, setChannel] = useState(null);
     const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
     const params = useParams()
     const jobId = params.slug;
+
     
     useEffect(() => {
 
@@ -23,22 +25,19 @@ export default function Page() {
         // 1) Create a new user for the chat
         console.log("GuestLogin")
         console.log(jobId)
-        const res = await GuestLogin(jobId);
-        guest_token = res.data.token;
-        guest_channel = res.data.channel;
-        
-        let guestId = 'guest-'+localStorage["jobID"];
-        
+        let res = await GuestLogin(jobId);
+
+        setChannel(res.channel);
+        console.log(res)
+        setToken(res.token);
+        console.log(guest_token)
         // Check if the token and userId are returned
-        if (!token || !userId) {
+        if (!guest_token) {
             throw new Error("No token or userId returned from GuestLogin");
         }
 
         // 2) Set the chat data state with the token and userId
-        setChatData({
-            token: token,
-            user: { id: guestId },
-        });
+
 
         } catch (err) {
         console.error("Failed to create guest user:", err);
@@ -54,13 +53,20 @@ export default function Page() {
     }
     }, [jobId]);
 
+    const data = {
+        channels: guest_channel,
+        token: guest_token,
+        user: 'guest-'+localStorage["jobID"],
+    };
+    console.log("data")
+    console.log(data);
     if (loading) {
     return <div>Loading chat...</div>;
     }
     if (errorMessage) {
     return <div className="text-red-600">{errorMessage}</div>;
     }
-    if (!chatData) {
+    if (!data) {
     return <div>Unable to load chat data.</div>;
     }
 
@@ -69,7 +75,7 @@ export default function Page() {
             <div className="!overflow-y-hidden w-full flex flex-col">
                 
                 <div style = {style.container}>
-                <ClientChatComponent data={chatData}></ClientChatComponent>
+                <ClientChatComponent data={data}></ClientChatComponent>
                 </div>
 
             </div>

@@ -3,13 +3,16 @@ import  {GetServerEndpoint}  from "../scripts/script-settings";
 
 export async function GuestLogin(jobId) {
     let base = GetServerEndpoint();
+    let data = null;
     await axios.get(base + "/chat/guest/login/" + jobId).then(res => {
         console.log(res.status);
         if (res.status === 200) {
             console.log("Guest user created successfully");
-            return res.data.token; // return the guest token
+            console.log(res.data)
+            data = res.data; // return the token and channel
         }
     });
+    return data;
 }
 
 export async function LogIn(userId, businessId) {

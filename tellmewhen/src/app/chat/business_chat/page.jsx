@@ -29,15 +29,7 @@ export default function Page() {
             console.log("businessID:"+businessID)
             // Attempt login using that ID
             console.log("LogIn")
-            let res = await LogIn(storedID, businessID);
-            console.log("busi res:")
-            console.log(res)
-            console.log("busi stat:")
-            console.log(res.stat) 
-            console.log("busi res.data.channels:")
-            console.log(res.data.channels) 
-            console.log("busi res.data.token:")
-            console.log(res.data.token)   
+            let res = await LogIn(storedID, businessID);  
             if (res.stat === 200) {
                 setChannel(res.data.channels);
                 setToken(res.data.token);
