@@ -17,11 +17,11 @@ const streamChat = StreamChat.getInstance(
 
 // token for businesses
 const generateBusinessToken = (userId) => {
-    return streamChat.createToken(`worker-${userId}`, 36000 )};
+    return streamChat.createToken(`worker-${userId}`)};
 
 // temp token for customers
 const generateGuestToken = (jobId) => {
-    return streamChat.createToken(`guest-${jobId}`, 36000)};
+    return streamChat.createToken(`guest-${jobId}`)};
 
 // a channel for a job
 const createJobChannel = async (jobId, userId) => {
