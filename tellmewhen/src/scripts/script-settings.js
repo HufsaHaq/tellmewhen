@@ -1,4 +1,4 @@
 export function GetServerEndpoint()
 {
-    return "http://localhost:4000";
+    return "https://16.170.213.100";
 }
