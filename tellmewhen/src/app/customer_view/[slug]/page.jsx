@@ -205,7 +205,7 @@ function Page() {
                 </div>
 
                 <div className="flex justify-center">
-                    <Button href={`/chat/customer_chat/${jobID}`} className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700">
+                    <Button href={`/chat/client_chat/${decryptedJobID}`} className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700">
                         Chat
                     </Button>
                 </div>

@@ -29,28 +29,11 @@ export async function LogIn(userId, businessId) {
             console.log(res.status);
             if (res.status === 200) {
                 console.log("Worker logged in successfully");
-                data = res.data; // rturn the token and channels
+                data = res; // rturn the token and channels
             }
         });
 
     return data;
-}
-
-export async function NewChannel(jobId, businessId) {
-    let base = localStorage["endpointChat"];
-    if (localStorage["endpointChat"] == null || localStorage["endpointChat"] == "") {
-        throw new Error("Endpoint not defined.");
-    }
-
-    await axios.post(base + "/chat/channels/create_channel/" + businessId, {
-        jobId: jobId,
-    }).then(res => {
-        console.log(res.status);
-        if (res.status === 200) {
-            console.log("Channel created successfully");
-            return res.data.channel; // return the created channel
-        }
-    });
 }
 
 export async function DeleteChannel(jobId) {
