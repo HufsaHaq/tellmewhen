@@ -42,9 +42,16 @@ chatRouter.get("/worker/login/:userId/:businessId", async (req, res) => {
             }
 
         }
-
+        const simplifiedChannels = channels.map(channel => ({
+            id: channel.id,
+            name: channel.data.name,
+            members: Object.values(channel.state.members).map(member => ({
+                user_id: member.user_id,
+                role: member.role,
+            })),
+        }));
         console.log(`Worker ${userId} logged in successfully`);
-        res.status(200).json({ token:token, channels:channels });
+        res.status(200).json({ token:token, channels:simplifiedChannels });
     } catch (error) {
         console.error("Worker login error:", error.message);
         res.status(404).json({ message: "Server error" });
