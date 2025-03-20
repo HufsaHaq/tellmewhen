@@ -5,8 +5,10 @@ import Header from "@/components/Header";
 import { useParams } from "next/navigation";
 import { GetJobDetails } from "@/scripts/customer";
 import React, { use } from "react";
-import { SaveSubscription } from "@/scripts/webpush";
+import { RegisterServiceWorker, SaveSubscription } from "@/scripts/webpush";
 import { Button } from "@mui/joy";
+import Switch, { switchClasses } from '@mui/joy/Switch';
+
 /* 
 
                             DYNAMIC ROUTING
@@ -36,18 +38,6 @@ function Page() {
         checkSubscriptionStatus();
     }, []);
 
-    function urlB64ToUint8Array(base64String) {
-        const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-        const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-        const rawData = window.atob(base64);
-        const outputArray = new Uint8Array(rawData.length);
-
-        for (let i = 0; i < rawData.length; i++) {
-            outputArray[i] = rawData.charCodeAt(i);
-        }
-        return outputArray;
-    }
-
     async function saveSubscription(subscription) {
         let endpoint = localStorage["endpoint"];
         let res = await SaveSubscription(subscription, params.slug, localStorage["businessID"]);
@@ -57,7 +47,7 @@ function Page() {
         if ("serviceWorker" in navigator) {
             const registration = await navigator.serviceWorker.ready;
             const subscription = await registration.pushManager.getSubscription();
-            setNotificationsEnabled(!!subscription);
+            setNotificationsEnabled(subscription);
         }
     };
 
@@ -81,36 +71,24 @@ function Page() {
     };
 
     const enableNotifications = async () => {
-        if (!("serviceWorker" in navigator)) {
-            alert("Service Workers are not supported in your browser.");
-            return;
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+            alert("Notification permission denied.");
+            return false;
         }
+
 
         //job/display_code/:jId
         try {
-            const registration = await navigator.serviceWorker.register("/sw.js");
-            console.log("Service Worker registered:", registration);
-
-            const permission = await Notification.requestPermission();
-            if (permission !== "granted") {
-                alert("Push notifications permission denied.");
-                return;
-            }
-
-            const subscription = await registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: urlB64ToUint8Array("BO9BkKD8IykLzyJ6djlVMziBKTtwIjhhVk_S-W_0gzfP2dC26ytBsDMSdngvT9rCd_0oX8jUGW_e54b_xEXr4LQ"),
-            });
-
-            console.log("Push Subscription:", subscription);
-            console.log(subscription.endpoint);
+            let subscription = await RegisterServiceWorker();
             await saveSubscription(subscription);
-
             setNotificationsEnabled(true);
-            alert("Push notifications enabled!");
+            return true;
         } catch (error) {
             console.error("Error enabling notifications:", error);
         }
+        setNotificationsEnabled(true);
+        return false;
     };
 
     const disableNotifications = async () => {
@@ -120,7 +98,6 @@ function Page() {
             if (subscription) {
                 await subscription.unsubscribe();
                 setNotificationsEnabled(false);
-                alert("Push notifications disabled!");
             }
         }
     };
@@ -170,14 +147,38 @@ function Page() {
                 {/* Radio buttons to enable/disable notifications */}
                 <div className="flex justify-center gap-8 mb-8">
                     <p className="font-semibold text-xl text-gray-700">Enable Notifications:</p>
-                    <label className="flex items-center space-x-2 text-xl cursor-pointer">
-                        <input type="radio" name="notifications" value="on" checked={notificationsEnabled} onChange={enableNotifications} className="h-6 w-6" />
-                        <span>On</span>
-                    </label>
-                    <label className="flex items-center space-x-2 text-xl cursor-pointer">
-                        <input type="radio" name="notifications" value="off" checked={!notificationsEnabled} onChange={disableNotifications} className="h-6 w-6" />
-                        <span>Off</span>
-                    </label>
+                    <Switch
+                        key={notificationsEnabled}
+                        checked={notificationsEnabled}
+                        onChange={async(event) => {
+                            if(event.target.checked)
+                            {
+                                await enableNotifications()
+                                setNotificationsEnabled(true);
+                                
+                            }else{
+                                await disableNotifications();
+                                setNotificationsEnabled(false);
+                            }
+                        }}
+                        sx={(theme) => ({
+                            '--Switch-thumbShadow': '0 3px 7px 0 rgba(0 0 0 / 0.12)',
+                            '--Switch-thumbSize': '27px',
+                            '--Switch-trackWidth': '51px',
+                            '--Switch-trackHeight': '31px',
+                            '--Switch-trackBackground': theme.vars.palette.background.level3,
+                            [`& .${switchClasses.thumb}`]: {
+                                transition: 'width 0.2s, left 0.2s',
+                            },
+                            '&:hover': {
+                                '--Switch-trackBackground': theme.vars.palette.background.level3,
+                            },
+                            '&:active': {
+                                '--Switch-thumbWidth': '32px',
+                            },
+
+                        })}
+                    />
                 </div>
 
                 {/* Details Section */}
