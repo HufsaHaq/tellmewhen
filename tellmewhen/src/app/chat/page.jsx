@@ -3,14 +3,12 @@ import { Input, Button } from "@mui/joy";
 import { useState, useEffect } from "react";
 function Debugger() {
     const [Endpoint, SetEndPoint] = useState("");
-    const [EndpointChat, SetEndPointChat] = useState("");
     const [APIKey, SetAPIKey] = useState("");
     const [AdminID, SetAdminID] = useState("");
 
     useEffect(() => {
         if(typeof window === "undefined") return;
         SetEndPoint(localStorage["endpoint"]);
-        SetEndPointChat(localStorage["endpointChat"]);
         SetAPIKey(localStorage["apiKey"]);
         SetAdminID(localStorage["adminID"]);
 
@@ -29,10 +27,6 @@ function Debugger() {
 
             <div className="mx-auto space-y-[10px] px-[20px] w-[90%] rounded-md py-[10px] bg-white shadow-lg">
                 <h1 className="font-bold">CHAT</h1>
-                <span className="inline flex align-items-center justify-between px-[10px]">
-                    <h1 className="mr-[10px]">Endpoint: </h1>
-                    <Input className="w-[80%]" onChange={(event) => { SetEndPointChat(event.target.value) }} value={EndpointChat}></Input>
-                </span>
                 <span className="inline flex align-items-center justify-between px-[10px]">
                     <h1 className="mr-[10px]">Admin Account ID: </h1>
                     <Input className="w-[80%]" onChange={(event) => { SetAdminID(event.target.value) }} value={AdminID}></Input>
@@ -60,7 +54,6 @@ function Debugger() {
     function SaveResultsToLocal() {
         if (typeof window === "undefined") return;
         localStorage["endpoint"] = Endpoint;
-        localStorage["endpointChat"] = EndpointChat;
         localStorage["adminID"] = AdminID;
         localStorage["apiKey"] = APIKey;
     }
