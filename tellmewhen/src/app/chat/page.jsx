@@ -9,8 +9,8 @@ function Debugger() {
     useEffect(() => {
         if(typeof window === "undefined") return;
         SetEndPoint(localStorage["endpoint"]);
-        SetAPIKey(localStorage["apiKey"]);
-        SetAdminID(localStorage["adminID"]);
+        SetAPIKey("myh6kvcn45t5");
+        SetAdminID("archiecalvert");
 
     }, []);
     return (
@@ -54,8 +54,8 @@ function Debugger() {
     function SaveResultsToLocal() {
         if (typeof window === "undefined") return;
         localStorage["endpoint"] = Endpoint;
-        localStorage["adminID"] = AdminID;
-        localStorage["apiKey"] = APIKey;
+        localStorage["adminID"] = "archiecalvert";
+        localStorage["apiKey"] = "myh6kvcn45t5";
     }
 
 }

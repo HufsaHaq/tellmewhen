@@ -129,7 +129,7 @@ export function BusinessChatComponent({ data, isMobile }) {
 
     // Connect to Stream
     const client = useCreateChatClient({
-        apiKey: localStorage["apiKey"],
+        apiKey: "myh6kvcn45t5",
         tokenOrProvider: token,
         userData: { id: user},
     });

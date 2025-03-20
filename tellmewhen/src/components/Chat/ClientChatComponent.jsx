@@ -21,7 +21,7 @@ export function ClientChatComponent({ data }) {
     let channel = data.channels;
     const [curChannel, setCurChannel] = useState(data.channel)
     const client = useCreateChatClient({
-        apiKey: localStorage["apiKey"],
+        apiKey: "myh6kvcn45t5",
         tokenOrProvider: data.token,
         userData: { id: data.user },
     });
