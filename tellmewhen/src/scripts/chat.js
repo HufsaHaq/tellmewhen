@@ -3,7 +3,7 @@ import  {GetServerEndpoint}  from "../scripts/script-settings";
 
 export async function GuestLogin(jobId) {
     let base = GetServerEndpoint();
-    await axios.post(base + "/chat/guest/login" + jobId).then(res => {
+    await axios.get(base + "/chat/guest/login/" + jobId).then(res => {
         console.log(res.status);
         if (res.status === 200) {
             console.log("Guest user created successfully");
