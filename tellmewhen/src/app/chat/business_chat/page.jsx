@@ -17,7 +17,7 @@ export default function Page() {
         async function fetchData() {
             // Make sure localStorage is accessible:
             const storedID = typeof window !== "undefined" ? localStorage["userID"] : "";
-            setID(storedID);
+            setID(storedID)
 
             const businessID = typeof window !== "undefined" ? localStorage["businessID"] : "";
 
@@ -28,9 +28,17 @@ export default function Page() {
             console.log("storedID:"+storedID)
             console.log("businessID:"+businessID)
             // Attempt login using that ID
-            const res = await LogIn(storedID, businessID);
-            console.log("res:"+res)
-            if (res.status === 200) {
+            console.log("LogIn")
+            let res = await LogIn(storedID, businessID);
+            console.log("busi res:")
+            console.log(res)
+            console.log("busi stat:")
+            console.log(res.stat) 
+            console.log("busi res.data.channels:")
+            console.log(res.data.channels) 
+            console.log("busi res.data.token:")
+            console.log(res.data.token)   
+            if (res.stat === 200) {
                 setChannel(res.data.channels);
                 setToken(res.data.token);
             }
@@ -43,8 +51,13 @@ export default function Page() {
     // console.log(data);
     // if (!data) {
     //     return <h1>Error: Could not load user or token</h1>;
-    // }
-
+    // }}
+    const data = {
+        channels: channel,
+        token: token,
+        user: 'worker-' + localStorage["userID"],
+    };
+    console.log(data);
     return (
         <div className="!overflow-y-hidden w-full flex flex-col">
             {/* Chat area */}

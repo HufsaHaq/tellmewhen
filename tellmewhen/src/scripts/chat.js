@@ -15,6 +15,7 @@ export async function GuestLogin(jobId) {
 export async function LogIn(userId, businessId) {
     let base = GetServerEndpoint();
     let data;
+    let stat;
 
     await axios.get(base + "/chat/worker/login/" + userId + "/" + businessId)
         .then(res => {
@@ -22,11 +23,11 @@ export async function LogIn(userId, businessId) {
             if (res.status === 200) {
                 console.log("Worker logged in successfully");
                 data = res.data; // rturn the token and channels
-                console.log(data);
+                stat = res.status;
             }
         });
 
-    return data;
+    return {data:data, stat:stat};
 }
 
 export async function DeleteChannel(jobId) {
