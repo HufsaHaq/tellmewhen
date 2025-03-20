@@ -5,36 +5,67 @@ import { LogIn } from "@/scripts/chat";
 import { ClientChatComponent } from "@/components/Chat/ClientChatComponent";
 export default function Page() {
 
-    const [id, SetID] = useState("");
-    const [userData, setUserData] = useState(null);
-    const [token, setToken] = useState(null);
-    const [data, setData]  =useState(null);
-    async function HandleSave() {
-        let res = await LogIn(id);
-        if (res.status === 200) {
-            setUserData(res.data.user);
-            setToken(res.data.token);
-            setData(res.data);
+    const [chatData, setChatData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState("");
+    
+    useEffect(() => {
+
+    async function initChat() {
+        try {
+        setErrorMessage("");
+        setLoading(true);
+        
+        // 1) Create a new user for the chat
+        const { token } = await GuestLogin(jobId);
+        
+        let userId = localStorage["userID"];
+        
+        // Check if the token and userId are returned
+        if (!token || !userId) {
+            throw new Error("No token or userId returned from GuestLogin");
         }
+
+        // 2) Set the chat data state with the token and userId
+        setChatData({
+            token: token,
+            user: { id: userId },
+        });
+
+        } catch (err) {
+        console.error("Failed to create guest user:", err);
+        setErrorMessage("Could not create guest user for chat.");
+        } finally {
+        setLoading(false);
+        }
+    }
+
+    // If the jobId is available, initialize the chat
+    if (jobId) {
+        initChat();
+    }
+    }, [jobId]);
+
+    if (loading) {
+    return <div>Loading chat...</div>;
+    }
+    if (errorMessage) {
+    return <div className="text-red-600">{errorMessage}</div>;
+    }
+    if (!chatData) {
+    return <div>Unable to load chat data.</div>;
     }
 
     return (
         <>
-            {id == null || userData == null ?
-                <div className="space-y-[10px] px-[10px] mx-auto py-[10px] rounded-md shadow-lg mt-[35px] max-tablet620:w-[95%] tablet620:w-[50%] bg-white">
-                    <h1 className="w-[100%] font-semibold text-[30px]">Login</h1>
-                    <input onChange={(e) => { SetID(e.target.value) }} value={id} type="text" placeholder="User ID" className="px-[5px] w-[100%] h-[35px] outline outline-[1px]"></input>
-                    <button onClick={() => { HandleSave() }} className="bottom-[10px]  font-semibold text-white w-[100%] h-[45px] mx-auto bg-[#0A5397]">Create</button>
+            <div className="!overflow-y-hidden w-full flex flex-col">
+                
+                <div style = {style.container}>
+                <ClientChatComponent data={chatData} jobId={jobId}></ClientChatComponent>
                 </div>
-                :
-                <div className="!overflow-y-hidden w-full flex flex-col">
-                    
-                    <div style = {style.container}>
-                    <ClientChatComponent data={data}></ClientChatComponent>
-                    </div>
 
-                </div>
-            }
+            </div>
+            
         </>
     )
 }
