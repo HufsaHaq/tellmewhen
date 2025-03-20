@@ -1,64 +1,12 @@
-/* archie stuff 
-import axois from "axios";
-export async function NewUser(username, id) {
-    let base = localStorage["endpointChat"];
-    if (localStorage["endpointChat"] == null || localStorage["endpointChat"] == "") throw new Error("Endpoint not defined.");
-
-    await axois.post(base + "/chat/create_user",
-        {
-            username: username,
-            id: id
-        }
-    ).then(res => {
-        console.log(res.statusCode);
-        if (res.statusCode === 200) {
-            alert("User created successfully");
-            window.location.href = "/debugger";
-        }
-    })
-}
-
-export async function LogIn(id) {
-    let base = localStorage["endpointChat"];
-    let data;
-    if (localStorage["endpointChat"] == null || localStorage["endpointChat"] == "") throw new Error("Endpoint not defined.");
-
-    await axois.get(base + "/chat/login/" + id,
-    ).then(async res => {
-        data = res;
-    })
-    return data;
-
-}
-
-export async function NewChannel(name, id)
-{
-    let base = localStorage["endpointChat"];
-    if (localStorage["endpointChat"] == null || localStorage["endpointChat"] == "") throw new Error("Endpoint not defined.");
-
-    await axois.post(base + "/chat/channels/create_channel",
-        {
-            name: name,
-            id: id
-        }
-    ).then(res => {
-        console.log(res.statusCode);
-        if (res.statusCode === 200) {
-            alert("Channel created successfully");
-            window.location.href = "/debugger";
-        }
-    })
-}
-*/
 import axios from "axios";
 
-export async function NewUser(jobId) {
+export async function GuestLogin(jobId) {
     let base = localStorage["endpointChat"];
     if (localStorage["endpointChat"] == null || localStorage["endpointChat"] == "") {
         throw new Error("Endpoint not defined.");
     }
 
-    await axios.post(base + "/chat/create_user", {
+    await axios.post(base + "/chat/guest/login", {
         jobId: jobId,
     }).then(res => {
         console.log(res.status);
@@ -112,7 +60,7 @@ export async function DeleteChannel(jobId) {
     }
 
     await axios.post(base + "/chat/channels/delete_channel", {
-        data: { jobId: jobId },
+        jobId: jobId,
     }).then(res => {
         console.log(res.status);
         if (res.status === 200) {
