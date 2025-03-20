@@ -18,8 +18,14 @@ export default function Page() {
             const storedID = typeof window !== "undefined" ? localStorage["userID"] : "";
             setID(storedID);
 
+            const businessID = typeof window !== "undefined" ? localStorage["businessID"] : "";
+
+            if (!storedID || !businessID) {
+                throw new Error("User ID or Business ID not found in localStorage.");
+            }
+
             // Attempt login using that ID
-            const res = await LogIn(storedID, localStorage["businessID"]);
+            const res = await LogIn(storedID, businessID);
             if (res.status === 200) {
                 setUserData(res.data.user);
                 setData(res.data);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GuestLogin } from "@/scripts/chat";
 import { ClientChatComponent } from "@/components/Chat/ClientChatComponent";
 import { useParams } from "next/navigation";
