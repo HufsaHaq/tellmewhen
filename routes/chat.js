@@ -50,6 +50,7 @@ chatRouter.get("/worker/login/:userId/:businessId", async (req, res) => {
                 role: member.role,
             })),
         }));
+        consol
         console.log(`Worker ${userId} logged in successfully`);
         res.status(200).json({ token:token, channels:simplifiedChannels });
     } catch (error) {
@@ -77,7 +78,16 @@ chatRouter.get("/guest/login/:jobId", async (req, res) => {
     }
 
     const channel = channels[0];
-    res.status(200).json({token: guestToken, channel: channel});
+    // Extract only the necessary data from the channel
+    const simplifiedChannel = {
+        id: channel.id,
+        name: channel.data.name,
+        members: Object.values(channel.state.members).map(member => ({
+            user_id: member.user_id,
+            role: member.role,
+        })),
+    };
+    res.status(200).json({token: guestToken, channel: simplifiedChannel});
 
     }
     catch (error) {
