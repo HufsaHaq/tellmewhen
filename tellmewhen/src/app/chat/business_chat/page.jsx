@@ -7,7 +7,8 @@ import { BusinessChatComponent } from "@/components/Chat/BusinessChatComponent";
 
 export default function Page() {
     const [id, setID] = useState("");
-    const [data, setData] = useState(null);
+    const [token, setToken] = useState(null);
+    const [channel, setChannel] = useState(null);
     const [loading, setLoading] = useState(true);
 
     const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
@@ -16,13 +17,30 @@ export default function Page() {
         async function fetchData() {
             // Make sure localStorage is accessible:
             const storedID = typeof window !== "undefined" ? localStorage["userID"] : "";
-            setID(storedID);
+            setID(storedID)
 
+            const businessID = typeof window !== "undefined" ? localStorage["businessID"] : "";
+
+            if (!storedID || !businessID) {
+                throw new Error("User ID or Business ID not found in localStorage.");
+            }
+            console.log("Attempt login using that ID")
+            console.log("storedID:"+storedID)
+            console.log("businessID:"+businessID)
             // Attempt login using that ID
-            const res = await LogIn(storedID, localStorage["businessID"]);
-            if (res.status === 200) {
-                setUserData(res.data.user);
-                setData(res.data);
+            console.log("LogIn")
+            let res = await LogIn(storedID, businessID);
+            console.log("busi res:")
+            console.log(res)
+            console.log("busi stat:")
+            console.log(res.stat) 
+            console.log("busi res.data.channels:")
+            console.log(res.data.channels) 
+            console.log("busi res.data.token:")
+            console.log(res.data.token)   
+            if (res.stat === 200) {
+                setChannel(res.data.channels);
+                setToken(res.data.token);
             }
             setLoading(false);
         }
@@ -30,11 +48,16 @@ export default function Page() {
     }, []);
 
     if (loading) return <h1>Loading...</h1>;
-
-    if (!data) {
-        return <h1>Error: Could not load user or token</h1>;
-    }
-
+    // console.log(data);
+    // if (!data) {
+    //     return <h1>Error: Could not load user or token</h1>;
+    // }}
+    const data = {
+        channels: channel,
+        token: token,
+        user: 'worker-' + localStorage["userID"],
+    };
+    console.log(data);
     return (
         <div className="!overflow-y-hidden w-full flex flex-col">
             {/* Chat area */}

@@ -1,14 +1,9 @@
 import axios from "axios";
+import  {GetServerEndpoint}  from "../scripts/script-settings";
 
 export async function GuestLogin(jobId) {
-    let base = localStorage["endpointChat"];
-    if (localStorage["endpointChat"] == null || localStorage["endpointChat"] == "") {
-        throw new Error("Endpoint not defined.");
-    }
-
-    await axios.post(base + "/chat/guest/login", {
-        jobId: jobId,
-    }).then(res => {
+    let base = GetServerEndpoint();
+    await axios.get(base + "/chat/guest/login/" + jobId).then(res => {
         console.log(res.status);
         if (res.status === 200) {
             console.log("Guest user created successfully");
@@ -18,11 +13,9 @@ export async function GuestLogin(jobId) {
 }
 
 export async function LogIn(userId, businessId) {
-    let base = localStorage["endpointChat"];
+    let base = GetServerEndpoint();
     let data;
-    if (localStorage["endpointChat"] == null || localStorage["endpointChat"] == "") {
-        throw new Error("Endpoint not defined.");
-    }
+    let stat;
 
     await axios.get(base + "/chat/worker/login/" + userId + "/" + businessId)
         .then(res => {
@@ -30,34 +23,15 @@ export async function LogIn(userId, businessId) {
             if (res.status === 200) {
                 console.log("Worker logged in successfully");
                 data = res.data; // rturn the token and channels
+                stat = res.status;
             }
         });
 
-    return data;
-}
-
-export async function NewChannel(jobId, businessId) {
-    let base = localStorage["endpointChat"];
-    if (localStorage["endpointChat"] == null || localStorage["endpointChat"] == "") {
-        throw new Error("Endpoint not defined.");
-    }
-
-    await axios.post(base + "/chat/channels/create_channel/" + businessId, {
-        jobId: jobId,
-    }).then(res => {
-        console.log(res.status);
-        if (res.status === 200) {
-            console.log("Channel created successfully");
-            return res.data.channel; // return the created channel
-        }
-    });
+    return {data:data, stat:stat};
 }
 
 export async function DeleteChannel(jobId) {
-    let base = localStorage["endpointChat"];
-    if (localStorage["endpointChat"] == null || localStorage["endpointChat"] == "") {
-        throw new Error("Endpoint not defined.");
-    }
+    let base = GetServerEndpoint();
 
     await axios.post(base + "/chat/channels/delete_channel", {
         jobId: jobId,

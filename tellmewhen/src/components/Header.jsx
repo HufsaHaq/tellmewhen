@@ -127,6 +127,7 @@ function Header() {
                                             Dashboard
                                         </button>
                                         <button
+                                            className="text-white text-[20px] justify-self-start"
                                             onClick={() => {
                                                 window.location.href = "/chat/business_chat";
                                             }}

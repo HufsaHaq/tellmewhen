@@ -15,23 +15,25 @@ import { useState, useEffect } from "react";
 export function ClientChatComponent({ data = null }) {
     const STREAM_API_KEY = typeof window === "undefined" ? "" : localStorage?.apiKey || "";
     const [channel, setChannel] = useState(null);
+    const user = 'guest-' + localStorage["jobID"];
+    const jobId = localStorage["jobID"];
 
     const client = useCreateChatClient({
         apiKey: STREAM_API_KEY,
         tokenOrProvider: data?.token,
-        userData: { id: data?.user?.id },
+        userData: { id: user },
     });
 
-    useEffect(() => {
-        if (!client || !data?.user?.id || !jobId) return;
+    // useEffect(() => {
+    //     if (!client || !user || !jobId) return;
     
-        const newChannel = client.channel("messaging", jobId, {
-          members: [data.user.id /*, localStorage["adminID"]*/],
-          name: `Job #${jobId} Chat`,
-        });
+    //     const newChannel = client.channel("messaging", jobId, {
+    //       members: [data.user.id /*, localStorage["adminID"]*/],
+    //       name: `Job #${jobId} Chat`,
+    //     });
     
-        setChannel(newChannel);
-      }, [client, data?.user?.id, jobId]);
+    //     setChannel(newChannel);
+    //   }, [client, data?.user?.id, jobId]);
 
     if (!client) return <LoadingIndicator />;
     if (!channel) return <div>Initializing chat...</div>;

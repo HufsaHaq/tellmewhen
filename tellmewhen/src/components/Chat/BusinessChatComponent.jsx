@@ -23,7 +23,7 @@ function DesktopLayout({ user }) {
         <div className="flex h-full">
             {/* Left sidebar */}
             <div className="w-1/4 border-r">
-                <ChannelList filters={{ members: { $in: [user?.id] } }} />
+                <ChannelList filters={{ members: { $in: [user] } }} />
             </div>
 
             {/* Right content */}
@@ -56,7 +56,7 @@ function MobileLayout({ user }) {
                     Channels
                 </h2>
                 <ChannelList
-                    filters={{ members: { $in: [user?.id] } }}
+                    filters={{ members: { $in: [user] } }}
                     onSelect={(channel) => setSelectedChannel(channel)}
                     Preview={(previewProps) => {
                         const { channel } = previewProps;
@@ -120,16 +120,24 @@ function MobileLayout({ user }) {
  */
 export function BusinessChatComponent({ data, isMobile }) {
     // Key, token, user from data
-    const STREAM_API_KEY =
-        typeof window !== "undefined" ? localStorage["apiKey"] : "";
-    const user = data?.user;
+    // const STREAM_API_KEY =
+    //     typeof window !== "undefined" ? localStorage["apiKey"] : "";
+    const channel = data?.channels;
     const token = data?.token;
+    // const user = 'worker-' + localStorage["userID"];
+    const user = data?.user;
 
+    console.log("channel:");
+    console.log(channel);
+    console.log("token:");  
+    console.log(token);
+    console.log("user:");
+    console.log(user);
     // Connect to Stream
     const client = useCreateChatClient({
-        apiKey: STREAM_API_KEY,
+        apiKey: 'af26cv9nusph',
         tokenOrProvider: token,
-        userData: { id: user?.id },
+        userData: { id: user},
     });
 
     if (!client) return <LoadingIndicator />;
