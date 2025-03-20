@@ -3,13 +3,15 @@
 import { useState, useEffect } from "react";
 import { GuestLogin } from "@/scripts/chat";
 import { ClientChatComponent } from "@/components/Chat/ClientChatComponent";
+import { useParams } from "next/navigation";
 
 export default function Page() {
 
     const [chatData, setChatData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
-    const jobId = localStorage["jobID"];
+    const params = useParams()
+    const jobId = params.slug;
     
     useEffect(() => {
 
