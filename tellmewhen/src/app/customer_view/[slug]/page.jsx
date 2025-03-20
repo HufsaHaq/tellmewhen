@@ -110,10 +110,9 @@ function Page() {
                 if (details.status === 200) {
                     setBusinessName(details.data.Business_Name || "");
                     setJobDescription(details.data.Description || "");
-                    setDecryptedJobID(details.data.Job_ID || "");
-                    localStorage["jobID"] = details.data.Job_ID;
+                    setDecryptedJobID(details.data.jobId || "");
+                    localStorage["jobID"] = details.data.jobId;
                     console.log("Job ID: " + localStorage["jobID"]);
-                    console.log(details.data.Job_ID);
                     setErrorDetails("");
                 } else {
                     setErrorDetails("Cannot connect to server");
