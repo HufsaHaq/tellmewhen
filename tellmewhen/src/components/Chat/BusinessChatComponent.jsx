@@ -120,14 +120,14 @@ function MobileLayout({ user }) {
  */
 export function BusinessChatComponent({ data, isMobile }) {
     // Key, token, user from data
-    const STREAM_API_KEY =
-        typeof window !== "undefined" ? localStorage["apiKey"] : "";
+    // const STREAM_API_KEY =
+    //     typeof window !== "undefined" ? localStorage["apiKey"] : "";
     const user = data?.user;
     const token = data?.token;
 
     // Connect to Stream
     const client = useCreateChatClient({
-        apiKey: STREAM_API_KEY,
+        apiKey: 'af26cv9nusph',
         tokenOrProvider: token,
         userData: { id: user?.id },
     });

@@ -18,7 +18,11 @@ export async function GuestLogin(jobId) {
 }
 
 export async function LogIn(userId, businessId) {
+    console.log("userId:"+userId)
+    console.log("businessId:"+businessId)
+
     let base = localStorage["endpointChat"];
+    console.log("base:"+base)
     let data;
     if (localStorage["endpointChat"] == null || localStorage["endpointChat"] == "") {
         throw new Error("Endpoint not defined.");
@@ -29,7 +33,7 @@ export async function LogIn(userId, businessId) {
             console.log(res.status);
             if (res.status === 200) {
                 console.log("Worker logged in successfully");
-                data = res; // rturn the token and channels
+                data = res.data; // rturn the token and channels
             }
         });
 

@@ -23,12 +23,17 @@ export default function Page() {
             if (!storedID || !businessID) {
                 throw new Error("User ID or Business ID not found in localStorage.");
             }
-
+            console.log("Attempt login using that ID")
+            console.log("storedID:"+storedID)
+            console.log("businessID:"+businessID)
             // Attempt login using that ID
             const res = await LogIn(storedID, businessID);
+            console.log("res:"+res.data);
             if (res.status === 200) {
                 setUserData(res.data.user);
                 setData(res.data);
+                console.log("res:"+res.data);
+                console.log("res:2"+res.data.user);
             }
             setLoading(false);
         }
