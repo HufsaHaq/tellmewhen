@@ -127,15 +127,9 @@ export function BusinessChatComponent({ data, isMobile }) {
     // const user = 'worker-' + localStorage["userID"];
     const user = data?.user;
 
-    console.log("channel:");
-    console.log(channel);
-    console.log("token:");  
-    console.log(token);
-    console.log("user:");
-    console.log(user);
     // Connect to Stream
     const client = useCreateChatClient({
-        apiKey: 'af26cv9nusph',
+        apiKey: localStorage["apiKey"],
         tokenOrProvider: token,
         userData: { id: user},
     });

@@ -13,7 +13,6 @@ export default function Page() {
     const [errorMessage, setErrorMessage] = useState("");
     const params = useParams()
     const jobId = params.slug;
-
     
     useEffect(() => {
 
@@ -28,17 +27,7 @@ export default function Page() {
         let res = await GuestLogin(jobId);
 
         setChannel(res.channel);
-        console.log(res)
         setToken(res.token);
-        console.log(guest_token)
-        // Check if the token and userId are returned
-        if (!guest_token) {
-            throw new Error("No token or userId returned from GuestLogin");
-        }
-
-        // 2) Set the chat data state with the token and userId
-
-
         } catch (err) {
         console.error("Failed to create guest user:", err);
         setErrorMessage("Could not create guest user for chat.");
