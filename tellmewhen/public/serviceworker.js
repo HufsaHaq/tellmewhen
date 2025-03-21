@@ -15,5 +15,6 @@ self.addEventListener("push", async function (event) {
 	await self.registration.showNotification(title, {
 		body: body,
 		vibrate: [200, 100, 200],
+		data: {url: "/customer_view"}
 	})
 });
