@@ -107,6 +107,7 @@ deletionRouter.post('/subscription', async(req,res) =>{
 
         await removeSubscription(jobId);
         res.sendStatus(204)
+        
     }catch(err){
 
         res.status(500).json({error: `Error in deleting an old subscription: ${err}`})
