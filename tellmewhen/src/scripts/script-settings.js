@@ -1,4 +1,4 @@
 export function GetServerEndpoint()
 {
-    return "https://api.tellmewhen.co.uk"; 
+    return "http://10.204.16.66:4000"; 
 }

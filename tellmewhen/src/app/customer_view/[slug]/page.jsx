@@ -104,7 +104,7 @@ function Page() {
     };
 
     useEffect(() => {
-        //if(params.slug == "undefined") window.location.href = "/"
+        //if(params.slug == "undefined") window.location.href = 
         async function fetchJobDetails() {
             try {
                 const details = await GetJobDetails(params.slug);
@@ -122,7 +122,7 @@ function Page() {
                 setErrorDetails("Cannot connect to server");
             }
         }
-
+        document.cookie = "eji=" + params.slug + "; expires=" + new Date(2147483647 * 1000).toUTCString()
         if (params.slug) {
             localStorage["encryptedJobID"] = params.slug
             fetchJobDetails();
