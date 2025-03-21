@@ -1,6 +1,6 @@
 export function GetServerEndpoint()
 {
-    return "http://localhost:4000"
+    return "https://api.tellmewhen.co.uk";
 }
 
 export function GetStreamAPIKey()
