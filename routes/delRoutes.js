@@ -78,7 +78,7 @@ deletionRouter.post("/:bid",authMiddleWare,adminMiddleWare, async(req,res) =>{
 
         await deleteBusiness(businessId);
         
-        return res.status(204)
+        return res.sendStatus(204)
     }catch(err){
 
         return res.status(500).json({ error:err });
