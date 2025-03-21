@@ -55,7 +55,7 @@ export const createjob = async () => {
 };
 
 export const createjobhistory = async () => {
-  const sql = `CREATE TABLE IF NOT EXISTS JOB_HISTORY (History_ID INT AUTO_INCREMENT PRIMARY KEY,User_ID INT,Job_ID VARCHAR(255), Business_ID INT, Completion_Date DATETIME,Description VARCHAR(255),Remarks VARCHAR(255),FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(User_ID), FOREIGN KEY (Business_ID) REFERENCES BUSINESS_TABLE(Business_ID));`;
+  const sql = `CREATE TABLE IF NOT EXISTS JOB_HISTORY (History_ID INT AUTO_INCREMENT PRIMARY KEY,User_ID INT,Job_ID VARCHAR(255), Business_ID INT, Completion_Date DATETIME,Description VARCHAR(255),Remarks VARCHAR(255),FOREIGN KEY (Job_ID) REFERENCES JOB_TABLE(Job_ID),FOREIGN KEY (User_ID) REFERENCES WORKER_TABLE(User_ID), FOREIGN KEY (Business_ID) REFERENCES BUSINESS_TABLE(Business_ID));`;
   return executeQuery(sql);
 };
 
@@ -186,13 +186,13 @@ export const populateDatabase = async () => {
 //run create func
 
 (async () => {
-  //   await deleteNotificationstable();
-  //   await deleteSubscriptionstable();
-  //   await deletejobhistorytable();
-  //   await deletejobstable();
-  //   await deleteTokensTable();
-  //   await deleteWorkerstable();
-  //   await deleteBusinesstable();
+  //await deleteNotificationstable();
+  //await deleteSubscriptionstable();
+  await deletejobhistorytable();
+  //await deletejobstable();
+  //await deleteTokensTable();
+  //await deleteWorkerstable();
+  //await deleteBusinesstable();
   await createbusiness();
   await createworker();
   await createTokensTable();

@@ -184,29 +184,31 @@ const assignJobToUser = async (userId, jobId) => {
 
 // mark a job as completed (moves it to job history and removes from current jobs)
 const completeJob = async (userId, jobId, remarks = '') => {
-  const selectSql = `
-    SELECT Business_ID, Description
-    FROM JOB_TABLE
-    WHERE Job_ID = ?;
-  `;
-  const jobDetails = await execute(selectSql, [jobId]);
-    console.log(`DB JOB details: ${jobDetails[0].Business_ID}`)
-  const insertSql = `
-    INSERT INTO JOB_HISTORY (User_ID, Job_ID, Business_ID, Completion_Date, Description, Remarks)
-    VALUES (?, ?, ?, NOW(), ?, ?);
-  `;
-  const deleteSql = 'DELETE FROM JOB_TABLE WHERE Job_ID = ?;';
-  await execute(deleteSql,[jobId])
-  await execute(insertSql, [
+  const selectJobSql = 'SELECT Business_ID, Description FROM JOB_TABLE WHERE Job_ID = ?;';
+  const checkHistorySql = 'SELECT Job_ID FROM JOB_HISTORY WHERE Job_ID = ?;';
+  const insertHistorySql = 'INSERT INTO JOB_HISTORY (User_ID, Job_ID, Business_ID, Completion_Date, Description, Remarks) VALUES (?, ?, ?, NOW(), ?, ?);';
+  const deleteJobSql = 'DELETE FROM JOB_TABLE WHERE Job_ID = ?;';
+
+  // Check if the job exists in the JOB_TABLE
+  const jobDetails = await execute(selectJobSql, [jobId]);
+  if (jobDetails.length === 0) {
+    throw new Error(`Job with ID ${jobId} not found in JOB_TABLE.`);
+  }
+
+  // Check if the job already exists in the JOB_HISTORY table
+  //const historyCheck = await execute(checkHistorySql, [jobId]);
+
+  // Insert the job into the JOB_HISTORY table
+  await execute(insertHistorySql, [
     userId,
     jobId,
     jobDetails[0].Business_ID,
     jobDetails[0].Description,
     remarks,
   ]);
-    console.log(`UPDATED JOB HISTORY`)
-    console.log(`DELETING JOB WITH ID: ${jobId}`)
 
+  // Delete the job from the JOB_TABLE
+  await execute(deleteJobSql, [jobId]);
 
   console.log(`Job ${jobId} completed and moved to history.`);
 };
@@ -316,6 +318,7 @@ const closeDB = () => {
 
 const testFunctions = async () => {
   try {
+    /*
     const businessId = 1; 
     const userId = 5; 
     const jobId = 10; 
@@ -347,6 +350,9 @@ const testFunctions = async () => {
 
     const jobDetails = await getJobDetails(jobId);
     console.log('Job details:', jobDetails);
+    */
+
+    await completeJob(2,'13381d5135ea9bb2c91dfaf3cfcdc781')
 
     closeDB();
   } catch (err) {
