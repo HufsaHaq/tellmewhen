@@ -436,7 +436,7 @@ jobRouter.post('/notify/:jid',authMiddleWare, async (req, res) => {
   
     const options = {
       vapidDetails: {
-        subject: 'mailto:https://tellmewhen.co.uk',
+        subject: 'mailto:admin@tellmewhen.co.uk',
         publicKey: process.env.VAPID_PUBLIC,
         privateKey: process.env.VAPID_PRIVATE
       }};
