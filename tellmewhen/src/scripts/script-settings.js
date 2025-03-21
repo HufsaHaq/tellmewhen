@@ -1,4 +1,4 @@
 export function GetServerEndpoint()
 {
-    return "https://api.tellmewhen.co.uk"; 
+    return "https://api.tellmewhen.co.uk"
 }
