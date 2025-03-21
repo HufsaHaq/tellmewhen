@@ -10,17 +10,13 @@ function NotificationModal({ isOpen, jobID, close }) {
     const [errorMessage, setErrorMessage] = useState("")
     async function sendNotification()
     {
-        let res = await NotifyCustomer(jobID, title, body).catch(err => setErrorEnabled(true));
-        console.log(res)
+        let res = await NotifyCustomer(jobID, title, body).catch(err => {setErrorEnabled(true); setErrorMessage("The customer has notifications disabled"); return});
         if (res.status === 200)
         {
             close();
             return
         }
-        else if(res.status === 400)
-        {
-            setErrorMessage(res.data.error)
-        }
+
         setErrorEnabled(true)
     }
     if (!isOpen) return null;
@@ -53,7 +49,7 @@ function NotificationModal({ isOpen, jobID, close }) {
                         onChange={(e) => { setBody(e.target.value); }}
                     />
                 </div>
-                {errorEnabled && <h1 className="text-red-500 text-sm my-2">An error occured whilst sending the notification</h1>}
+                {errorEnabled && <h1 className="text-red-500 text-sm my-2">{errorMessage}</h1>}
                 <div className="max-tablet620:grid max-tablet620:grid-cols-1 tablet620:flex tablet620:justify-end tablet620:space-x-4 max-tablet620:gap-2">
                     <Button
                         onClick={close}
