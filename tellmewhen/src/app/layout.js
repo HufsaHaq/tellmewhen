@@ -3,6 +3,10 @@ import Header from "../components/Header"
 export const metadata = {
   title: "Tell Me When",
   description: "",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent"
+  }
 };
 
 export default function RootLayout({ children }) {

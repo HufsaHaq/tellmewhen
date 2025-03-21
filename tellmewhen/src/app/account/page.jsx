@@ -308,6 +308,7 @@ function Account() {
 
     if (hidePage) return <PageLoad message={APIError != "" ? APIError : "Loading..."}></PageLoad>
     return (
+        <div className="w-[100vw] h-[100vh] overflow-y-scroll fixed bg-[#F5F5F5] ">
         <div className={`page-content max-tablet620:w-[90%] tablet620:w-[75%] m-auto mt-[25px]`}>
             {/* TITLEBAR */}
             <span className="mb-[25px] header-content flex mt-auto my-auto items-center ">
@@ -573,6 +574,7 @@ function Account() {
                 />
             )}
 
+        </div>
         </div>
     )
 }

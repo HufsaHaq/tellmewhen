@@ -12,6 +12,7 @@ import {
 } from "stream-chat-react";
 import "stream-chat-react/dist/css/v2/index.css";
 import { useState, useEffect } from "react";
+import PageLoad from "../PageLoad";
 
 
 export function ClientChatComponent({ data }) {
@@ -25,8 +26,8 @@ export function ClientChatComponent({ data }) {
         tokenOrProvider: data.token,
         userData: { id: data.user },
     });
-    if (!client) return <LoadingIndicator />;
-    if (!channel) return <div>Initializing chat...</div>;
+    if (!client) return <PageLoad />;
+    if (!channel) return <PageLoad/>;
     console.log(channel)
     return (
         <Chat client={client}>

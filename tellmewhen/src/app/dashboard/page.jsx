@@ -337,7 +337,9 @@ function Page() {
 
     if (hidePage) return <PageLoad></PageLoad>
     return (
-        <div className={"page-content max-tablet620:w-[90%] tablet620:w-[80%] m-auto"}>
+        <div className="w-[100vw] h-[100vh] overflow-y-scroll fixed bg-[#F5F5F5] ">
+
+        <div className={"page-content max-tablet620:w-[90%] tablet620:w-[80%] m-auto bg-[#F5F5F5]"}>
             {/* Span element is for the controls above the table (Switcher and Button) to keep them inline*/}
             <span className={`z-10 transition ease-in-out hover:scale-[100.75%] sticky top-[15px] ${coloursTailwind["tertiary"]} border-[1px] mb-[10px] border-[#A0A0A0] w-[98%] m-auto rounded-lg shadow-lg mt-[20px] grid grid-cols-2 items-center min-h-[60px] max-tablet620:space-y-[10px] max-tablet620:py-[10px] tablet620:py-[5px] max-tablet620:px-[15px] tablet620:px-[5px]`}>
                 <Tabs
@@ -495,6 +497,7 @@ function Page() {
             {/* Finish Job Modal */}
             <FinishJobModal isOpen={isFinishModalOpen} job={jobToFinish} onClose={() => setIsFinishModalOpen(false)} onFinish={handleFinishJob}
             />
+        </div>
         </div>
     );
 }

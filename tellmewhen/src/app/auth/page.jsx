@@ -91,6 +91,7 @@ const AuthPage = () => {
     
 
     return (
+        <div className="w-[100vw] h-[100vh] fixed bg-[#F5F5F5] ">
         <div style={styles.container}>
             <div style={styles.card}>
                 <div style={styles.tabsContainer}>
@@ -194,6 +195,7 @@ const AuthPage = () => {
                     </button>
                 </form>
             </div>
+        </div>
         </div>
     );
 };

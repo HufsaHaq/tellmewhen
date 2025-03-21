@@ -104,6 +104,7 @@ function Page() {
     };
 
     useEffect(() => {
+        if(params.slug == "undefined") window.location.href = "/"
         async function fetchJobDetails() {
             try {
                 const details = await GetJobDetails(params.slug);
@@ -123,11 +124,14 @@ function Page() {
         }
 
         if (params.slug) {
+            localStorage["encryptedJobID"] = params.slug
             fetchJobDetails();
         }
     }, [params.slug]); // Use params.slug as the dependency
 
     return (
+        <div className="w-[100vw] h-[100%] overflow-y-scroll absolute top-[0px] bg-[#F5F5F5] ">
+
         <div className=" flex flex-col pt-20 pb-8 bg-gray-100">
             <div className="flex flex-col items-center justify-start mt-12 px-6">
 
@@ -201,6 +205,7 @@ function Page() {
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     );
 }

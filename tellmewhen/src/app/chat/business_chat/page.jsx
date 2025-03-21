@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { LogIn } from "@/scripts/chat";
 import { useMediaQuery } from "react-responsive";
 import { BusinessChatComponent } from "@/components/Chat/BusinessChatComponent";
+import PageLoad from "@/components/PageLoad";
 
 export default function Page() {
     const [id, setID] = useState("");
@@ -39,7 +40,7 @@ export default function Page() {
         fetchData();
     }, []);
 
-    if (loading) return <h1>Loading...</h1>;
+    if (loading) return <PageLoad message="Loading Chat"/>;
     // console.log(data);
     // if (!data) {
     //     return <h1>Error: Could not load user or token</h1>;
@@ -51,7 +52,7 @@ export default function Page() {
     };
     console.log(data);
     return (
-        <div className="!overflow-y-hidden w-full flex flex-col">
+        <div className="!overflow-y-hidden bg-[#F5F5F5] w-full flex flex-col">
             {/* Chat area */}
             <div className="" style={style.container}>
                 <BusinessChatComponent data={data} isMobile={isMobile} />
@@ -62,5 +63,6 @@ export default function Page() {
 const style = {
     container: {
         height: "calc(100vh - 85px)",
+        backgroundColor: "#F5F5F5"
     }
 }

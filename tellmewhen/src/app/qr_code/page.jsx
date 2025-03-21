@@ -14,7 +14,7 @@ function Page() {
     },[]);
 
     return (
-        <div className="min-h-screen flex flex-col pt-20 pb-8">
+        <div className="min-h-screen flex flex-col pt-20 pb-8 bg-[#F5F5F5]">
             <div className="flex flex-col items-center justify-start mt-8">
                 {error ? (
                 <div className="text-red-500 text-3xl font-semibold mb-[100px]">

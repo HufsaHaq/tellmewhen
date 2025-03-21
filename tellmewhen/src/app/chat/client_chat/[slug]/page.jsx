@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { GuestLogin } from "@/scripts/chat";
 import { ClientChatComponent } from "@/components/Chat/ClientChatComponent";
 import { useParams } from "next/navigation";
+import PageLoad from "@/components/PageLoad";
 
 export default function Page() {
 
@@ -50,18 +51,18 @@ export default function Page() {
     console.log("data")
     console.log(data);
     if (loading) {
-    return <div>Loading chat...</div>;
+    return <PageLoad message="Loading Chat"/>;
     }
     if (errorMessage) {
-    return <div className="text-red-600">{errorMessage}</div>;
+    return <PageLoad message={errorMessage}></PageLoad>;
     }
     if (!data) {
-    return <div>Unable to load chat data.</div>;
+    return <PageLoad message="Unable to load chat data"></PageLoad>;
     }
 
     return (
         <>
-            <div className="!overflow-y-hidden w-full flex flex-col">
+            <div className="!overflow-y-hidden bg-[#F5F5F5] w-full flex flex-col">
                 
                 <div style = {style.container}>
                 <ClientChatComponent data={data}></ClientChatComponent>
