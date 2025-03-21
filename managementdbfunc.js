@@ -183,7 +183,7 @@ export const deleteBusiness = async (businessId) => {
 
     await executeQuery(sqlBusiness, [businessId]);
 
-    console.log('Business with ID ${businessId} and all associated records deleted successfully.');
+    console.log(`Business with ID ${businessId} and all associated records deleted successfully.`);
   } catch (error) {
     console.error('Error deleting business and associated records:', error.message);
   }
