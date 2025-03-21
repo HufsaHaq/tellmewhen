@@ -1,5 +1,4 @@
 import express from 'express';
-import fs from 'fs';
 import dotenv from 'dotenv';
 import webPush from 'web-push'
 import fs from 'fs'
