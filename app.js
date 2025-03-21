@@ -21,7 +21,7 @@ const __dirname = "";
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+//app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(bodyParser.json());
