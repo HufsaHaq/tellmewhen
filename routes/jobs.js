@@ -2,8 +2,9 @@ import express from 'express';
 import fs from 'fs';
 import dotenv from 'dotenv';
 import webPush from 'web-push'
+import fs from 'fs'
 // db helper functions
-import { getJobHistory, getOpenJobs, createNewJob, assignJobToUser, completeJob, getJobDetails, getNotifications, getSubscription } from '../dbhelper.js';
+import { getJobHistory, getOpenJobs, createNewJob, assignJobToUser, completeJob, getJobDetails } from '../dbhelper.js';
 import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmin, countTotalJobs} from '../managementdbfunc.js';
 //middleware functions for encyrption, authentication and data integrity
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
@@ -419,42 +420,31 @@ jobRouter.post('/notify/:jid',authMiddleWare, async (req, res) => {
 
     let pushSubscription;
     try{
-       pushSubscription = await getSubscription(jobId, businessId);
-       pushSubscription = JSON.parse(pushSubscription)
-       if(pushSubscription == [])
-       {
-        res.status(500).json({ message:"No service worker found" });
-        return
-       }
+
+       pushSubscription = await getNotifications(businessId, jobId);
+
     } catch (err) {
+
       res.status(500).json({ error: err });
-      return
-    }
-  
-    const payload = {
-      title: messageTitle,
-      body: messageBody,
-      jobId: jobId,
-    }
-  
-    const subscription = {
-      endpoint: pushSubscription[0].Endpoint,
-      keys: {
-        auth: pushSubscription[0].Auth_Key1,
-        p256dh: pushSubscription[0].Auth_Key2
-      }
 
     }
+  
+    const payload = JSON.stringify({
+      title: messageTitle,
+      body: messageBody,
+      icon: photo
+    })
+  
     const options = {
       vapidDetails: {
         subject: 'mailto:https://tellmewhen.co.uk',
-        publicKey: "BNErQOX0hbGYSQNR-wAtxuQmBu9ONQCB1jcCEkZo_wIFtHDuvp9478VhcMbOgBIBbFpFDqV6YHo5QNgsCGLaofg",
-        privateKey: "SfML-bkDPu3GjNdQbix_ORUdSocUjG2kBrdtJNYPu1E"
+        publicKey: process.env.VAPID_PUBLIC,
+        privateKey: process.env.VAPID_PRIVATE
       }};
     //send notifcation using PUSH API
     try{
 
-      webPush.sendNotification(subscription, JSON.stringify(payload), options)
+      webPush.sendNotification(pushSubscription, payload, options)
 
       return res.status(200).json({ message:'Notification sent'})
 
@@ -507,9 +497,9 @@ jobRouter.get('/display_code/:jid', authMiddleWare, async(req,res) =>{
     try{ 
 
         const qrResult = await generate_qr(jobId)
-
+        const buffer = Buffer.from(qrResult,'base64')
         return res.status(201).json({
-            qrCode : qrResult
+            qrCode : buffer 
         })
 
     }catch (err){
