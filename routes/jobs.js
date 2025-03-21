@@ -422,7 +422,7 @@ jobRouter.post('/notify/:jid',authMiddleWare, async (req, res) => {
        pushSubscription = JSON.parse(await getSubscription(jobId,businessId))[0]
        if( pushSubscription.length == undefined){
 
-            return res.status(400).json({error:'Unable to send a notification, make sure the customer has enabled notifications.'})
+            return res.status(400).json({error:'Customer has not enabled notifications'})
        }
 
     } catch (err) {
