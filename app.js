@@ -19,10 +19,6 @@ dotenv.config();
 var app = express();
 const __dirname = "";
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug'); // do we need a view engine
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
