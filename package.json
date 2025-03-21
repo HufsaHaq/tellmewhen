@@ -19,10 +19,11 @@
     "qrcode": "^1.5.4",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7",
+    "stream-chat": "^8.57.6",
     "web-push": "^3.6.7"
   },
   "scripts": {
-    "start" : "nodemon apps.js",
+    "start": "nodemon apps.js",
     "startDev": "nodemon app.js",
     "startDB": "nodemon db.js",
     "startHelper": "nodemon dbhelper.js",

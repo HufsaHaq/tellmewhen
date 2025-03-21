@@ -126,7 +126,7 @@ const createNewJob = async (businessId, userId = null, description, dueDate) => 
 
 export const getCustomerJobDetails = async (jobId) => {
   const sql = `
-    SELECT JOB_TABLE.Description, BUSINESS_TABLE.Business_Name 
+    SELECT JOB_TABLE.Description, BUSINESS_TABLE.Business_Name, BUSINESS_TABLE.Business_ID
     FROM JOB_TABLE JOIN BUSINESS_TABLE ON JOB_TABLE.Business_ID = BUSINESS_TABLE.Business_ID 
     WHERE JOB_TABLE.Job_ID = ?`;
 
