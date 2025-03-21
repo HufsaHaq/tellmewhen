@@ -47,7 +47,10 @@ function EmployeeDetailsModal({ isOpen, employeeData, onClose, onConfirm }) {
     }
     const handleDelete = async () => {
         let res = await DeleteEmployee(tempData.id)
-        if(res.status===204) onClose();
+        if(res.status===204){
+            onClose();
+            window.location.reload();
+        }
     }
 
     return (
