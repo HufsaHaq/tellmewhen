@@ -186,30 +186,32 @@ const assignJobToUser = async (userId, jobId) => {
 const completeJob = async (userId, jobId, remarks = '') => {
   const selectJobSql = 'SELECT Business_ID, Description FROM JOB_TABLE WHERE Job_ID = ?;';
   const checkHistorySql = 'SELECT Job_ID FROM JOB_HISTORY WHERE Job_ID = ?;';
-  const insertHistorySql = 'INSERT INTO JOB_HISTORY (User_ID, Job_ID, Business_ID, Completion_Date, Description, Remarks) VALUES (?, ?, ?, NOW(), ?, ?);';
+  const insertHistorySql = 'INSERT INTO JOB_HISTORY (User_ID, Job_ID, Business_ID, Completion_Date, Description, Remarks) VALUES (?, ?, ?, ?, ?, ?);';
   const deleteJobSql = 'DELETE FROM JOB_TABLE WHERE Job_ID = ?;';
   const deleteSubscriptionSql = 'DELETE FROM SUBSCRIPTION_TABLE WHERE Job_ID = ?;';
   // Check if the job exists in the JOB_TABLE
-  const jobDetails = await execute(selectJobSql, [jobId]);
+  console.log(`___________JOB  ID: ${jobId}`)
+  const jobDetails = JSON.parse(await execute(selectJobSql, [jobId]));
   if (jobDetails.length === 0) {
     throw new Error(`Job with ID ${jobId} not found in JOB_TABLE.`);
   }
-
+  console.log(`Business id ${jobDetails[0].Business_ID}`)
   // Check if the job already exists in the JOB_HISTORY table
   //const historyCheck = await execute(checkHistorySql, [jobId]);
-
+ 
   // Insert the job into the JOB_HISTORY table
   await execute(insertHistorySql, [
     userId,
     jobId,
     jobDetails[0].Business_ID,
+    '2025-03-03',
     jobDetails[0].Description,
     remarks,
   ]);
-
-  // Delete the job from the JOB_TABLE
   await execute(deleteSubscriptionSql, [jobId]);
   await execute(deleteJobSql, [jobId]);
+  // Delete the job from the JOB_TABLE
+  
 
   console.log(`Job ${jobId} completed and moved to history.`);
 };
