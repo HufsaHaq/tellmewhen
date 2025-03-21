@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Select, Option } from "@mui/joy";
 import ChangePasswordModal from "./ChangePassword";
-import { ChangePassword } from "@/scripts/account";
+import { ChangePassword, DeleteEmployee } from "@/scripts/account";
 
 function EmployeeDetailsModal({ isOpen, employeeData, onClose, onConfirm }) {
     const [isEditing, setIsEditing] = useState(false);
@@ -44,6 +44,10 @@ function EmployeeDetailsModal({ isOpen, employeeData, onClose, onConfirm }) {
     const handlePasswordSave = async(password) => {
         let res = await ChangePassword(tempData.name, password, tempData.id)
         if(res.status===200) setPasswordOpen(false);
+    }
+    const handleDelete = async () => {
+        let res = await DeleteEmployee(tempData.id)
+        if(res.status===204) onClose();
     }
 
     return (
@@ -110,17 +114,25 @@ function EmployeeDetailsModal({ isOpen, employeeData, onClose, onConfirm }) {
                                     onClick={onClose}
                                     variant="soft"
                                     color="neutral"
-                                    className="row-start-2 min-w-[100px] px-4 py-2"
+                                    className="row-start-3 min-w-[100px] px-4 py-2"
                                 >
                                     Close
                                 </Button>
                                 <Button
-                                    onClick={handleOpenPassword}
+                                    onClick={handleDelete}
                                     variant="solid"
                                     color="primary"
                                     className="px-4 min-w-[100px] py-2"
                                 >
                                     Change Password
+                                </Button>
+                                <Button
+                                    onClick={handleDelete}
+                                    variant="solid"
+                                    color="danger"
+                                    className="px-4 min-w-[100px] py-2"
+                                >
+                                    Delete
                                 </Button>
                             </>
                     </div>

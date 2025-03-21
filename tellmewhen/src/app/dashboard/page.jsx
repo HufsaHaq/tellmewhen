@@ -18,6 +18,7 @@ import FinishJobModal from "@/components/Dashboard/FinishJob";
 import HistoryJobDetailModal from "@/components/Dashboard/HistoryJobDetail";
 import PageLoad from "@/components/PageLoad";
 import { GetAccountDetails, GetEmployees, GetPrivilegeLevel } from "@/scripts/account";
+import { NotifyCustomer } from "@/scripts/webpush";
 
 function Page() {
 
@@ -313,6 +314,7 @@ function Page() {
         let res = await CompleteJob(jobToFinish.id, remarks);
         if(res.status === 201)
         {
+            let res2 = await NotifyCustomer(jobToFinish.id, null, null)
             window.location.reload();
         }
         else {

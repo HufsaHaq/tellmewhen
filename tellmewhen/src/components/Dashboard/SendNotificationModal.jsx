@@ -7,6 +7,7 @@ function NotificationModal({ isOpen, jobID, close }) {
     const [title, setTitle] = useState("")
     const [body, setBody] = useState("")
     const [errorEnabled, setErrorEnabled] = useState(false)
+    const [errorMessage, setErrorMessage] = useState("")
     async function sendNotification()
     {
         let res = await NotifyCustomer(jobID, title, body).catch(err => setErrorEnabled(true));
@@ -15,6 +16,10 @@ function NotificationModal({ isOpen, jobID, close }) {
         {
             close();
             return
+        }
+        else if(res.status === 400)
+        {
+            setErrorMessage(res.data.error)
         }
         setErrorEnabled(true)
     }

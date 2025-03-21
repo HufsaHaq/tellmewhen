@@ -120,14 +120,14 @@ export async function EditEmployee()
     // Modifies an existing employee
 }
 
-export async function DeleteEmployee(userID)
+export async function DeleteEmployee(currentID, targetID)
 {
     // Deletes an employee
     let data = null;
     
-    await axios.post(endpoint + "/delete/user/" + userID,
+    await axios.post(endpoint + "/delete/user/" + targetID,
         {
-            businessID: localStorage["businessID"],
+            userId: currentID,
         }
     ).then(async (res) => {
         data = res;
