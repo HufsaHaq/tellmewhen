@@ -188,7 +188,7 @@ const completeJob = async (userId, jobId, remarks = '') => {
   const checkHistorySql = 'SELECT Job_ID FROM JOB_HISTORY WHERE Job_ID = ?;';
   const insertHistorySql = 'INSERT INTO JOB_HISTORY (User_ID, Job_ID, Business_ID, Completion_Date, Description, Remarks) VALUES (?, ?, ?, NOW(), ?, ?);';
   const deleteJobSql = 'DELETE FROM JOB_TABLE WHERE Job_ID = ?;';
-
+  const deleteSubscriptionSql = 'DELETE FROM SUBSCRIPTION_TABLE WHERE Job_ID = ?;';
   // Check if the job exists in the JOB_TABLE
   const jobDetails = await execute(selectJobSql, [jobId]);
   if (jobDetails.length === 0) {
@@ -208,6 +208,7 @@ const completeJob = async (userId, jobId, remarks = '') => {
   ]);
 
   // Delete the job from the JOB_TABLE
+  await execute(deleteSubscriptionSql, [jobId]);
   await execute(deleteJobSql, [jobId]);
 
   console.log(`Job ${jobId} completed and moved to history.`);
