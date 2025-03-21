@@ -77,7 +77,7 @@ export function decryptJobId(encryptedJobId) {
     }
     try {
         const decipher = crypto.createDecipheriv(ALGO, ENCRYPTION_KEY, ENCRYPTION_IV);
-        let decrypted = decipher.update(hex, 'hex', 'utf8');
+        let decrypted = decipher.update(encryptedJobId, 'hex', 'utf8');
         decrypted += decipher.final('utf8');
         return decrypted;
     } catch (err) {
