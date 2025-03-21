@@ -190,7 +190,7 @@ const completeJob = async (userId, jobId, remarks = '') => {
     WHERE Job_ID = ?;
   `;
   const jobDetails = await execute(selectSql, [jobId]);
-    console.log(`DB JOB details: ${jobDetails}`)
+    console.log(`DB JOB details: ${jobDetails[0].Business_ID}`)
   const insertSql = `
     INSERT INTO JOB_HISTORY (User_ID, Job_ID, Business_ID, Completion_Date, Description, Remarks)
     VALUES (?, ?, ?, NOW(), ?, ?);
@@ -283,6 +283,14 @@ const getTokenStatus = async (token) =>{
   }
 }
 const addSubscription = async (jobId, businessId, endpoint, authKey1, authKey2) => {
+    try{
+
+        await(removeSubscription(jobId))
+
+    }catch (err){
+
+        return 0
+    }
   const sql = `
     INSERT INTO SUBSCRIPTION_TABLE (Job_ID, Business_ID, Endpoint, Auth_Key1, Auth_Key2)
     VALUES (?,?,?,?,?);
