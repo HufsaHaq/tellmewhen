@@ -104,7 +104,7 @@ function Page() {
     };
 
     useEffect(() => {
-        if(params.slug == "undefined") window.location.href = "/"
+        //if(params.slug == "undefined") window.location.href = "/"
         async function fetchJobDetails() {
             try {
                 const details = await GetJobDetails(params.slug);
