@@ -91,8 +91,9 @@ export async function ChangeBusinessPhoto(photob64)
 export async function DeleteBusiness()
 {
     // Deletes the whole business
-    
+    let data = null
     await axios.post(endpoint + "/delete/" + localStorage["businessID"], {timeout: 5000}).then((res) => { data = res })
+    return data;
 }
 
 export async function CreateEmployee(username, password, privilege)

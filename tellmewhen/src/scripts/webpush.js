@@ -61,7 +61,7 @@ export async function RegisterServiceWorker()
     const registration = await navigator.serviceWorker.register('/serviceworker.js', {scope: '/'});
     const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: 'BNErQOX0hbGYSQNR-wAtxuQmBu9ONQCB1jcCEkZo_wIFtHDuvp9478VhcMbOgBIBbFpFDqV6YHo5QNgsCGLaofg',
+        applicationServerKey: 'BBMhViKggz_SberAlf-lNtJ5fkVUyFqVj5X_brgnK3d01tYkjxCsbl23C374X62gPiyLSHIrFjDMBQVBoLTxqLE',
     });
     console.log(subscription);
     return subscription;

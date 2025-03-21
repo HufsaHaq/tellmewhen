@@ -8,6 +8,7 @@ function CurrentJobDetail({ isOpen, jobData, onClose, onConfirm, onOpenFinish, o
   const [tempData, setTempData] = useState(jobData);
   const [NotificationModalOpen, SetNotificationModalOpen] = useState(false);
 
+
   useEffect(() => {
     setTempData(jobData);
   }, [jobData]);
