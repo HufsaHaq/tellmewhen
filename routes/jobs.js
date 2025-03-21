@@ -501,9 +501,8 @@ jobRouter.get('/display_code/:jid', authMiddleWare, async(req,res) =>{
     try{ 
 
         const qrResult = await generate_qr(jobId)
-        const buffer = Buffer.from(qrResult,'base64')
         return res.status(201).json({
-            qrCode : buffer 
+            qrCode : qrResult
         })
 
     }catch (err){

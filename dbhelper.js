@@ -1,6 +1,7 @@
 // Get all open jobs for certain user id ( send empty paeameter for manager)
 import mysql from 'mysql';
 import dotenv from 'dotenv';
+import { del } from 'jase';
 dotenv.config();
 
 const {
@@ -195,6 +196,7 @@ const completeJob = async (userId, jobId, remarks = '') => {
     VALUES (?, ?, ?, NOW(), ?, ?);
   `;
   const deleteSql = 'DELETE FROM JOB_TABLE WHERE Job_ID = ?;';
+  await execute(deleteSql,[jobId])
   await execute(insertSql, [
     userId,
     jobId,
