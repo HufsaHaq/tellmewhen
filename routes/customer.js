@@ -19,7 +19,9 @@ customerRouter.get('/my_job/:job_id', async (req, res) => {
 
         let results = await getCustomerJobDetails(decyptedId)
 
+
         results["jobId"] = decyptedId;
+        console.log(results)
         
         return res.status(200).json(results)
     }catch (err){
