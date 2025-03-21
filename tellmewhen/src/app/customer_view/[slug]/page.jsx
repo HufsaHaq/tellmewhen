@@ -31,6 +31,7 @@ function Page() {
     // const parameters = React.use(params)
     const [decryptedJobID, setDecryptedJobID] = useState("");
     const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+    const [businessID, setBusinessID] = useState("");
     const params = useParams();
     let jobID = params.slug;
 
@@ -40,7 +41,7 @@ function Page() {
 
     async function saveSubscription(subscription) {
         let endpoint = localStorage["endpoint"];
-        let res = await SaveSubscription(subscription, params.slug, localStorage["businessID"]);
+        let res = await SaveSubscription(subscription, params.slug, businessID);
     }
 
     const checkSubscriptionStatus = async () => {
@@ -78,7 +79,6 @@ function Page() {
             return false;
         }
 
-
         //job/display_code/:jId
         try {
             let subscription = await RegisterServiceWorker();
@@ -86,7 +86,7 @@ function Page() {
             setNotificationsEnabled(true);
             return true;
         } catch (error) {
-            alert("Error enabling notifications:", error);
+            console.log("Error enabling notifications:", error);
         }
         return false;
     };
@@ -108,9 +108,11 @@ function Page() {
             try {
                 const details = await GetJobDetails(params.slug);
                 if (details.status === 200) {
+                    console.log(details)
                     setBusinessName(details.data.Business_Name || "");
                     setJobDescription(details.data.Description || "");
                     setDecryptedJobID(details.data.jobId || "");
+                    setBusinessID(details.data.Business_ID)
                     localStorage["jobID"] = details.data.jobId;
                     console.log("Job ID: " + localStorage["jobID"]);
                     setErrorDetails("");
@@ -166,7 +168,6 @@ function Page() {
                     <div className="grid inline">
                         <div className="flex justify-between ml-[15px] gap-8 mb-8">
                             <p className="font-semibold text-xl text-gray-700">Enable Notifications:</p>
-                            <button className="bg-indigo-500 text-white" onClick={()=>enableNotifications()}>Enable</button>
                             <Switch
                                 key={notificationsEnabled}
                                 checked={notificationsEnabled}

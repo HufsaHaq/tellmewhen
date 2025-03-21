@@ -25,7 +25,9 @@ export async function SaveSubscription(subscription, jobId, businessId)
 
     let data = null
     let sub = JSON.parse(JSON.stringify(subscription));
-
+    console.log("Subscription: ", subscription)
+    console.log("jobId: ", jobId)
+    console.log("businessId: ", businessId)
     let json = {
         jobId: jobId,
         endpoint: sub.endpoint,
