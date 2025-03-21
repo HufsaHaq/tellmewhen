@@ -86,9 +86,8 @@ function Page() {
             setNotificationsEnabled(true);
             return true;
         } catch (error) {
-            console.error("Error enabling notifications:", error);
+            alert("Error enabling notifications:", error);
         }
-        setNotificationsEnabled(true);
         return false;
     };
 
@@ -167,6 +166,7 @@ function Page() {
                     <div className="grid inline">
                         <div className="flex justify-between ml-[15px] gap-8 mb-8">
                             <p className="font-semibold text-xl text-gray-700">Enable Notifications:</p>
+                            <button className="bg-indigo-500 text-white" onClick={()=>enableNotifications()}>Enable</button>
                             <Switch
                                 key={notificationsEnabled}
                                 checked={notificationsEnabled}
