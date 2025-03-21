@@ -415,13 +415,12 @@ jobRouter.post('/notify/:jid',authMiddleWare, async (req, res) => {
 
     const messageBody = req.body.message || 'Your job is ready for pickup';
     const messageTitle = req.body.title || 'There is an update to your job';
-    const photo = await getBusinessPhoto(businessId);
 
     let pushSubscription;
     try{
 
-       pushSubscription = await getSubscription(jobId,businessId)
-
+       pushSubscription = JSON.parse(await getSubscription(jobId,businessId))[0]
+       
        if( pushSubscription.lenght <= 0){
 
             return res.status(400).json({error:'Unable to send a notification, make sure the customer has enabled notifications.'})
@@ -436,7 +435,6 @@ jobRouter.post('/notify/:jid',authMiddleWare, async (req, res) => {
     const payload = JSON.stringify({
       title: messageTitle,
       body: messageBody,
-      icon: photo
     })
   
     const options = {
@@ -445,10 +443,18 @@ jobRouter.post('/notify/:jid',authMiddleWare, async (req, res) => {
         publicKey: process.env.VAPID_PUBLIC,
         privateKey: process.env.VAPID_PRIVATE
       }};
+    
+    let subscription = {
+      endpoint: pushSubscription.Endpoint,
+      keys: {
+        auth: pushSubscription.Auth_Key1,
+        p256dh: pushSubscription.Auth_Key2,
+      }
+    }
     //send notifcation using PUSH API
     try{
 
-      webPush.sendNotification(pushSubscription, payload, options)
+      webPush.sendNotification(subscription, payload, options)
 
       return res.status(200).json({ message:'Notification sent'})
 
