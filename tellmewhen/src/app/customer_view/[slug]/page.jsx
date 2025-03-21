@@ -31,7 +31,6 @@ function Page() {
     // const parameters = React.use(params)
     const [decryptedJobID, setDecryptedJobID] = useState("");
     const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-    const [businessID, setBusinessID] = useState("");
     const params = useParams();
     let jobID = params.slug;
 
@@ -41,7 +40,7 @@ function Page() {
 
     async function saveSubscription(subscription) {
         let endpoint = localStorage["endpoint"];
-        let res = await SaveSubscription(subscription, params.slug, businessID);
+        let res = await SaveSubscription(subscription, params.slug, localStorage["businessID"]);
     }
 
     const checkSubscriptionStatus = async () => {
@@ -79,6 +78,7 @@ function Page() {
             return false;
         }
 
+
         //job/display_code/:jId
         try {
             let subscription = await RegisterServiceWorker();
@@ -112,7 +112,6 @@ function Page() {
                     setBusinessName(details.data.Business_Name || "");
                     setJobDescription(details.data.Description || "");
                     setDecryptedJobID(details.data.jobId || "");
-                    setBusinessID(details.data.Business_ID)
                     localStorage["jobID"] = details.data.jobId;
                     console.log("Job ID: " + localStorage["jobID"]);
                     setErrorDetails("");
