@@ -110,7 +110,7 @@ export const addUser = async (username, hashedPassword, businessId, role) => {
 export const deleteUser = async (workerId, currID) => {
   // find admin in the same business as the user being deleted
   const bid = 'SELECT Business_ID FROM WORKER_TABLE WHERE User_ID = ?;';
-  const findAdminSQL = 'SELECT User_ID FROM WORKER_TABLE WHERE Business_ID = ? AND Role = 1 LIMIT 1;'
+  const findAdminSQL = 'SELECT User_ID FROM WORKER_TABLE WHERE Business_ID = ? AND Role = 1;'
 
   // reassign all open jobs from the user being deleted to the admin
   const reassignJobsSQL = 'UPDATE JOB_TABLE SET User_ID = ? WHERE User_ID = ?;';
