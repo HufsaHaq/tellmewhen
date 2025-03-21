@@ -69,7 +69,7 @@ deletionRouter.post("/:bid",authMiddleWare,adminMiddleWare, async(req,res) =>{
     */
     const businessId = parseInt(req.params.bid)
     
-    if(!(businessId === req.user.Business_ID)){
+    if(!(businessId === req.user.businessId)){
 
         return res.status(403).json({ error:'Unable to delete another business'});
 
