@@ -5,7 +5,7 @@ import { useEffect } from "react";
 export default function Page()
 {
     useEffect(() => {
-        if(localStorage["encryptedJobID"] == "undefined")
+        if(localStorage["encryptedJobID"] == "undefined"  || localStorage["encryptedJobID"] === undefined)
         {
             window.location.href = "/"
 
