@@ -1,7 +1,7 @@
 import express from "express";
 import { deleteBusiness,deleteUser } from "../managementdbfunc.js";
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
-
+import {removeSubscription} from "../dbhelper.js"
 const deletionRouter = express.Router()
 
 // Delete a worker from a business
@@ -83,6 +83,33 @@ deletionRouter.post("/:bid",authMiddleWare,adminMiddleWare, async(req,res) =>{
 
         return res.status(500).json({ error:err });
 
+    }
+
+})
+
+/**
+ * @route /delete/subscription
+ * @descrtiption deletes a subscription 
+ * @access any
+ * 
+ * @param {req} - express request object
+ * @param {req.body.jobId} -the job id associated with the subscription object
+ * 
+ * @param {res} - express response object
+ * @return {JOSN} - 204(Created) if the record is succesfully deleted
+ * 
+ * */
+deletionRouter.post('/subscription', async(req,res) =>{
+
+    const jobId = req.body.jobId;
+
+    try{
+
+        await removeSubscription(jobId);
+        res.sendStatus(204)
+    }catch(err){
+
+        res.status(500).json({error: `Error in deleting an old subscription: ${err}`})
     }
 
 })

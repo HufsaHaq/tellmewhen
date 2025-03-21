@@ -282,14 +282,12 @@ const getTokenStatus = async (token) =>{
     return 0;
   }
 }
-
 const addSubscription = async (jobId, businessId, endpoint, authKey1, authKey2) => {
-  const deletesql = 'DELETE FROM SUBSCRIPTION_TABLE WHERE Job_ID = ?'
   const sql = `
     INSERT INTO SUBSCRIPTION_TABLE (Job_ID, Business_ID, Endpoint, Auth_Key1, Auth_Key2)
     VALUES (?,?,?,?,?);
   `;
-  execute(deletesql, jobId)
+
   return execute(sql, [jobId, businessId, endpoint, authKey1, authKey2]);
 };
 
@@ -368,5 +366,6 @@ export {
   addToken,
   getTokenStatus,
   freezeUser,
-  blockToken
+  blockToken,
+  removeSubscription
 };
