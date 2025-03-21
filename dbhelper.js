@@ -188,12 +188,13 @@ const completeJob = async (userId, jobId, remarks = '') => {
     FROM JOB_TABLE
     WHERE Job_ID = ?;
   `;
-  const jobDetails = JSON.parse(await execute(selectSql, [jobId]));
-
+  const jobDetails = await execute(selectSql, [jobId]);
+    console.log(`DB JOB details: ${jobDetails}`)
   const insertSql = `
     INSERT INTO JOB_HISTORY (User_ID, Job_ID, Business_ID, Completion_Date, Description, Remarks)
     VALUES (?, ?, ?, NOW(), ?, ?);
   `;
+  const deleteSql = 'DELETE FROM JOB_TABLE WHERE Job_ID = ?;';
   await execute(insertSql, [
     userId,
     jobId,
@@ -201,12 +202,9 @@ const completeJob = async (userId, jobId, remarks = '') => {
     jobDetails[0].Description,
     remarks,
   ]);
+    console.log(`UPDATED JOB HISTORY`)
+    console.log(`DELETING JOB WITH ID: ${jobId}`)
 
-  const deleteSql = `
-    DELETE FROM JOB_TABLE
-    WHERE Job_ID = ?;
-  `;
-  await execute(deleteSql, [jobId]);
 
   console.log(`Job ${jobId} completed and moved to history.`);
 };

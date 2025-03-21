@@ -373,7 +373,7 @@ jobRouter.post('/complete/:jid',authMiddleWare, async (req,res) =>{
 
       }
     }
-
+    console.log(`JOB COMPLETE:\nUSER_ID:${userId}\nJob ID:${jobId}\nRemarks:${remarks}`)
     try{
 
         await completeJob(userId,jobId,remarks)
@@ -423,7 +423,7 @@ jobRouter.post('/notify/:jid',authMiddleWare, async (req, res) => {
        pushSubscription = await getSubscription(jobId,businessId)
 
        if( pushSubscription.lenght <= 0){
-        
+
             return res.status(400).json({error:'Unable to send a notification, make sure the customer has enabled notifications.'})
        }
 
