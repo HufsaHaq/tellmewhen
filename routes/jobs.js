@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import webPush from 'web-push'
 import fs from 'fs'
 // db helper functions
-import { getJobHistory, getOpenJobs, createNewJob, assignJobToUser, completeJob, getJobDetails } from '../dbhelper.js';
+import { getJobHistory, getOpenJobs, createNewJob, assignJobToUser, completeJob, getJobDetails, getSubscription } from '../dbhelper.js';
 import { countOpenJobs, getBusinessPhoto, addUser, login,registerBusinessAndAdmin, countTotalJobs} from '../managementdbfunc.js';
 //middleware functions for encyrption, authentication and data integrity
 import {authMiddleWare, adminMiddleWare, moderatorMiddleWare} from '../authMiddleWare.js';
@@ -420,7 +420,12 @@ jobRouter.post('/notify/:jid',authMiddleWare, async (req, res) => {
     let pushSubscription;
     try{
 
-       pushSubscription = await getNotifications(businessId, jobId);
+       pushSubscription = await getSubscription(jobId,businessId)
+
+       if( pushSubscription.lenght <= 0){
+        
+            return res.status(400).json({error:'Unable to send a notification, make sure the customer has enabled notifications.'})
+       }
 
     } catch (err) {
 

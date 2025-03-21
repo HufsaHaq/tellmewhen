@@ -188,24 +188,24 @@ indexRouter.post('/login', async (req, res) => {
  */
 indexRouter.post('/register', async (req, res) => {
   
-  const name = req.body.name;
-  const username = req.body.username;
-  const password = req.body.password;
+    const name = req.body.name;
+    const username = req.body.username;
+    const password = req.body.password;
 
-  if(name && username && password){
+    if(name && username && password){
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await registerBusinessAndAdmin(name, username, hashedPassword).then((attempt) => {
-      if (attempt != null) {
-          res.status(201).json({ message: 'Success, Business Registered' });
-      } else {
-          res.status(409).json({ error: 'Fail' });
-      }
-  })
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await registerBusinessAndAdmin(name, username, hashedPassword).then((attempt) => {
+        if (attempt != null) {
+            res.status(201).json({ message: 'Success, Business Registered' });
+        } else {
+            res.status(409).json({ error: 'Fail' });
+        }
+    })
 
-  }else{
-    res.status(400).json({message: "missing fields"})
-  }
+    }else{
+        res.status(400).json({message: "missing fields"})
+    }
 });
 
 /**
