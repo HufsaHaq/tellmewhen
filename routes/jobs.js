@@ -381,7 +381,7 @@ jobRouter.post('/complete/:jid',authMiddleWare, async (req,res) =>{
         return res.status(201).json( { message: 'Job marked as complete'})
 
     }catch (err) {
-
+        console.log(err)
         return res.status(500).json( { error : err } )
 
     }
