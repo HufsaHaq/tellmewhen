@@ -310,11 +310,11 @@ function Page() {
     //Function to handle the finish job button
     const handleFinishJob = async (remarks) => {
         if (!jobToFinish) return;
-
+        let res2 = await NotifyCustomer(jobToFinish.id, null, null)
         let res = await CompleteJob(jobToFinish.id, remarks);
         if(res.status === 201)
         {
-            let res2 = await NotifyCustomer(jobToFinish.id, null, null)
+            
             window.location.reload();
         }
         else {
