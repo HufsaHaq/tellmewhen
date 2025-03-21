@@ -5,5 +5,5 @@ export function GetServerEndpoint()
 
 export function GetStreamAPIKey()
 {
-    return "myh6kvcn45t5"
+    return "myh6kvcn45t5";
 }
