@@ -1,3 +1,4 @@
+import { GetStreamAPIKey } from "@/scripts/script-settings";
 import React, { useState } from "react";
 import {
     Chat,
@@ -129,7 +130,7 @@ export function BusinessChatComponent({ data, isMobile }) {
 
     // Connect to Stream
     const client = useCreateChatClient({
-        apiKey: "myh6kvcn45t5",
+        apiKey: GetStreamAPIKey(),
         tokenOrProvider: token,
         userData: { id: user},
     });

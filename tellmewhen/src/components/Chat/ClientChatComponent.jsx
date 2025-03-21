@@ -13,6 +13,7 @@ import {
 import "stream-chat-react/dist/css/v2/index.css";
 import { useState, useEffect } from "react";
 import PageLoad from "../PageLoad";
+import { GetStreamAPIKey } from "@/scripts/script-settings";
 
 
 export function ClientChatComponent({ data }) {
@@ -22,7 +23,7 @@ export function ClientChatComponent({ data }) {
     let channel = data.channels;
     const [curChannel, setCurChannel] = useState(data.channel)
     const client = useCreateChatClient({
-        apiKey: "myh6kvcn45t5",
+        apiKey: GetStreamAPIKey(),
         tokenOrProvider: data.token,
         userData: { id: data.user },
     });
